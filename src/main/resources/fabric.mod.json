@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "chunksfadein",
+  "version": "${version}",
+  "name": "Chunks Fade In",
+  "description": "Adds bedrock-like chunk fade-in animation!",
+  "authors": [
+    "Koteinik"
+  ],
+  "contact": {
+    "homepage": "https://github.com/kerudion/chunksfadein",
+    "sources": "https://github.com/kerudion/chunksfadein"
+  },
+  "license": "GPLv3",
+  "icon": "assets/chunksfadein/icon.png",
+  "environment": "client",
+  "mixins": [
+    "chunksfadein.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.10",
+    "minecraft": "~1.19",
+    "java": ">=17",
+    "sodium": "0.4.x"
+  }
+}
