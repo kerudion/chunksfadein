@@ -1,6 +1,7 @@
 package com.koteinik.chunksfadein.mixin;
 
 import java.nio.ByteBuffer;
+import java.util.HashSet;
 import java.util.List;
 
 import org.lwjgl.system.MemoryUtil;
@@ -22,10 +23,14 @@ import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion.RenderR
 
 @Mixin(value = RenderRegionArenas.class, remap = false)
 public class RenderRegionArenasMixin implements RenderRegionArenasExt {
-    private static final int fadeCoeffStride = 4 * 4;
+    private static final int FADE_COEFF_STRIDE = 4 * 4;
+
     private final ByteBuffer chunkFadeCoeffsBuffer = createFadeCoeffsBuffer();
     private GlMutableBuffer chunkGlFadeCoeffBuffer;
+
     private CommandList commandList;
+
+    private HashSet<Integer> chunksToReset = new HashSet<>();
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     private void modifyConstructor(CommandList commandList, StagingBuffer stagingBuffer, CallbackInfo ci) {
@@ -36,17 +41,30 @@ public class RenderRegionArenasMixin implements RenderRegionArenasExt {
 
     @Inject(method = "delete", at = @At(value = "TAIL"))
     private void modifyDelete(CommandList commandList, CallbackInfo ci) {
+        chunksToReset.clear();
         chunkFadeCoeffsBuffer.clear();
         commandList.deleteBuffer(chunkGlFadeCoeffBuffer);
     }
 
+    @Override
+    public void resetFadeCoeffForChunk(RenderSection chunk) {
+        chunksToReset.add(chunk.getChunkId());
+    }
+
+    @Override
     public void updateChunksFade(List<RenderSection> chunks, ChunkShaderInterfaceExt shader) {
         for (RenderSection chunk : chunks) {
             final int chunkId = chunk.getChunkId();
-            float fadeCoeff = chunkFadeCoeffsBuffer.getFloat(chunkId * fadeCoeffStride);
-            fadeCoeff += fadeCoeff < 1f ? 0.025f : 0f;
 
-            chunkFadeCoeffsBuffer.putFloat(chunkId * fadeCoeffStride, fadeCoeff);
+            float fadeCoeff = chunkFadeCoeffsBuffer.getFloat(chunkId * FADE_COEFF_STRIDE);
+
+            if (chunksToReset.contains(chunkId)) {
+                fadeCoeff = 0f;
+                chunksToReset.remove(chunkId);
+            } else
+                fadeCoeff += fadeCoeff < 1f ? 0.025f : 0f;
+
+            chunkFadeCoeffsBuffer.putFloat(chunkId * FADE_COEFF_STRIDE, fadeCoeff);
         }
 
         uploadFadeCoeffDataToGl();
@@ -58,10 +76,10 @@ public class RenderRegionArenasMixin implements RenderRegionArenasExt {
     }
 
     private ByteBuffer createFadeCoeffsBuffer() {
-        ByteBuffer data = MemoryUtil.memAlloc(RenderRegion.REGION_SIZE * fadeCoeffStride);
+        ByteBuffer data = MemoryUtil.memAlloc(RenderRegion.REGION_SIZE * FADE_COEFF_STRIDE);
 
         for (int i = 0; i < RenderRegion.REGION_SIZE; i++)
-            data.putFloat(i * fadeCoeffStride, 0f);
+            data.putFloat(i * FADE_COEFF_STRIDE, 0f);
 
         return data;
     }
