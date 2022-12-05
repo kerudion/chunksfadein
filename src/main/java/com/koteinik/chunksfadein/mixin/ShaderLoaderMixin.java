@@ -9,11 +9,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.koteinik.chunksfadein.Logger;
+import com.koteinik.chunksfadein.iris.IrisApiHook;
 
 @Mixin(value = ShaderLoader.class, remap = false)
 public abstract class ShaderLoaderMixin {
     @Inject(method = "getShaderSource", at = @At("RETURN"), cancellable = true)
     private static void modifyShaderForFadeInEffect(Identifier name, CallbackInfoReturnable<String> cir) {
+        if (IrisApiHook.isShaderPackInUse())
+            return;
+
         String path = name.getPath();
 
         String[] splittedPath = path.split("/");
