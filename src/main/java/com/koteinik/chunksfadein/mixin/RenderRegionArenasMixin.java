@@ -1,6 +1,7 @@
 package com.koteinik.chunksfadein.mixin;
 
 import java.nio.ByteBuffer;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 
@@ -32,6 +33,8 @@ public class RenderRegionArenasMixin implements RenderRegionArenasExt {
 
     private HashSet<Integer> chunksToReset = new HashSet<>();
 
+    private long lastFrameTime = 0L;
+
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     private void modifyConstructor(CommandList commandList, StagingBuffer stagingBuffer, CallbackInfo ci) {
         chunkGlFadeCoeffBuffer = commandList.createMutableBuffer();
@@ -53,6 +56,9 @@ public class RenderRegionArenasMixin implements RenderRegionArenasExt {
 
     @Override
     public void updateChunksFade(List<RenderSection> chunks, ChunkShaderInterfaceExt shader) {
+        final long currentFrameTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        final float fadeCoeffChange = lastFrameTime == 0L ? 0.025f : (currentFrameTime - lastFrameTime) / 600f;
+
         for (RenderSection chunk : chunks) {
             final int chunkId = chunk.getChunkId();
 
@@ -62,13 +68,17 @@ public class RenderRegionArenasMixin implements RenderRegionArenasExt {
                 fadeCoeff = 0f;
                 chunksToReset.remove(chunkId);
             } else
-                fadeCoeff += fadeCoeff < 1f ? 0.025f : 0f;
+                fadeCoeff += fadeCoeff < 1f ? fadeCoeffChange : 0f;
+
+            if (fadeCoeff > 1f)
+                fadeCoeff = 1f;
 
             chunkFadeCoeffsBuffer.putFloat(chunkId * FADE_COEFF_STRIDE, fadeCoeff);
         }
 
         uploadFadeCoeffDataToGl();
         shader.setFadeCoeffs(chunkGlFadeCoeffBuffer);
+        lastFrameTime = currentFrameTime;
     }
 
     private void uploadFadeCoeffDataToGl() {
