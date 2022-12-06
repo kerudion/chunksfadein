@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.koteinik.chunksfadein.extenstions.RenderRegionArenasExt;
-import com.koteinik.chunksfadein.iris.IrisApiHook;
+import com.koteinik.chunksfadein.hooks.IrisApiHook;
 
 import org.spongepowered.asm.mixin.injection.At;
 

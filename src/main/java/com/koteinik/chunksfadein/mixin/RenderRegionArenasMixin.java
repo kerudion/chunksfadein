@@ -11,9 +11,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.koteinik.chunksfadein.Config;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extenstions.RenderRegionArenasExt;
-import com.koteinik.chunksfadein.iris.IrisApiHook;
+import com.koteinik.chunksfadein.hooks.IrisApiHook;
 
 import me.jellysquid.mods.sodium.client.gl.arena.staging.StagingBuffer;
 import me.jellysquid.mods.sodium.client.gl.buffer.GlBufferUsage;
@@ -66,28 +67,35 @@ public class RenderRegionArenasMixin implements RenderRegionArenasExt {
     @Override
     public void updateChunksFade(List<RenderSection> chunks, ChunkShaderInterfaceExt shader) {
         final long currentFrameTime = ZonedDateTime.now().toInstant().toEpochMilli();
-        final float fadeCoeffChange = lastFrameTime == 0L ? 0.025f : (currentFrameTime - lastFrameTime) / 600f;
 
-        for (RenderSection chunk : chunks) {
-            final int chunkId = chunk.getChunkId();
+        final float fadeCoeffChange = lastFrameTime == 0L ? 0
+                : (currentFrameTime - lastFrameTime) * Config.fadeCoeffPerMs;
 
-            float fadeCoeff = chunkFadeCoeffsBuffer.getFloat(chunkId * FADE_COEFF_STRIDE);
-
-            if (chunksToReset.contains(chunkId)) {
-                fadeCoeff = 0f;
-                chunksToReset.remove(chunkId);
-            } else
-                fadeCoeff += fadeCoeff < 1f ? fadeCoeffChange : 0f;
-
-            if (fadeCoeff > 1f)
-                fadeCoeff = 1f;
-
-            chunkFadeCoeffsBuffer.putFloat(chunkId * FADE_COEFF_STRIDE, fadeCoeff);
-        }
+        for (RenderSection chunk : chunks)
+            processChunk(fadeCoeffChange, chunk);
 
         uploadFadeCoeffDataToGl();
         shader.setFadeCoeffs(chunkGlFadeCoeffBuffer);
         lastFrameTime = currentFrameTime;
+    }
+
+    private void processChunk(final float fadeCoeffChange, RenderSection chunk) {
+        final int chunkId = chunk.getChunkId();
+
+        float fadeCoeff = chunkFadeCoeffsBuffer.getFloat(chunkId * FADE_COEFF_STRIDE);
+
+        if (chunksToReset.remove(chunkId))
+            fadeCoeff = 0f;
+        else
+            fadeCoeff += fadeCoeffChange;
+
+        if (fadeCoeff == 1f)
+            return;
+
+        if (fadeCoeff > 1f)
+            fadeCoeff = 1f;
+
+        chunkFadeCoeffsBuffer.putFloat(chunkId * FADE_COEFF_STRIDE, fadeCoeff);
     }
 
     private void uploadFadeCoeffDataToGl() {

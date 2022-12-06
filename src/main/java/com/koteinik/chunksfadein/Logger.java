@@ -8,4 +8,12 @@ public class Logger {
     public static void info(Object object) {
         LOGGER.info(object.toString());
     }
+
+    public static void warn(Object object) {
+        LOGGER.warn(object.toString());
+    }
+
+    public static void error(Object object) {
+        LOGGER.error(object.toString());
+    }
 }

@@ -8,8 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.koteinik.chunksfadein.Logger;
-import com.koteinik.chunksfadein.iris.IrisApiHook;
+import com.koteinik.chunksfadein.hooks.IrisApiHook;
 
 @Mixin(value = ShaderLoader.class, remap = false)
 public abstract class ShaderLoaderMixin {
@@ -58,7 +57,6 @@ public abstract class ShaderLoaderMixin {
             default:
                 break;
         }
-        Logger.info(shaderFileName + "\n" + source);
 
         cir.setReturnValue(source);
     }

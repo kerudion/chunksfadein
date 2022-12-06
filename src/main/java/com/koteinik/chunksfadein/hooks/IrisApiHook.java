@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.iris;
+package com.koteinik.chunksfadein.hooks;
 
 import java.lang.reflect.Method;
 

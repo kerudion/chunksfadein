@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extenstions.RenderRegionArenasExt;
-import com.koteinik.chunksfadein.iris.IrisApiHook;
+import com.koteinik.chunksfadein.hooks.IrisApiHook;
 
 import me.jellysquid.mods.sodium.client.render.chunk.RegionChunkRenderer;
 import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
@@ -29,6 +29,7 @@ public class RegionChunkRendererMixin {
     private final boolean isShaderPackInUse = IrisApiHook.isShaderPackInUse();
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/RegionChunkRenderer;setModelMatrixUniforms", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
+    @SuppressWarnings("rawtypes")
     private void modifyChunkRender(ChunkRenderMatrices matrices, CommandList commandList,
             ChunkRenderList list, BlockRenderPass pass,
             ChunkCameraContext camera,
