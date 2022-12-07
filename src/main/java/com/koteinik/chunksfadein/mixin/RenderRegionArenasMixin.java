@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.koteinik.chunksfadein.Config;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extenstions.RenderRegionArenasExt;
-import com.koteinik.chunksfadein.hooks.IrisApiHook;
 
 import me.jellysquid.mods.sodium.client.gl.arena.staging.StagingBuffer;
 import me.jellysquid.mods.sodium.client.gl.buffer.GlBufferUsage;
@@ -26,9 +25,9 @@ import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion.RenderR
 
 @Mixin(value = RenderRegionArenas.class, remap = false)
 public class RenderRegionArenasMixin implements RenderRegionArenasExt {
-    private static final int FADE_COEFF_STRIDE = 4 * 4;
+    private final boolean isEnabled = Config.needToTurnOff();
 
-    private final boolean isShaderPackInUse = IrisApiHook.isShaderPackInUse();
+    private static final int FADE_COEFF_STRIDE = 4 * 4;
 
     private final ByteBuffer chunkFadeCoeffsBuffer = createFadeCoeffsBuffer();
     private GlMutableBuffer chunkGlFadeCoeffBuffer;
@@ -41,7 +40,7 @@ public class RenderRegionArenasMixin implements RenderRegionArenasExt {
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     private void modifyConstructor(CommandList commandList, StagingBuffer stagingBuffer, CallbackInfo ci) {
-        if (isShaderPackInUse)
+        if (isEnabled)
             return;
 
         chunkGlFadeCoeffBuffer = commandList.createMutableBuffer();
@@ -51,7 +50,7 @@ public class RenderRegionArenasMixin implements RenderRegionArenasExt {
 
     @Inject(method = "delete", at = @At(value = "TAIL"))
     private void modifyDelete(CommandList commandList, CallbackInfo ci) {
-        if (isShaderPackInUse)
+        if (isEnabled)
             return;
 
         chunksToReset.clear();

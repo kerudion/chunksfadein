@@ -11,6 +11,8 @@ import net.minecraft.text.Text;
 public class SettingsScreen extends GameOptionsScreen {
     private FadeTimeSlider slider;
     private DoneButton doneButton;
+    private ResetButton resetButton;
+    private EnabledButton enabledButton;
 
     @SuppressWarnings("resource")
     public SettingsScreen(Screen parent) {
@@ -21,8 +23,12 @@ public class SettingsScreen extends GameOptionsScreen {
     public void init() {
         slider = new FadeTimeSlider(width, height);
         doneButton = new DoneButton(this, client, width, height);
+        resetButton = new ResetButton(width, height, 100, 0, slider);
+        enabledButton = new EnabledButton(this, width, height);
         addDrawableChild(slider);
         addDrawableChild(doneButton);
+        addDrawableChild(resetButton);
+        addDrawableChild(enabledButton);
     }
 
     @Override
