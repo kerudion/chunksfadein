@@ -7,8 +7,7 @@
     "ShaderLoaderMixin",
     "ChunkShaderInterfaceMixin",
     "RegionChunkRendererMixin",
-    "RenderRegionMixin",
-    "RenderRegionArenasMixin"
+    "RenderRegionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

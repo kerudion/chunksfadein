@@ -16,14 +16,14 @@ import me.jellysquid.mods.sodium.client.render.chunk.shader.ShaderBindingContext
 
 @Mixin(value = ChunkShaderInterface.class, remap = false)
 public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
-    private final boolean isEnabled = Config.needToTurnOff();
+    private final boolean needToDisable = Config.needToTurnOff();
 
     private GlUniformBlock uniformFadeCoeffs;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void modifyShaderForFadeInEffect(ShaderBindingContext context, ChunkShaderOptions options,
             CallbackInfo ci) {
-        if (isEnabled)
+        if (needToDisable)
             return;
 
         uniformFadeCoeffs = context.bindUniformBlock("ubo_ChunkFadeCoeffs", 1);

@@ -25,12 +25,12 @@ public class EnabledButton extends ButtonWidget {
                 new TooltipSupplier() {
                     @Override
                     public void onTooltip(ButtonWidget button, MatrixStack matrices, int mouseX, int mouseY) {
-                        if (!isEnabled())
+                        if (!needToDisable())
                             parent.renderTooltip(matrices, Text.of("This option can't be changed in-game"), mouseX,
                                     mouseY);
                     }
                 });
-        this.active = isEnabled();
+        this.active = needToDisable();
     }
 
     private static Text createText() {
@@ -40,7 +40,7 @@ public class EnabledButton extends ButtonWidget {
         return Text.of("Enabled: " + color + enabledText);
     }
 
-    private static boolean isEnabled() {
+    private static boolean needToDisable() {
         return MinecraftClient.getInstance().getGame().getCurrentSession() == null;
     }
 }

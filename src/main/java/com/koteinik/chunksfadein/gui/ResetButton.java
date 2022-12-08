@@ -11,7 +11,7 @@ public class ResetButton extends ButtonWidget {
 
     public ResetButton(int parentW, int parentH, int offsetX, int offsetY, FadeTimeSlider slider) {
         super(parentW / 2 - buttonW / 2 + offsetX, parentH / 2 - buttonH / 2 + offsetY,
-                buttonW, buttonH, Text.of("RESET"), new PressAction() {
+                buttonW, buttonH, Text.of("Reset"), new PressAction() {
                     @Override
                     public void onPress(ButtonWidget button) {
                         Config.setFadeCoeffFromSeconds(Config.DEFAULT_FADE_TIME);
