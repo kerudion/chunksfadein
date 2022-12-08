@@ -26,7 +26,7 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
         if (needToDisable)
             return;
 
-        uniformFadeCoeffs = context.bindUniformBlock("ubo_ChunkFadeCoeffs", 1);
+        uniformFadeCoeffs = context.bindUniformBlock("ubo_ChunkFadeDatas", 1);
     }
 
     @Override

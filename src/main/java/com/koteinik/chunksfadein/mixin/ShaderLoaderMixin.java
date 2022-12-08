@@ -46,12 +46,13 @@ public abstract class ShaderLoaderMixin {
                 break;
 
             case "chunk_vertex.glsl":
-                source += "\n#define _fade_coeff Chunk_FadeCoeffs[_draw_id].fadeCoeff.x";
+                source += "\n#define _fade_offset Chunk_FadeDatas[_draw_id].fadeData.xyz";
+                source += "\n#define _fade_coeff Chunk_FadeDatas[_draw_id].fadeData.w";
                 break;
 
             case "chunk_parameters.glsl":
-                source += "\n\nstruct ChunkFadeCoeff {\n    vec4 fadeCoeff;\n};";
-                source += "\n\nlayout(std140) uniform ubo_ChunkFadeCoeffs {\n    ChunkFadeCoeff Chunk_FadeCoeffs[256];\n};";
+                source += "\n\nstruct ChunkFadeData {\n    vec4 fadeData;\n};";
+                source += "\n\nlayout(std140) uniform ubo_ChunkFadeDatas {\n    ChunkFadeData Chunk_FadeDatas[256];\n};";
                 break;
 
             default:
