@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.koteinik.chunksfadein.Config;
+import com.koteinik.chunksfadein.config.Config;
 
 @Mixin(value = ShaderLoader.class, remap = false)
 public abstract class ShaderLoaderMixin {
@@ -42,7 +42,8 @@ public abstract class ShaderLoaderMixin {
                 source = source
                         .replaceFirst("out", "out float v_fadeCoeff;\nout")
                         .replaceFirst("_vert_tex_diffuse_coord;",
-                                "_vert_tex_diffuse_coord;\n    v_fadeCoeff = _fade_coeff;");
+                                "_vert_tex_diffuse_coord;\n    v_fadeCoeff = _fade_coeff;")
+                                .replaceFirst("\\+ _vert_position;", "+ _vert_position + _fade_offset;");
                 break;
 
             case "chunk_vertex.glsl":

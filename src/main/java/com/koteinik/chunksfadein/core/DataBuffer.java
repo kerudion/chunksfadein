@@ -11,9 +11,11 @@ import me.jellysquid.mods.sodium.client.gl.device.CommandList;
 public class DataBuffer {
     private final ByteBuffer buffer;
     private final int stride;
+    private final int fieldsCount;
 
     public DataBuffer(int size, int fieldsCount) {
         this.stride = fieldsCount * 4;
+        this.fieldsCount = fieldsCount;
 
         buffer = MemoryUtil.memAlloc(size * stride);
 
@@ -32,6 +34,11 @@ public class DataBuffer {
 
     public void uploadData(CommandList commandList, GlMutableBuffer glBuffer) {
         commandList.uploadData(glBuffer, buffer, GlBufferUsage.DYNAMIC_DRAW);
+    }
+
+    public void reset(int i) {
+        for (int j = 0; j < fieldsCount; j++)
+            put(i, j, 0f);
     }
 
     public void delete() {

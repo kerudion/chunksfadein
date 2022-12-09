@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.koteinik.chunksfadein.Config;
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 
 import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
@@ -18,7 +18,7 @@ import me.jellysquid.mods.sodium.client.render.chunk.shader.ShaderBindingContext
 public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
     private final boolean needToDisable = Config.needToTurnOff();
 
-    private GlUniformBlock uniformFadeCoeffs;
+    private GlUniformBlock uniformFadeDatas;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void modifyShaderForFadeInEffect(ShaderBindingContext context, ChunkShaderOptions options,
@@ -26,11 +26,11 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
         if (needToDisable)
             return;
 
-        uniformFadeCoeffs = context.bindUniformBlock("ubo_ChunkFadeDatas", 1);
+        uniformFadeDatas = context.bindUniformBlock("ubo_ChunkFadeDatas", 1);
     }
 
     @Override
-    public void setFadeCoeffs(GlMutableBuffer buffer) {
-        uniformFadeCoeffs.bindBuffer(buffer);
+    public void setFadeDatas(GlMutableBuffer buffer) {
+        uniformFadeDatas.bindBuffer(buffer);
     }
 }

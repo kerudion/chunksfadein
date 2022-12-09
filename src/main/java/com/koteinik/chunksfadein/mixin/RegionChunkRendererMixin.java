@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import com.koteinik.chunksfadein.Config;
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extenstions.RenderRegionExt;
 

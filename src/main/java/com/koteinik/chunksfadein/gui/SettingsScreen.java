@@ -1,18 +1,26 @@
 package com.koteinik.chunksfadein.gui;
 
-import com.koteinik.chunksfadein.Config;
+import com.koteinik.chunksfadein.config.Config;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 public class SettingsScreen extends GameOptionsScreen {
-    private FadeTimeSlider slider;
+    private FadeTimeSlider fadeSlider;
     private DoneButton doneButton;
-    private ResetButton resetButton;
-    private EnabledButton enabledButton;
+    private ResetButton fadeResetButton;
+    private ResetButton animationTimeResetButton;
+    private ModEnabledButton modEnabledButton;
+    private FadeEnabledButton fadeEnabledButton;
+    private AnimationEnabledButton animationEnabledButton;
+    private AnimationTimeSlider animationTimeSlider;
+    private AnimationCurveButton animationCurveButton;
+    private AnimationOffsetSlider animationOffsetSlider;
+    private ResetButton animationOffsetResetButton;
 
     @SuppressWarnings("resource")
     public SettingsScreen(Screen parent) {
@@ -21,25 +29,58 @@ public class SettingsScreen extends GameOptionsScreen {
 
     @Override
     public void init() {
-        slider = new FadeTimeSlider(width, height);
+        modEnabledButton = new ModEnabledButton(this, width, height);
+        fadeEnabledButton = new FadeEnabledButton(this, width, height);
+        animationEnabledButton = new AnimationEnabledButton(this, width, height);
+
+        fadeSlider = new FadeTimeSlider(width, height);
+        fadeResetButton = new ResetButton(width, height, 100, -28, () -> {
+            Config.reset(Config.FADE_TIME_KEY);
+            fadeSlider.setValue(Config.secondsFromFadeChange() / Config.MAX_FADE_TIME);
+        });
+        animationCurveButton = new AnimationCurveButton(width, height);
+        animationTimeSlider = new AnimationTimeSlider(width, height);
+        animationTimeResetButton = new ResetButton(width, height, 100, 28 * 2, () -> {
+            Config.reset(Config.ANIMATION_TIME_KEY);
+            animationTimeSlider.setValue(Config.secondsFromAnimationChange() / Config.MAX_ANIMATION_TIME);
+        });
+        animationOffsetSlider = new AnimationOffsetSlider(width, height);
+        animationOffsetResetButton = new ResetButton(width, height, 100, 28 * 3, () -> {
+            Config.reset(Config.ANIMATION_OFFSET_KEY);
+            animationOffsetSlider.setValue(Config.animationInitialOffset / Config.MAX_ANIMATION_OFFSET);
+        });
+
         doneButton = new DoneButton(this, client, width, height);
-        resetButton = new ResetButton(width, height, 100, 0, slider);
-        enabledButton = new EnabledButton(this, width, height);
-        addDrawableChild(slider);
+
+        addDrawableChild(modEnabledButton);
+        addDrawableChild(fadeEnabledButton);
+        addDrawableChild(animationEnabledButton);
+
+        addDrawableChild(fadeSlider);
+        addDrawableChild(fadeResetButton);
+        addDrawableChild(animationCurveButton);
+        addDrawableChild(animationTimeSlider);
+        addDrawableChild(animationTimeResetButton);
+        addDrawableChild(animationOffsetSlider);
+        addDrawableChild(animationOffsetResetButton);
+
         addDrawableChild(doneButton);
-        addDrawableChild(resetButton);
-        addDrawableChild(enabledButton);
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        TextRenderer textRenderer = minecraftClient.textRenderer;
+
         renderBackground(matrices);
+        drawCenteredText(matrices, textRenderer, Text.of("Chunks fade in mod settings"), width / 2, height / 20,
+                16777215 | 255 << 24);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Override
     public void removed() {
         super.removed();
-        Config.saveConfig();
+        Config.save();
     }
 }
