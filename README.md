@@ -3,7 +3,7 @@
 [![CurseForge](https://cf.way2muchnoise.eu/full_720811_downloads.svg?badge_style=for_the_badge)](https://www.curseforge.com/minecraft/mc-mods/chunks-fade-in)
 
 ## Features
-Adds bedrock-like chunk fade in animation! For more details, please visit modrinth page.
+Adds bedrock-like chunk fade in animation and chunk animations like in ChunkAnimator mod! For more details, please visit modrinth page.
 
 ## Versions
 - 1.19.x
