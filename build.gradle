@@ -45,6 +45,7 @@ dependencies {
 	modImplementation "com.github.CaffeineMC:sodium-fabric:${project.sodiumVersion}"
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
+	include 'com.moandjiezana.toml:toml4j:0.7.2'
 	implementation 'com.moandjiezana.toml:toml4j:0.7.2'
 
 	// Uncomment the following line to enable the deprecated Fabric API modules. 
