@@ -25,7 +25,7 @@ public class AnimationCurveButton extends ButtonWidget {
                         Config.setInteger(Config.ANIMATION_CURVE_KEY, next);
                         button.setMessage(createText());
                     }
-                });
+                }, DEFAULT_NARRATION_SUPPLIER);
     }
 
     private static Text createText() {

@@ -16,6 +16,6 @@ public class DoneButton extends ButtonWidget {
                     public void onPress(ButtonWidget button) {
                         parent.close();
                     }
-                });
+                }, DEFAULT_NARRATION_SUPPLIER);
     }
 }

@@ -4,6 +4,7 @@ import com.koteinik.chunksfadein.config.Config;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -21,15 +22,9 @@ public class ModEnabledButton extends ButtonWidget {
                         Config.setBoolean(Config.MOD_ENABLED_KEY, !Config.isModEnabled);
                         button.setMessage(createText());
                     }
-                },
-                new TooltipSupplier() {
-                    @Override
-                    public void onTooltip(ButtonWidget button, MatrixStack matrices, int mouseX, int mouseY) {
-                        if (!needToDisable())
-                            parent.renderTooltip(matrices, Text.of("This option can't be changed in-game"), mouseX,
-                                    mouseY);
-                    }
-                });
+                }, DEFAULT_NARRATION_SUPPLIER);
+        if (!needToDisable())
+            this.setTooltip(Tooltip.of(Text.of("This option can't be changed in-game")));
         this.active = needToDisable();
     }
 

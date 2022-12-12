@@ -14,6 +14,6 @@ public class ResetButton extends ButtonWidget {
                     public void onPress(ButtonWidget button) {
                         resetCallback.run();
                     }
-                });
+                }, DEFAULT_NARRATION_SUPPLIER);
     }
 }

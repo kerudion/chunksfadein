@@ -19,7 +19,7 @@ public class AnimationEnabledButton extends ButtonWidget {
                         Config.setBoolean(Config.ANIMATION_ENABLED_KEY, !Config.isAnimationEnabled);
                         button.setMessage(createText());
                     }
-                });
+                }, DEFAULT_NARRATION_SUPPLIER);
     }
 
     private static Text createText() {
