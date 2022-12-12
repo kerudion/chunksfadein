@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "chunksfadein",
-  "version": "2.1.0",
+  "version": "v1.0.0-1.19.3",
   "name": "Chunks Fade In",
   "description": "Adds bedrock-like chunk fade-in animation and chunk animations like in ChunkAnimator mod!",
   "authors": [
@@ -13,7 +13,7 @@
     "issues": "https://github.com/kerudion/chunksfadein/issues"
   },
   "license": "GPLv3",
-  "icon": "assets/chunksfadein/icon.png",
+  "icon": "assets/chunksfadein/icon.jpg",
   "environment": "client",
   "mixins": [
     "chunksfadein.mixins.json"
