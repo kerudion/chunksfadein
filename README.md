@@ -8,7 +8,7 @@ No more chunks appearing right in front of you out of nowhere! This mod adds Bed
 [![Youtube Video](http://img.youtube.com/vi/CanA5ADOis0/0.jpg)](https://www.youtube.com/watch?v=CanA5ADOis0)
 
 ### Flexible configuration with Mod Menu support!
-![Mod Menu Config](readme-assets/config.png)
+<img src="https://github.com/kerudion/chunksfadein/blob/main/readme-assets/config.png?raw=true" width="30%">
 
 ## Versions
 - `1.19`-`1.19.2`
