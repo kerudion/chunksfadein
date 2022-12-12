@@ -15,8 +15,8 @@ Unlike other chunk animation mods like [ChunkAnimator], [Chunkimator], [Animated
 *Original idea is taken from [Fade In Chunks](https://modrinth.com/mod/fade-in-chunks), which was abandoned by its developer. However, [Sodium] has updated a lot, so old code is almost unusable in new versions of the game.*
 
 ## Versions
-- [`1.19`-`1.19.2`](https://github.com/kerudion/chunksfadein/releases/tag/v2.0.1)
-- [`1.19.3`]()
+- [`1.19`-`1.19.2`](https://github.com/kerudion/chunksfadein/releases/tag/v2.1.0-1.19)
+- [`1.19.3`](https://github.com/kerudion/chunksfadein/releases/tag/v1.0.0-1.19.3)
 
 ## Dependencies
 - Sodium `0.4.x`
