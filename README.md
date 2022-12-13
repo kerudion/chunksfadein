@@ -11,9 +11,7 @@
 [![CurseForge](https://cf.way2muchnoise.eu/full_720811_downloads.svg?badge_style=for_the_badge)](https://www.curseforge.com/minecraft/mc-mods/chunks-fade-in)
 [![Discord](https://img.shields.io/discord/1052166699924856852?style=for-the-badge&color=informational&logo=discord)](https://discord.gg/fPbPhrQNSz)
 
-<p align="center">
-    <img width="200" src="readme-assets/icon.png" alt="Chunks fade in">
-</p>
+<img width="200" src="readme-assets/icon.png" align="right" alt="Chunks fade in icon">
 
 This simple mod adds Bedrock Edition-like fade-in animation for chunks. And also (if you want to) motion animation like in [ChunkAnimator] mod! No more chunks appearing right in front of you out of nowhere!  
 Unlike other similar mods like [ChunkAnimator], [Chunkimator], [Animated Chunks] and [Smooth Chunks], it works perfectly fine with Sodium!
