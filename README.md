@@ -16,6 +16,11 @@
 This simple mod adds Bedrock Edition-like fade-in animation for chunks. And also (if you want to) motion animation like in [ChunkAnimator] mod! No more chunks appearing right in front of you out of nowhere!  
 Unlike other similar mods like [ChunkAnimator], [Chunkimator], [Animated Chunks] and [Smooth Chunks], it works perfectly fine with Sodium!
 
+\
+\
+\
+\
+\
 **The original idea is taken from [Fade In Chunks], which was abandoned by its developer. However, [Sodium] has updated a lot since these times. So old code is almost unusable in new versions of Minecraft.*
 
 **The [Smooth Chunks] mod was abandoned. Fl0gic (cadenkriese in GitHub) allowed me to use its updated icon in my mod. Thanks to him :)*
