@@ -1,15 +1,20 @@
 package com.koteinik.chunksfadein.mixin;
 
 import java.util.List;
+import java.util.Set;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.ChunkData;
 import com.koteinik.chunksfadein.core.ChunkFadeInController;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extenstions.RenderRegionExt;
+
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -20,6 +25,9 @@ import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegionManager;
 
 @Mixin(value = RenderRegion.class, remap = false)
 public class RenderRegionMixin implements RenderRegionExt {
+    @Shadow
+    private final Set<RenderSection> chunks = new ObjectOpenHashSet<>();
+
     private final boolean needToDisable = Config.needToTurnOff();
     private ChunkFadeInController fadeController;
 
@@ -31,8 +39,8 @@ public class RenderRegionMixin implements RenderRegionExt {
         fadeController = new ChunkFadeInController();
     }
 
-    @Inject(method = "removeChunk", at = @At(value = "TAIL"))
-    private void modifyRemoveChunk(RenderSection chunk, CallbackInfo ci) {
+    @Inject(method = "addChunk", at = @At(value = "TAIL"))
+    private void modifyAddChunk(RenderSection chunk, CallbackInfo ci) {
         if (needToDisable)
             return;
 
@@ -50,5 +58,10 @@ public class RenderRegionMixin implements RenderRegionExt {
     @Override
     public void updateChunksFade(List<RenderSection> chunks, ChunkShaderInterfaceExt shader, CommandList commandList) {
         fadeController.updateChunksFade(chunks, shader, commandList);
+    }
+
+    @Override
+    public ChunkData getChunkData(int x, int y, int z) {
+        return fadeController.getChunkData(x, y, z);
     }
 }

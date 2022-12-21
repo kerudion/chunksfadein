@@ -23,4 +23,20 @@ public class MathUtils {
     public static float abs(float in) {
         return in >= 0f ? in : -in;
     }
+
+    public static int floor(float x) {
+        int y;
+
+        if (x >= Float.MAX_VALUE || x <= -Float.MAX_VALUE)
+            return (int) x;
+
+        y = (int) x;
+        if (x < 0 && y != x)
+            y--;
+
+        if (y == 0)
+            return 0;
+
+        return y;
+    }
 }

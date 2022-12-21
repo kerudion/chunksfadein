@@ -22,7 +22,32 @@ public class ChunkFadeInController {
 
     public ChunkFadeInController() {
         for (int i = 0; i < RenderRegion.REGION_SIZE; i++)
-            resetFadeForChunk(i);
+            completeChunkFade(i);
+    }
+
+    public ChunkData getChunkData(int x, int y, int z) {
+        int rX = x & (RenderRegion.REGION_WIDTH - 1);
+        int rY = y & (RenderRegion.REGION_HEIGHT - 1);
+        int rZ = z & (RenderRegion.REGION_LENGTH - 1);
+
+        return getChunkData(RenderRegion.getChunkIndex(rX, rY, rZ));
+    }
+
+    public ChunkData getChunkData(int chunkId) {
+        float x = chunkFadeDatasBuffer.get(chunkId, 0);
+        float y = chunkFadeDatasBuffer.get(chunkId, 1);
+        float z = chunkFadeDatasBuffer.get(chunkId, 2);
+        float w = chunkFadeDatasBuffer.get(chunkId, 3);
+
+        return new ChunkData(x, y, z, w);
+    }
+
+    public void completeChunkFade(int chunkId) {
+        chunkFadeDatasBuffer.put(chunkId, 0, 0f);
+        chunkFadeDatasBuffer.put(chunkId, 1, 0f);
+        chunkFadeDatasBuffer.put(chunkId, 2, 0f);
+        chunkFadeDatasBuffer.put(chunkId, 3, 1f);
+        progressMap.remove(chunkId);
     }
 
     public void resetFadeForChunk(int chunkId) {
