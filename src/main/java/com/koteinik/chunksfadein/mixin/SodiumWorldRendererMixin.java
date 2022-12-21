@@ -33,6 +33,8 @@ import net.minecraft.world.chunk.ChunkSection;
 
 @Mixin(value = SodiumWorldRenderer.class, remap = false)
 public class SodiumWorldRendererMixin {
+    private boolean needToTurnOff = Config.needToTurnOff();
+
     @Inject(method = "renderTileEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;render"), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
     @SuppressWarnings("rawtypes")
     private void modifyRender(MatrixStack matrices, BufferBuilderStorage bufferBuilders,
@@ -63,7 +65,7 @@ public class SodiumWorldRendererMixin {
 
     @Inject(method = "isEntityVisible", at = @At(value = "RETURN"), cancellable = true)
     private void modifyIsEntityVisible(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if(needToTurnOff)
+        if (needToTurnOff)
             return;
 
         if (cir.getReturnValueZ()) {
