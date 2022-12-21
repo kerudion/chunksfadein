@@ -72,7 +72,17 @@ public class SodiumWorldRendererMixin {
             ChunkData fadeData = ChunkAppearedLink.getChunkData(chunkPos.x, chunkY,
                     chunkPos.z);
 
-            cir.setReturnValue(!(fadeData.y == -Config.animationInitialOffset && fadeData.fadeCoeff == 0f));
+            boolean isVisible = !(fadeData.y == -Config.animationInitialOffset && fadeData.fadeCoeff == 0f);
+
+            if (!isVisible) {
+                ChunkSection chunk = entity.getWorld().getChunk(chunkPos.x, chunkPos.z)
+                        .getSectionArray()[entity.getWorld().sectionCoordToIndex(chunkY)];
+
+                if (chunk.isEmpty())
+                    isVisible = true;
+            }
+
+            cir.setReturnValue(isVisible);
         }
     }
 
