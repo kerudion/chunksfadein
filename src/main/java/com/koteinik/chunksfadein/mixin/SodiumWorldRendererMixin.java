@@ -39,12 +39,10 @@ public class SodiumWorldRendererMixin {
             Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions,
             Camera camera, float tickDelta, CallbackInfo ci, Immediate i1, Vec3d v, double d1, double d2, double d3,
             BlockEntityRenderDispatcher d, Iterator i2, BlockEntity entity) {
-        if (!entity.hasWorld())
+        if (!entity.hasWorld() || !Config.isAnimationEnabled || needToTurnOff)
             return;
 
         BlockEntityExt ext = (BlockEntityExt) entity;
-        if (ext.getLastRenderOffset().equals(Vec3d.ZERO))
-            return;
 
         ChunkSectionPos chunkPos = ChunkSectionPos.from(entity.getPos());
 
@@ -65,6 +63,9 @@ public class SodiumWorldRendererMixin {
 
     @Inject(method = "isEntityVisible", at = @At(value = "RETURN"), cancellable = true)
     private void modifyIsEntityVisible(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+        if(needToTurnOff)
+            return;
+
         if (cir.getReturnValueZ()) {
             ChunkPos chunkPos = entity.getChunkPos();
             int chunkY = MathUtils.floor((float) entity.getY() / 16f);
