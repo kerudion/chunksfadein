@@ -5,7 +5,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.core.ChunkAppearedLink;
 import com.koteinik.chunksfadein.core.ChunkData;

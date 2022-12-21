@@ -10,7 +10,9 @@
     "RenderRegionMixin",
     "RenderRegionManagerMixin",
     "EntityRendererMixin",
-    "EntityMixin"
+    "EntityMixin",
+    "BlockEntityMixin",
+    "SodiumWorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
