@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.mixin;
+package com.koteinik.chunksfadein.mixin.chunk;
 
 import java.util.List;
 import java.util.Set;
@@ -28,12 +28,11 @@ public class RenderRegionMixin implements RenderRegionExt {
     @Shadow
     private final Set<RenderSection> chunks = new ObjectOpenHashSet<>();
 
-    private final boolean needToDisable = Config.needToTurnOff();
     private ChunkFadeInController fadeController;
 
     @Inject(method = "<init>", at = @At(value = "TAIL"))
     private void modifyConstructor(RenderRegionManager manager, int x, int y, int z, CallbackInfo ci) {
-        if (needToDisable)
+        if (!Config.isModEnabled)
             return;
 
         fadeController = new ChunkFadeInController();
@@ -41,7 +40,7 @@ public class RenderRegionMixin implements RenderRegionExt {
 
     @Inject(method = "addChunk", at = @At(value = "TAIL"))
     private void modifyAddChunk(RenderSection chunk, CallbackInfo ci) {
-        if (needToDisable)
+        if (!Config.isModEnabled)
             return;
 
         fadeController.resetFadeForChunk(chunk.getChunkId());
@@ -49,7 +48,7 @@ public class RenderRegionMixin implements RenderRegionExt {
 
     @Inject(method = "deleteResources", at = @At(value = "TAIL"))
     private void modifyDeleteResources(CommandList commandList, CallbackInfo ci) {
-        if (needToDisable)
+        if (!Config.isModEnabled)
             return;
 
         fadeController.delete(commandList);

@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.mixin;
+package com.koteinik.chunksfadein.mixin.shader;
 
 import me.jellysquid.mods.sodium.client.gl.shader.ShaderLoader;
 import net.minecraft.util.Identifier;
@@ -9,12 +9,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.hooks.IrisApiHook;
 
 @Mixin(value = ShaderLoader.class, remap = false)
 public abstract class ShaderLoaderMixin {
     @Inject(method = "getShaderSource", at = @At("RETURN"), cancellable = true)
-    private static void modifyShaderForFadeInEffect(Identifier name, CallbackInfoReturnable<String> cir) {
-        if (Config.needToTurnOff())
+    private static void modifyConstructor(Identifier name, CallbackInfoReturnable<String> cir) {
+        if (!Config.isModEnabled || IrisApiHook.isShaderPackInUse())
             return;
 
         String path = name.getPath();
@@ -43,7 +44,7 @@ public abstract class ShaderLoaderMixin {
                         .replaceFirst("out", "out float v_fadeCoeff;\nout")
                         .replaceFirst("_vert_tex_diffuse_coord;",
                                 "_vert_tex_diffuse_coord;\n    v_fadeCoeff = _fade_coeff;")
-                                .replaceFirst("\\+ _vert_position;", "+ _vert_position + _fade_offset;");
+                        .replaceFirst("\\+ _vert_position;", "+ _vert_position + _fade_offset;");
                 break;
 
             case "chunk_vertex.glsl":

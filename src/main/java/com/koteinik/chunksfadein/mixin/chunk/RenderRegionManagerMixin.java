@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.mixin;
+package com.koteinik.chunksfadein.mixin.chunk;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,11 +19,10 @@ import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegionManager;
 public class RenderRegionManagerMixin implements RenderRegionManagerExt {
     @Shadow
     private final Long2ReferenceOpenHashMap<RenderRegion> regions = new Long2ReferenceOpenHashMap<RenderRegion>();
-    private final boolean needToDisable = Config.needToTurnOff();
 
     @Inject(method = "<init>", at = @At(value = "TAIL"))
     private void modifyConstructor(CommandList commandList, CallbackInfo ci) {
-        if (needToDisable)
+        if (!Config.isModEnabled)
             return;
 
         ChunkAppearedLink.regionManager = this;
@@ -31,9 +30,6 @@ public class RenderRegionManagerMixin implements RenderRegionManagerExt {
 
     @Override
     public RenderRegion getRenderRegion(int chunkX, int chunkY, int chunkZ) {
-        if (regions == null)
-            return null;
-
         long key = RenderRegion.getRegionKeyForChunk(chunkX, chunkY, chunkZ);
         return regions.get(key);
     }

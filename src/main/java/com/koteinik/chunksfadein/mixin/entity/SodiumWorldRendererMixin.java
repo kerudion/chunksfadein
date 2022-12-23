@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.mixin;
+package com.koteinik.chunksfadein.mixin.entity;
 
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -33,15 +33,16 @@ import net.minecraft.world.chunk.ChunkSection;
 
 @Mixin(value = SodiumWorldRenderer.class, remap = false)
 public class SodiumWorldRendererMixin {
-    private boolean needToTurnOff = Config.needToTurnOff();
-
     @Inject(method = "renderTileEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;render"), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
     @SuppressWarnings("rawtypes")
     private void modifyRender(MatrixStack matrices, BufferBuilderStorage bufferBuilders,
             Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions,
             Camera camera, float tickDelta, CallbackInfo ci, Immediate i1, Vec3d v, double d1, double d2, double d3,
             BlockEntityRenderDispatcher d, Iterator i2, BlockEntity entity) {
-        if (!entity.hasWorld() || !Config.isAnimationEnabled || needToTurnOff)
+        if (!Config.isModEnabled)
+            return;
+
+        if (!entity.hasWorld() || !Config.isAnimationEnabled)
             return;
 
         BlockEntityExt ext = (BlockEntityExt) entity;
@@ -65,7 +66,7 @@ public class SodiumWorldRendererMixin {
 
     @Inject(method = "isEntityVisible", at = @At(value = "RETURN"), cancellable = true)
     private void modifyIsEntityVisible(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (needToTurnOff)
+        if (!Config.isModEnabled)
             return;
 
         if (cir.getReturnValueZ()) {

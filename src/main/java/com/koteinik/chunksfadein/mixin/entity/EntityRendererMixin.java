@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.mixin;
+package com.koteinik.chunksfadein.mixin.entity;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,11 +19,12 @@ import net.minecraft.world.chunk.ChunkSection;
 
 @Mixin(value = EntityRenderer.class)
 public class EntityRendererMixin {
-    private boolean needToTurnOff = Config.needToTurnOff();
-
     @Inject(method = "getPositionOffset", at = @At(value = "RETURN"), cancellable = true)
-    public void modifeGetPositionOffset(Entity entity, float tickDelta, CallbackInfoReturnable<Vec3d> cir) {
-        if (!Config.isAnimationEnabled || needToTurnOff)
+    public void modifyGetPositionOffset(Entity entity, float tickDelta, CallbackInfoReturnable<Vec3d> cir) {
+        if (!Config.isModEnabled)
+            return;
+
+        if (!Config.isAnimationEnabled)
             return;
 
         EntityExt ext = (EntityExt) entity;

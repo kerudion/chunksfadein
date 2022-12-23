@@ -10,7 +10,6 @@ import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.ConfigEntry.Type;
 import com.koteinik.chunksfadein.core.Curves;
-import com.koteinik.chunksfadein.hooks.IrisApiHook;
 import com.moandjiezana.toml.Toml;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -58,10 +57,6 @@ public class Config {
                 .addListener((o) -> isFadeEnabled = (Boolean) o);
         addEntry(new ConfigEntry<Boolean>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isAnimationEnabled = (Boolean) o);
-    }
-
-    public static boolean needToTurnOff() {
-        return IrisApiHook.isShaderPackInUse() || !isModEnabled;
     }
 
     public static float fadeChangeFromSeconds(double seconds) {

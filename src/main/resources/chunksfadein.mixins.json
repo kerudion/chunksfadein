@@ -4,15 +4,18 @@
   "package": "com.koteinik.chunksfadein.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ShaderLoaderMixin",
-    "ChunkShaderInterfaceMixin",
-    "RegionChunkRendererMixin",
-    "RenderRegionMixin",
-    "RenderRegionManagerMixin",
-    "EntityRendererMixin",
-    "EntityMixin",
-    "BlockEntityMixin",
-    "SodiumWorldRendererMixin"
+    "shader.ShaderLoaderMixin",
+    "shader.ChunkShaderInterfaceMixin",
+    "chunk.RegionChunkRendererMixin",
+    "chunk.RenderRegionMixin",
+    "chunk.RenderRegionManagerMixin",
+    "entity.EntityRendererMixin",
+    "entity.EntityMixin",
+    "entity.BlockEntityMixin",
+    "entity.SodiumWorldRendererMixin",
+    "iris.IrisChunkProgramOverridesMixin",
+    "iris.IrisChunkShaderInterfaceMixin",
+    "iris.IrisRegionChunkRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
