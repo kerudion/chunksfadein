@@ -6,6 +6,7 @@ import java.util.SortedSet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -33,7 +34,7 @@ import net.minecraft.world.chunk.ChunkSection;
 
 @Mixin(value = SodiumWorldRenderer.class, remap = false)
 public class SodiumWorldRendererMixin {
-    @Inject(method = "renderTileEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;render"), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
+    @Inject(method = "renderTileEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(DDD)V", shift = Shift.AFTER, remap = true), locals = LocalCapture.CAPTURE_FAILHARD)
     @SuppressWarnings("rawtypes")
     private void modifyRenderTileEntities(MatrixStack matrices, BufferBuilderStorage bufferBuilders,
             Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions,

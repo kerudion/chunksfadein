@@ -27,7 +27,7 @@ public abstract class WorldChunkMixin extends Chunk {
     @Shadow
     World world;
 
-    @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/ChunkSection;isEmpty"), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/ChunkSection;isEmpty()Z"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void modifySetBlockState(BlockPos pos, BlockState state, boolean moved,
             CallbackInfoReturnable<BlockState> cir, int i, ChunkSection chunkSection) {
         if (!chunkSection.isEmpty())
