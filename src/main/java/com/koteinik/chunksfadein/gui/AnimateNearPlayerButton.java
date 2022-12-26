@@ -5,28 +5,28 @@ import com.koteinik.chunksfadein.config.Config;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
-public class FadeEnabledButton extends ButtonWidget {
+public class AnimateNearPlayerButton extends ButtonWidget {
     private static final int buttonW = 150;
     private static final int buttonH = 20;
 
-    public FadeEnabledButton(int parentW, int parentH) {
-        super(parentW / 2 - buttonW / 2, parentH / 2 - buttonH / 2 - 28 * 2,
+    public AnimateNearPlayerButton(int parentW, int parentH) {
+        super(parentW / 2 - buttonW - 4, parentH / 2 - buttonH / 2 + 28 * 2,
                 buttonW, buttonH, createText(),
                 new PressAction() {
                     @Override
                     public void onPress(ButtonWidget button) {
-                        Config.setBoolean(Config.FADE_ENABLED_KEY, !Config.isFadeEnabled);
+                        Config.setBoolean(Config.ANIMATE_NEAR_PLAYER_KEY, !Config.animateNearPlayer);
                         button.setMessage(createText());
                     }
                 }, DEFAULT_NARRATION_SUPPLIER);
     }
 
     private static Text createText() {
-        Boolean isFadeEnabled = Config.isFadeEnabled;
+        Boolean animateNearPlayer = Config.animateNearPlayer;
 
-        String color = isFadeEnabled ? "§2" : "§c";
-        String enabledText = isFadeEnabled ? "YES" : "NO";
+        String color = animateNearPlayer ? "§2" : "§c";
+        String enabledText = animateNearPlayer ? "YES" : "NO";
 
-        return Text.of("Fade enabled: " + color + enabledText);
+        return Text.of("Animate near player: " + color + enabledText);
     }
 }

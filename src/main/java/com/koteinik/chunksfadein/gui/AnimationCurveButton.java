@@ -11,7 +11,7 @@ public class AnimationCurveButton extends ButtonWidget {
     private static final int buttonH = 20;
 
     public AnimationCurveButton(int parentW, int parentH) {
-        super(parentW / 2 - buttonW / 2, parentH / 2 - buttonH / 2 + 28,
+        super(parentW / 2 - buttonW / 2 - buttonW / 2 - 4, parentH / 2 - buttonH / 2 + 28,
                 buttonW, buttonH, createText(),
                 new PressAction() {
                     @Override
@@ -19,7 +19,7 @@ public class AnimationCurveButton extends ButtonWidget {
                         Integer current = Config.animationCurve.ordinal();
                         Integer next = current + 1;
 
-                        if (next > Curves.values().length - 1) 
+                        if (next > Curves.values().length - 1)
                             next = 0;
 
                         Config.setInteger(Config.ANIMATION_CURVE_KEY, next);

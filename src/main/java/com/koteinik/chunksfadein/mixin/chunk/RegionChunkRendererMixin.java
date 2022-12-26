@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.mixin;
+package com.koteinik.chunksfadein.mixin.chunk;
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,8 +26,6 @@ import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface
 
 @Mixin(value = RegionChunkRenderer.class, remap = false)
 public class RegionChunkRendererMixin {
-    private final boolean needToDisable = Config.needToTurnOff();
-
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/RegionChunkRenderer;setModelMatrixUniforms", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
     @SuppressWarnings("rawtypes")
     private void modifyChunkRender(ChunkRenderMatrices matrices, CommandList commandList,
@@ -35,7 +33,8 @@ public class RegionChunkRendererMixin {
             ChunkCameraContext camera,
             CallbackInfo ci, ChunkShaderInterface shader, Iterator i, Map.Entry e, RenderRegion region,
             List<RenderSection> chunks) {
-        if (needToDisable)
+        // Logger.info("1 " + shader.getClass().getCanonicalName() + " " + Arrays.copyOf(shader.getClass().getInterfaces(), shader.getClass().getInterfaces().length, String[].class));
+        if (!Config.isModEnabled || shader == null)
             return;
 
         final ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) shader;

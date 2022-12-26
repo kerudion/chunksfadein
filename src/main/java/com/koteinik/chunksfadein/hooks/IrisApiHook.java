@@ -1,32 +1,19 @@
 package com.koteinik.chunksfadein.hooks;
 
-import java.lang.reflect.Method;
+import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
+
+import net.irisshaders.iris.api.v0.IrisApi;
 
 public class IrisApiHook {
-    private static final boolean isIrisLoaded = isIrisLoaded();
-
-    private static Class<?> irisApiClass = null;
-    private static Object irisApiInstance = null;
-    private static Method irisShaderEnabledMethod = null;
-
-    static {
-        if (isIrisLoaded)
-            try {
-                irisApiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
-                irisApiInstance = irisApiClass.getMethod("getInstance").invoke(null);
-
-                irisShaderEnabledMethod = irisApiClass.getMethod("isShaderPackInUse");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-    }
+    public static ChunkShaderInterfaceExt irisExt;
+    public static final boolean isIrisLoaded = isIrisLoaded();
 
     public static boolean isShaderPackInUse() {
         if (!isIrisLoaded)
             return false;
 
         try {
-            boolean isShaderPackInUse = (boolean) irisShaderEnabledMethod.invoke(irisApiInstance);
+            boolean isShaderPackInUse = IrisApi.getInstance().isShaderPackInUse();
             return isShaderPackInUse;
         } catch (Exception e) {
             e.printStackTrace();

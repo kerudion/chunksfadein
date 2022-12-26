@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 
@@ -22,13 +23,44 @@ public class ChunkFadeInController {
 
     public ChunkFadeInController() {
         for (int i = 0; i < RenderRegion.REGION_SIZE; i++)
-            resetFadeForChunk(i);
+            completeChunkFade(i);
     }
 
-    public void resetFadeForChunk(int chunkId) {
+    public ChunkData getChunkData(int x, int y, int z) {
+        return getChunkData(MathUtils.chunkIdFromGlobal(x, y, z));
+    }
+
+    public ChunkData getChunkData(int chunkId) {
+        float x = chunkFadeDatasBuffer.get(chunkId, 0);
+        float y = chunkFadeDatasBuffer.get(chunkId, 1);
+        float z = chunkFadeDatasBuffer.get(chunkId, 2);
+        float w = chunkFadeDatasBuffer.get(chunkId, 3);
+
+        return new ChunkData(x, y, z, w);
+    }
+
+    public void completeChunkFade(int x, int y, int z) {
+        completeChunkFade(MathUtils.chunkIdFromGlobal(x, y, z));
+    }
+
+    public void completeChunkFade(int chunkId) {
         chunkFadeDatasBuffer.put(chunkId, 0, 0f);
-        chunkFadeDatasBuffer.put(chunkId, 1, -Config.animationInitialOffset);
+        chunkFadeDatasBuffer.put(chunkId, 1, 0f);
         chunkFadeDatasBuffer.put(chunkId, 2, 0f);
+        chunkFadeDatasBuffer.put(chunkId, 3, 1f);
+        progressMap.remove(chunkId);
+    }
+
+    public void resetFadeForChunk(int x, int y, int z, boolean resetFade) {
+        resetFadeForChunk(MathUtils.chunkIdFromGlobal(x, y, z), resetFade);
+    }
+
+    public void resetFadeForChunk(int chunkId, boolean resetAnimation) {
+        if (resetAnimation) {
+            chunkFadeDatasBuffer.put(chunkId, 0, 0f);
+            chunkFadeDatasBuffer.put(chunkId, 1, -Config.animationInitialOffset);
+            chunkFadeDatasBuffer.put(chunkId, 2, 0f);
+        }
         chunkFadeDatasBuffer.put(chunkId, 3, Config.isFadeEnabled ? 0f : 1f);
         progressMap.remove(chunkId);
     }

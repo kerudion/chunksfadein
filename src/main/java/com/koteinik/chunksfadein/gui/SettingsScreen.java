@@ -20,6 +20,7 @@ public class SettingsScreen extends GameOptionsScreen {
     private AnimationTimeSlider animationTimeSlider;
     private AnimationCurveButton animationCurveButton;
     private AnimationOffsetSlider animationOffsetSlider;
+    private AnimateNearPlayerButton animateNearPlayerButton;
     private ResetButton animationOffsetResetButton;
 
     @SuppressWarnings("resource")
@@ -30,8 +31,8 @@ public class SettingsScreen extends GameOptionsScreen {
     @Override
     public void init() {
         modEnabledButton = new ModEnabledButton(this, width, height);
-        fadeEnabledButton = new FadeEnabledButton(this, width, height);
-        animationEnabledButton = new AnimationEnabledButton(this, width, height);
+        fadeEnabledButton = new FadeEnabledButton(width, height);
+        animationEnabledButton = new AnimationEnabledButton(width, height);
 
         fadeSlider = new FadeTimeSlider(width, height);
         fadeResetButton = new ResetButton(width, height, 100, -28, () -> {
@@ -40,15 +41,16 @@ public class SettingsScreen extends GameOptionsScreen {
         });
         animationCurveButton = new AnimationCurveButton(width, height);
         animationTimeSlider = new AnimationTimeSlider(width, height);
-        animationTimeResetButton = new ResetButton(width, height, 100, 28 * 2, () -> {
+        animationTimeResetButton = new ResetButton(width, height, 179, 28, () -> {
             Config.reset(Config.ANIMATION_TIME_KEY);
             animationTimeSlider.setValue(Config.secondsFromAnimationChange() / Config.MAX_ANIMATION_TIME);
         });
         animationOffsetSlider = new AnimationOffsetSlider(width, height);
-        animationOffsetResetButton = new ResetButton(width, height, 100, 28 * 3, () -> {
+        animationOffsetResetButton = new ResetButton(width, height, 179, 28 * 2, () -> {
             Config.reset(Config.ANIMATION_OFFSET_KEY);
             animationOffsetSlider.setValue(Config.animationInitialOffset / Config.MAX_ANIMATION_OFFSET);
         });
+        animateNearPlayerButton = new AnimateNearPlayerButton(width, height);
 
         doneButton = new DoneButton(this, client, width, height);
 
@@ -63,6 +65,7 @@ public class SettingsScreen extends GameOptionsScreen {
         addDrawableChild(animationTimeResetButton);
         addDrawableChild(animationOffsetSlider);
         addDrawableChild(animationOffsetResetButton);
+        addDrawableChild(animateNearPlayerButton);
 
         addDrawableChild(doneButton);
     }
