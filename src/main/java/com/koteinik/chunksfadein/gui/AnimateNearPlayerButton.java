@@ -19,7 +19,6 @@ public class AnimateNearPlayerButton extends ButtonWidget {
                         button.setMessage(createText());
                     }
                 });
-        this.active = Config.isAnimationEnabled;
     }
 
     private static Text createText() {
