@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 
@@ -21,16 +22,12 @@ public class ChunkFadeInController {
     private long lastFrameTime = 0L;
 
     public ChunkFadeInController() {
-        for (int i = 0; i < RenderRegion.REGION_SIZE; i++)
+        for (int i = 0; i < RenderRegion.REGION_SIZE; i++) 
             completeChunkFade(i);
     }
 
     public ChunkData getChunkData(int x, int y, int z) {
-        int rX = x & (RenderRegion.REGION_WIDTH - 1);
-        int rY = y & (RenderRegion.REGION_HEIGHT - 1);
-        int rZ = z & (RenderRegion.REGION_LENGTH - 1);
-
-        return getChunkData(RenderRegion.getChunkIndex(rX, rY, rZ));
+        return getChunkData(MathUtils.chunkIdFromGlobal(x, y, z));
     }
 
     public ChunkData getChunkData(int chunkId) {
@@ -42,12 +39,20 @@ public class ChunkFadeInController {
         return new ChunkData(x, y, z, w);
     }
 
+    public void completeChunkFade(int x, int y, int z) {
+        completeChunkFade(MathUtils.chunkIdFromGlobal(x, y, z));
+    }
+
     public void completeChunkFade(int chunkId) {
         chunkFadeDatasBuffer.put(chunkId, 0, 0f);
         chunkFadeDatasBuffer.put(chunkId, 1, 0f);
         chunkFadeDatasBuffer.put(chunkId, 2, 0f);
         chunkFadeDatasBuffer.put(chunkId, 3, 1f);
         progressMap.remove(chunkId);
+    }
+
+    public void resetFadeForChunk(int x, int y, int z) {
+        resetFadeForChunk(MathUtils.chunkIdFromGlobal(x, y, z));
     }
 
     public void resetFadeForChunk(int chunkId) {

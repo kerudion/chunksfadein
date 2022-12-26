@@ -9,6 +9,7 @@
     "chunk.RegionChunkRendererMixin",
     "chunk.RenderRegionMixin",
     "chunk.RenderRegionManagerMixin",
+    "chunk.WorldChunkMixin",
     "entity.EntityRendererMixin",
     "entity.EntityMixin",
     "entity.BlockEntityMixin",

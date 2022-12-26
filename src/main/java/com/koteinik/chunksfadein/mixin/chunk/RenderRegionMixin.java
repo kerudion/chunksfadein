@@ -63,4 +63,9 @@ public class RenderRegionMixin implements RenderRegionExt {
     public ChunkData getChunkData(int x, int y, int z) {
         return fadeController.getChunkData(x, y, z);
     }
+
+    @Override
+    public void completeChunkFade(int x, int y, int z) {
+        fadeController.completeChunkFade(x, y, z);
+    }
 }

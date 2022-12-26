@@ -35,7 +35,7 @@ import net.minecraft.world.chunk.ChunkSection;
 public class SodiumWorldRendererMixin {
     @Inject(method = "renderTileEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;render"), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
     @SuppressWarnings("rawtypes")
-    private void modifyRender(MatrixStack matrices, BufferBuilderStorage bufferBuilders,
+    private void modifyRenderTileEntities(MatrixStack matrices, BufferBuilderStorage bufferBuilders,
             Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions,
             Camera camera, float tickDelta, CallbackInfo ci, Immediate i1, Vec3d v, double d1, double d2, double d3,
             BlockEntityRenderDispatcher d, Iterator i2, BlockEntity entity) {
