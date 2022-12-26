@@ -35,7 +35,7 @@ No more chunks appearing right in front of you out of nowhere! Unlike other mods
 [![Youtube Video](http://img.youtube.com/vi/CanA5ADOis0/0.jpg)](https://www.youtube.com/watch?v=CanA5ADOis0)
 
 ### Flexible configuration with Mod Menu support!
-<img src="https://github.com/kerudion/chunksfadein/blob/main/readme-assets/config.png?raw=true" width="30%">
+<img src="https://github.com/kerudion/chunksfadein/blob/main/readme-assets/config.png?raw=true" width="60%">
 
 ## FAQ
 ### Will there be Vanilla support?
