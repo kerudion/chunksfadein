@@ -3,11 +3,11 @@ package com.koteinik.chunksfadein.config;
 import com.koteinik.chunksfadein.MathUtils;
 import com.moandjiezana.toml.Toml;
 
-public class ConfigEntryLimitable extends ConfigEntry<Double> {
+public class ConfigEntryDoubleLimitable extends ConfigEntry<Double> {
     private final double max;
     private final double min;
 
-    public ConfigEntryLimitable(double min, double max, double defaultValue, String configKey) {
+    public ConfigEntryDoubleLimitable(double min, double max, double defaultValue, String configKey) {
         super(defaultValue, configKey, Type.DOUBLE);
         this.max = max;
         this.min = min;

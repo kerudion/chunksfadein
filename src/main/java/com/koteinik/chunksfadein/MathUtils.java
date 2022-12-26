@@ -49,4 +49,12 @@ public class MathUtils {
 
         return RenderRegion.getChunkIndex(rX, rY, rZ);
     }
+
+    public static int chunkDistance(int aX, int aY, int aZ, int bX, int bY, int bZ) {
+        int xDiff = Math.abs(aX - bX);
+        int yDiff = Math.abs(aY - bY);
+        int zDiff = Math.abs(aZ - bZ);
+
+        return Math.max(xDiff, Math.max(yDiff, zDiff));
+    }
 }

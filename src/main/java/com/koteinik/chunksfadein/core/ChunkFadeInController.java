@@ -22,7 +22,7 @@ public class ChunkFadeInController {
     private long lastFrameTime = 0L;
 
     public ChunkFadeInController() {
-        for (int i = 0; i < RenderRegion.REGION_SIZE; i++) 
+        for (int i = 0; i < RenderRegion.REGION_SIZE; i++)
             completeChunkFade(i);
     }
 
@@ -51,14 +51,16 @@ public class ChunkFadeInController {
         progressMap.remove(chunkId);
     }
 
-    public void resetFadeForChunk(int x, int y, int z) {
-        resetFadeForChunk(MathUtils.chunkIdFromGlobal(x, y, z));
+    public void resetFadeForChunk(int x, int y, int z, boolean resetFade) {
+        resetFadeForChunk(MathUtils.chunkIdFromGlobal(x, y, z), resetFade);
     }
 
-    public void resetFadeForChunk(int chunkId) {
-        chunkFadeDatasBuffer.put(chunkId, 0, 0f);
-        chunkFadeDatasBuffer.put(chunkId, 1, -Config.animationInitialOffset);
-        chunkFadeDatasBuffer.put(chunkId, 2, 0f);
+    public void resetFadeForChunk(int chunkId, boolean resetAnimation) {
+        if (resetAnimation) {
+            chunkFadeDatasBuffer.put(chunkId, 0, 0f);
+            chunkFadeDatasBuffer.put(chunkId, 1, -Config.animationInitialOffset);
+            chunkFadeDatasBuffer.put(chunkId, 2, 0f);
+        }
         chunkFadeDatasBuffer.put(chunkId, 3, Config.isFadeEnabled ? 0f : 1f);
         progressMap.remove(chunkId);
     }

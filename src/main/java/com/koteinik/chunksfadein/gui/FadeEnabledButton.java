@@ -2,7 +2,6 @@ package com.koteinik.chunksfadein.gui;
 
 import com.koteinik.chunksfadein.config.Config;
 
-import net.minecraft.client.gui.screen.option.GameOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
@@ -10,7 +9,7 @@ public class FadeEnabledButton extends ButtonWidget {
     private static final int buttonW = 150;
     private static final int buttonH = 20;
 
-    public FadeEnabledButton(GameOptionsScreen parent, int parentW, int parentH) {
+    public FadeEnabledButton(int parentW, int parentH) {
         super(parentW / 2 - buttonW / 2, parentH / 2 - buttonH / 2 - 28 * 2,
                 buttonW, buttonH, createText(),
                 new PressAction() {

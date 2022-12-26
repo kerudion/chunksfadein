@@ -17,10 +17,11 @@ import net.fabricmc.loader.api.FabricLoader;
 public class Config {
     public static final double MAX_FADE_TIME = 3;
     public static final double MAX_ANIMATION_TIME = 10;
-    public static final double MAX_ANIMATION_OFFSET= 319;
+    public static final double MAX_ANIMATION_OFFSET = 319;
     public static final String MOD_ENABLED_KEY = "mod-enabled";
     public static final String FADE_ENABLED_KEY = "fade-enabled";
     public static final String ANIMATION_ENABLED_KEY = "animation-enabled";
+    public static final String ANIMATE_NEAR_PLAYER_KEY = "animate-near-player";
     public static final String FADE_TIME_KEY = "fade-time";
     public static final String ANIMATION_TIME_KEY = "animation-time";
     public static final String ANIMATION_CURVE_KEY = "animation-curve";
@@ -32,6 +33,7 @@ public class Config {
     public static boolean isModEnabled;
     public static boolean isFadeEnabled;
     public static boolean isAnimationEnabled;
+    public static boolean animateNearPlayer;
 
     public static float animationInitialOffset;
     public static float animationChangePerMs;
@@ -44,11 +46,11 @@ public class Config {
                 .addListener((o) -> animationCurve = Curves.values()[MathUtils.clamp((Integer) o, 0,
                         Curves.values().length - 1)]);
 
-        addEntry(new ConfigEntryLimitable(0.01, MAX_FADE_TIME, 0.64, FADE_TIME_KEY))
+        addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_FADE_TIME, 0.64, FADE_TIME_KEY))
                 .addListener((o) -> fadeChangePerMs = fadeChangeFromSeconds((Double) o));
-        addEntry(new ConfigEntryLimitable(0.01, MAX_ANIMATION_TIME, 1, ANIMATION_TIME_KEY))
+        addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_ANIMATION_TIME, 1, ANIMATION_TIME_KEY))
                 .addListener((o) -> animationChangePerMs = animationChangeFromSeconds((Double) o));
-        addEntry(new ConfigEntryLimitable(1, MAX_ANIMATION_OFFSET, 64, ANIMATION_OFFSET_KEY))
+        addEntry(new ConfigEntryDoubleLimitable(1, MAX_ANIMATION_OFFSET, 64, ANIMATION_OFFSET_KEY))
                 .addListener((o) -> animationInitialOffset = ((Double) o).floatValue());
 
         addEntry(new ConfigEntry<Boolean>(true, MOD_ENABLED_KEY, Type.BOOLEAN))
@@ -57,6 +59,8 @@ public class Config {
                 .addListener((o) -> isFadeEnabled = (Boolean) o);
         addEntry(new ConfigEntry<Boolean>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isAnimationEnabled = (Boolean) o);
+        addEntry(new ConfigEntry<Boolean>(true, ANIMATE_NEAR_PLAYER_KEY, Type.BOOLEAN))
+                .addListener((o) -> animateNearPlayer = (Boolean) o);
     }
 
     public static float fadeChangeFromSeconds(double seconds) {

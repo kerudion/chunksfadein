@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.ChunkData;
 import com.koteinik.chunksfadein.core.ChunkFadeInController;
@@ -22,6 +23,8 @@ import me.jellysquid.mods.sodium.client.gl.device.CommandList;
 import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
 import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
 import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegionManager;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 
 @Mixin(value = RenderRegion.class, remap = false)
 public class RenderRegionMixin implements RenderRegionExt {
@@ -39,11 +42,27 @@ public class RenderRegionMixin implements RenderRegionExt {
     }
 
     @Inject(method = "addChunk", at = @At(value = "TAIL"))
+    @SuppressWarnings("resource")
     private void modifyAddChunk(RenderSection chunk, CallbackInfo ci) {
         if (!Config.isModEnabled)
             return;
 
-        fadeController.resetFadeForChunk(chunk.getChunkId());
+        boolean resetAnimation = true;
+        if (!Config.animateNearPlayer) {
+            final int chunkX = chunk.getChunkX();
+            final int chunkY = chunk.getChunkY();
+            final int chunkZ = chunk.getChunkZ();
+
+            Entity camera = MinecraftClient.getInstance().cameraEntity;
+            final int camChunkX = MathUtils.floor((float) camera.lastRenderX / 16);
+            final int camChunkY = MathUtils.floor((float) camera.lastRenderY / 16);
+            final int camChunkZ = MathUtils.floor((float) camera.lastRenderZ / 16);
+
+            if (MathUtils.chunkDistance(chunkX, chunkY, chunkZ, camChunkX, camChunkY, camChunkZ) < 2)
+                resetAnimation = false;
+        }
+
+        fadeController.resetFadeForChunk(chunk.getChunkId(), resetAnimation);
     }
 
     @Inject(method = "deleteResources", at = @At(value = "TAIL"))

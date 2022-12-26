@@ -10,7 +10,7 @@ public class AnimationTimeSlider extends SliderWidget {
     private static final int sliderH = 20;
 
     public AnimationTimeSlider(int parentW, int parentH) {
-        super(parentW / 2 - sliderW / 2, parentH / 2 - sliderH / 2 + 28 * 2,
+        super(parentW / 2 - sliderW / 2 + sliderW / 2+4, parentH / 2 - sliderH / 2 + 28 * 2,
                 sliderW, sliderH,
                 Text.of(getText(Config.secondsFromAnimationChange())), 10);
 
