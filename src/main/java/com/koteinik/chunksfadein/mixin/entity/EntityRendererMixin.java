@@ -5,11 +5,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.koteinik.chunksfadein.ChunkUtils;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.ChunkAppearedLink;
 import com.koteinik.chunksfadein.core.ChunkData;
-import com.koteinik.chunksfadein.extenstions.EntityExt;
+import com.koteinik.chunksfadein.core.LastRenderOffsetStorage;
 
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.entity.Entity;
@@ -27,17 +28,24 @@ public class EntityRendererMixin {
         if (!Config.isAnimationEnabled)
             return;
 
-        EntityExt ext = (EntityExt) entity;
+        LastRenderOffsetStorage storage = (LastRenderOffsetStorage) entity;
+
+        if (storage.getLastRenderOffset().equals(Vec3d.ZERO)) {
+            return;
+        }
+
+        if (!storage.getLastRenderOffset().equals(Vec3d.ZERO) && !Config.isAnimationEnabled) {
+            storage.setLastRenderOffset(Vec3d.ZERO);
+            return;
+        }
 
         ChunkPos chunkPos = entity.getChunkPos();
         int chunkY = MathUtils.floor((float) entity.getY() / 16f);
 
-        ChunkSection chunk = entity.getWorld().getChunk(chunkPos.x, chunkPos.z).getSectionArray()[entity.getWorld()
-                .sectionCoordToIndex(chunkY)];
+        ChunkSection chunk = ChunkUtils.getChunkOn(entity.getWorld(), chunkPos, chunkY);
 
-        if (chunk.isEmpty()) {
-            cir.setReturnValue(Vec3d.ZERO);
-            ext.setLastRenderOffset(Vec3d.ZERO);
+        if (chunk == null || chunk.isEmpty()) {
+            storage.setLastRenderOffset(Vec3d.ZERO);
             return;
         }
 
@@ -45,6 +53,6 @@ public class EntityRendererMixin {
         Vec3d offset = new Vec3d(fadeData.x, fadeData.y, fadeData.z);
 
         cir.setReturnValue(offset);
-        ext.setLastRenderOffset(offset);
+        storage.setLastRenderOffset(offset);
     }
 }

@@ -41,12 +41,12 @@ public class SettingsScreen extends GameOptionsScreen {
         });
         animationCurveButton = new AnimationCurveButton(width, height);
         animationTimeSlider = new AnimationTimeSlider(width, height);
-        animationTimeResetButton = new ResetButton(width, height, 179, 28, () -> {
+        animationTimeResetButton = new ResetButton(width, height, 179, 28 * 2, () -> {
             Config.reset(Config.ANIMATION_TIME_KEY);
             animationTimeSlider.setValue(Config.secondsFromAnimationChange() / Config.MAX_ANIMATION_TIME);
         });
         animationOffsetSlider = new AnimationOffsetSlider(width, height);
-        animationOffsetResetButton = new ResetButton(width, height, 179, 28 * 2, () -> {
+        animationOffsetResetButton = new ResetButton(width, height, 179, 28, () -> {
             Config.reset(Config.ANIMATION_OFFSET_KEY);
             animationOffsetSlider.setValue(Config.animationInitialOffset / Config.MAX_ANIMATION_OFFSET);
         });

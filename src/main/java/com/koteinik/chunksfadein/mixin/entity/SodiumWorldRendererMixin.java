@@ -11,11 +11,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import com.koteinik.chunksfadein.ChunkUtils;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.ChunkAppearedLink;
 import com.koteinik.chunksfadein.core.ChunkData;
-import com.koteinik.chunksfadein.extenstions.BlockEntityExt;
+import com.koteinik.chunksfadein.core.LastRenderOffsetStorage;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
@@ -46,15 +47,22 @@ public class SodiumWorldRendererMixin {
         if (!entity.hasWorld() || !Config.isAnimationEnabled)
             return;
 
-        BlockEntityExt ext = (BlockEntityExt) entity;
+        LastRenderOffsetStorage storage = (LastRenderOffsetStorage) entity;
+
+        if (storage.getLastRenderOffset().equals(Vec3d.ZERO))
+            return;
+
+        if (!storage.getLastRenderOffset().equals(Vec3d.ZERO) && !Config.isAnimationEnabled) {
+            storage.setLastRenderOffset(Vec3d.ZERO);
+            return;
+        }
 
         ChunkSectionPos chunkPos = ChunkSectionPos.from(entity.getPos());
 
-        ChunkSection chunk = entity.getWorld().getChunk(chunkPos.getX(), chunkPos.getZ())
-                .getSectionArray()[entity.getWorld().sectionCoordToIndex(chunkPos.getY())];
+        ChunkSection chunk = ChunkUtils.getChunkOn(entity.getWorld(), chunkPos);
 
-        if (chunk.isEmpty()) {
-            ext.setLastRenderOffset(Vec3d.ZERO);
+        if (chunk == null || chunk.isEmpty()) {
+            storage.setLastRenderOffset(Vec3d.ZERO);
             return;
         }
 
@@ -62,7 +70,7 @@ public class SodiumWorldRendererMixin {
         Vec3d offset = new Vec3d(fadeData.x, fadeData.y, fadeData.z);
 
         matrices.translate(fadeData.x, fadeData.y, fadeData.z);
-        ext.setLastRenderOffset(offset);
+        storage.setLastRenderOffset(offset);
     }
 
     @Inject(method = "isEntityVisible", at = @At(value = "RETURN"), cancellable = true)
@@ -80,10 +88,9 @@ public class SodiumWorldRendererMixin {
             boolean isVisible = !(fadeData.y == -Config.animationInitialOffset && fadeData.fadeCoeff == 0f);
 
             if (!isVisible) {
-                ChunkSection chunk = entity.getWorld().getChunk(chunkPos.x, chunkPos.z)
-                        .getSectionArray()[entity.getWorld().sectionCoordToIndex(chunkY)];
+                ChunkSection chunk = ChunkUtils.getChunkOn(entity.getWorld(), chunkPos, chunkY);
 
-                if (chunk.isEmpty())
+                if (chunk == null || chunk.isEmpty())
                     isVisible = true;
             }
 

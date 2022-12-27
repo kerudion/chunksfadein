@@ -1,9 +1,7 @@
 package com.koteinik.chunksfadein.core;
 
 import java.time.ZonedDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
@@ -15,7 +13,7 @@ import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
 import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
 
 public class ChunkFadeInController {
-    private final Map<Integer, Float> progressMap = new HashMap<>();
+    private final float[] progressArr = new float[RenderRegion.REGION_SIZE];
     private final DataBuffer chunkFadeDatasBuffer = new DataBuffer(RenderRegion.REGION_SIZE, 4);
     private GlMutableBuffer chunkGlFadeDataBuffer;
 
@@ -48,7 +46,7 @@ public class ChunkFadeInController {
         chunkFadeDatasBuffer.put(chunkId, 1, 0f);
         chunkFadeDatasBuffer.put(chunkId, 2, 0f);
         chunkFadeDatasBuffer.put(chunkId, 3, 1f);
-        progressMap.remove(chunkId);
+        progressArr[chunkId] = 1;
     }
 
     public void resetFadeForChunk(int x, int y, int z, boolean resetFade) {
@@ -62,7 +60,7 @@ public class ChunkFadeInController {
             chunkFadeDatasBuffer.put(chunkId, 2, 0f);
         }
         chunkFadeDatasBuffer.put(chunkId, 3, Config.isFadeEnabled ? 0f : 1f);
-        progressMap.remove(chunkId);
+        progressArr[chunkId] = 0;
     }
 
     public void updateChunksFade(List<RenderSection> chunks, ChunkShaderInterfaceExt shader, CommandList commandList) {
@@ -112,15 +110,13 @@ public class ChunkFadeInController {
         if (Config.isAnimationEnabled) {
             float y = chunkFadeDatasBuffer.get(chunkId, 1);
             if (y != 0f) {
-                Float animationProgress = progressMap.remove(chunkId);
-                if (animationProgress == null)
-                    animationProgress = 0f;
+                float animationProgress = progressArr[chunkId];
 
                 animationProgress += Config.animationChangePerMs * delta;
                 if (animationProgress > 1f)
                     animationProgress = 1f;
 
-                progressMap.put(chunkId, animationProgress);
+                progressArr[chunkId] = animationProgress;
 
                 float curved = Config.animationInitialOffset
                         - Config.animationCurve.calculate(animationProgress) * Config.animationInitialOffset;
@@ -128,7 +124,6 @@ public class ChunkFadeInController {
 
                 if (y <= 0f && curved > 0f) {
                     y = 0f;
-                    progressMap.remove(chunkId);
                 } else
                     y = curved;
 
