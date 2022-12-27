@@ -21,20 +21,20 @@ public class ChunkFadeInController {
 
     public ChunkFadeInController() {
         for (int i = 0; i < RenderRegion.REGION_SIZE; i++)
-            completeChunkFade(i);
+            resetFadeForChunk(i, true);
     }
 
-    public ChunkData getChunkData(int x, int y, int z) {
+    public float[] getChunkData(int x, int y, int z) {
         return getChunkData(MathUtils.chunkIdFromGlobal(x, y, z));
     }
 
-    public ChunkData getChunkData(int chunkId) {
+    public float[] getChunkData(int chunkId) {
         float x = chunkFadeDatasBuffer.get(chunkId, 0);
         float y = chunkFadeDatasBuffer.get(chunkId, 1);
         float z = chunkFadeDatasBuffer.get(chunkId, 2);
         float w = chunkFadeDatasBuffer.get(chunkId, 3);
 
-        return new ChunkData(x, y, z, w);
+        return new float[] { x, y, z, w };
     }
 
     public void completeChunkFade(int x, int y, int z) {

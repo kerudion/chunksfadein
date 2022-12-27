@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
-import com.koteinik.chunksfadein.core.ChunkData;
 import com.koteinik.chunksfadein.core.ChunkFadeInController;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extenstions.RenderRegionExt;
@@ -79,7 +78,7 @@ public class RenderRegionMixin implements RenderRegionExt {
     }
 
     @Override
-    public ChunkData getChunkData(int x, int y, int z) {
+    public float[] getChunkData(int x, int y, int z) {
         return fadeController.getChunkData(x, y, z);
     }
 

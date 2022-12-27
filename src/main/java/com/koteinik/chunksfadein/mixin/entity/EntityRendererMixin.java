@@ -9,8 +9,6 @@ import com.koteinik.chunksfadein.ChunkUtils;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.ChunkAppearedLink;
-import com.koteinik.chunksfadein.core.ChunkData;
-import com.koteinik.chunksfadein.core.LastRenderOffsetStorage;
 
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.entity.Entity;
@@ -28,31 +26,17 @@ public class EntityRendererMixin {
         if (!Config.isAnimationEnabled)
             return;
 
-        LastRenderOffsetStorage storage = (LastRenderOffsetStorage) entity;
-
-        if (storage.getLastRenderOffset().equals(Vec3d.ZERO)) {
-            return;
-        }
-
-        if (!storage.getLastRenderOffset().equals(Vec3d.ZERO) && !Config.isAnimationEnabled) {
-            storage.setLastRenderOffset(Vec3d.ZERO);
-            return;
-        }
-
         ChunkPos chunkPos = entity.getChunkPos();
         int chunkY = MathUtils.floor((float) entity.getY() / 16f);
 
         ChunkSection chunk = ChunkUtils.getChunkOn(entity.getWorld(), chunkPos, chunkY);
 
-        if (chunk == null || chunk.isEmpty()) {
-            storage.setLastRenderOffset(Vec3d.ZERO);
+        if (chunk == null || chunk.isEmpty())
             return;
-        }
 
-        ChunkData fadeData = ChunkAppearedLink.getChunkData(chunkPos.x, chunkY, chunkPos.z);
-        Vec3d offset = new Vec3d(fadeData.x, fadeData.y, fadeData.z);
+        float[] fadeData = ChunkAppearedLink.getChunkData(chunkPos.x, chunkY, chunkPos.z);
+        Vec3d offset = new Vec3d(fadeData[0], fadeData[1], fadeData[2]);
 
         cir.setReturnValue(offset);
-        storage.setLastRenderOffset(offset);
     }
 }

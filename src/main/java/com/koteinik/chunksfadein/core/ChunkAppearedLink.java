@@ -8,7 +8,7 @@ import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
 public class ChunkAppearedLink {
     public static RenderRegionManagerExt regionManager = null;
 
-    public static ChunkData getChunkData(int x, int y, int z) {
+    public static float[] getChunkData(int x, int y, int z) {
         if (regionManager == null)
             return null;
 

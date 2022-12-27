@@ -12,8 +12,6 @@
     "chunk.RenderRegionManagerMixin",
     "chunk.WorldChunkMixin",
     "entity.EntityRendererMixin",
-    "entity.EntityMixin",
-    "entity.BlockEntityMixin",
     "entity.SodiumWorldRendererMixin",
     "iris.IrisChunkProgramOverridesMixin",
     "iris.IrisChunkShaderInterfaceMixin",

@@ -15,8 +15,6 @@ import com.koteinik.chunksfadein.ChunkUtils;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.ChunkAppearedLink;
-import com.koteinik.chunksfadein.core.ChunkData;
-import com.koteinik.chunksfadein.core.LastRenderOffsetStorage;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
@@ -47,30 +45,16 @@ public class SodiumWorldRendererMixin {
         if (!entity.hasWorld() || !Config.isAnimationEnabled)
             return;
 
-        LastRenderOffsetStorage storage = (LastRenderOffsetStorage) entity;
-
-        if (storage.getLastRenderOffset().equals(Vec3d.ZERO))
-            return;
-
-        if (!storage.getLastRenderOffset().equals(Vec3d.ZERO) && !Config.isAnimationEnabled) {
-            storage.setLastRenderOffset(Vec3d.ZERO);
-            return;
-        }
-
         ChunkSectionPos chunkPos = ChunkSectionPos.from(entity.getPos());
 
         ChunkSection chunk = ChunkUtils.getChunkOn(entity.getWorld(), chunkPos);
 
-        if (chunk == null || chunk.isEmpty()) {
-            storage.setLastRenderOffset(Vec3d.ZERO);
+        if (chunk == null || chunk.isEmpty())
             return;
-        }
 
-        ChunkData fadeData = ChunkAppearedLink.getChunkData(chunkPos.getX(), chunkPos.getY(), chunkPos.getZ());
-        Vec3d offset = new Vec3d(fadeData.x, fadeData.y, fadeData.z);
+        float[] fadeData = ChunkAppearedLink.getChunkData(chunkPos.getX(), chunkPos.getY(), chunkPos.getZ());
 
-        matrices.translate(fadeData.x, fadeData.y, fadeData.z);
-        storage.setLastRenderOffset(offset);
+        matrices.translate(fadeData[0], fadeData[1], fadeData[2]);
     }
 
     @Inject(method = "isEntityVisible", at = @At(value = "RETURN"), cancellable = true)
@@ -82,10 +66,10 @@ public class SodiumWorldRendererMixin {
             ChunkPos chunkPos = entity.getChunkPos();
             int chunkY = MathUtils.floor((float) entity.getY() / 16f);
 
-            ChunkData fadeData = ChunkAppearedLink.getChunkData(chunkPos.x, chunkY,
+            float[] fadeData = ChunkAppearedLink.getChunkData(chunkPos.x, chunkY,
                     chunkPos.z);
 
-            boolean isVisible = !(fadeData.y == -Config.animationInitialOffset && fadeData.fadeCoeff == 0f);
+            boolean isVisible = !(fadeData[1] == -Config.animationInitialOffset && fadeData[2] == 0f);
 
             if (!isVisible) {
                 ChunkSection chunk = ChunkUtils.getChunkOn(entity.getWorld(), chunkPos, chunkY);

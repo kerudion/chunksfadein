@@ -1,6 +1,7 @@
 package com.koteinik.chunksfadein;
 
 import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
+import net.minecraft.util.math.Vec3d;
 
 public class MathUtils {
     public static double clamp(double value, double min, double max) {
@@ -26,20 +27,17 @@ public class MathUtils {
         return in >= 0f ? in : -in;
     }
 
+
+    public static Vec3d abs(Vec3d in) {
+        return new Vec3d(Math.abs(in.x), Math.abs(in.y), Math.abs(in.z));
+    }
+
     public static int floor(float x) {
-        int y;
+        final float f = x % 1f;
+        if (x < 0f && f != 0f)
+            x--;
 
-        if (x >= Float.MAX_VALUE || x <= -Float.MAX_VALUE)
-            return (int) x;
-
-        y = (int) x;
-        if (x < 0 && y != x)
-            y--;
-
-        if (y == 0)
-            return 0;
-
-        return y;
+        return f >= 0.5f ? (int) (x - 0.5f) : (int) x;
     }
 
     public static int chunkIdFromGlobal(int x, int y, int z) {
