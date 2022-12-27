@@ -13,6 +13,7 @@
     "chunk.WorldChunkMixin",
     "entity.EntityRendererMixin",
     "entity.SodiumWorldRendererMixin",
+    "entity.ItemFrameEntityRendererMixin",
     "iris.IrisChunkProgramOverridesMixin",
     "iris.IrisChunkShaderInterfaceMixin",
     "iris.IrisRegionChunkRendererMixin"
