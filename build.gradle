@@ -56,9 +56,6 @@ dependencies {
 	include 'com.moandjiezana.toml:toml4j:0.7.2'
 	implementation 'com.moandjiezana.toml:toml4j:0.7.2'
 
-	include 'org.anarres:jcpp:1.4.14'
-	implementation 'org.anarres:jcpp:1.4.14'
-
 	include 'io.github.douira:glsl-transformer:1.0.1'
 	implementation 'io.github.douira:glsl-transformer:1.0.1'
 

@@ -1,8 +1,8 @@
-package com.koteinik.chunksfadein.extenstions;
+package com.koteinik.chunksfadein.core;
 
 import net.minecraft.util.math.Vec3d;
 
-public interface EntityExt {
+public interface LastRenderOffsetStorage {
     public Vec3d getLastRenderOffset();
     public void setLastRenderOffset(Vec3d vec);
 }

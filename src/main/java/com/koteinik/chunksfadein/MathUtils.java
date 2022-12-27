@@ -57,4 +57,8 @@ public class MathUtils {
 
         return Math.max(xDiff, Math.max(yDiff, zDiff));
     }
+
+    public static float sqrt(float f) {
+        return (float) Math.sqrt((double) f);
+    }
 }
