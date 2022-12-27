@@ -1,6 +1,7 @@
 package com.koteinik.chunksfadein.mixin.iris;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
@@ -10,6 +11,7 @@ import com.koteinik.chunksfadein.core.ShaderInjector;
 import io.github.douira.glsl_transformer.ast.transform.ASTInjectionPoint;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkProgramOverrides;
 
+@Pseudo
 @Mixin(value = IrisChunkProgramOverrides.class)
 public class IrisChunkProgramOverridesMixin {
     private static final ShaderInjector vertexInjector = new ShaderInjector();
@@ -30,12 +32,6 @@ public class IrisChunkProgramOverridesMixin {
 
         fragmentInjector.injectTo(ASTInjectionPoint.BEFORE_DECLARATIONS,
                 "in float fadeCoeff;");
-        // fragmentInjector.appendToFunction("main",
-        // "iris_FragData0 = vec4(1.0,1.0,1.0,1.0);");
-        // fragmentInjector.appendToFunction("main",
-        // "iris_FragData1 = vec4(0.0,1.0,1.0,1.0);");
-        // fragmentInjector.appendToFunction("main",
-        // "iris_FragData2 = vec4(0.0,1.0,0.0,1.0);");
         fragmentInjector.appendToFunction("main",
                 "iris_FragData0 = mix(iris_FragData0, iris_FogColor, 1.0 - fadeCoeff);");
         fragmentInjector.commit();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -20,6 +21,7 @@ import net.coderbot.iris.gl.blending.BlendModeOverride;
 import net.coderbot.iris.gl.blending.BufferBlendOverride;
 import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
 
+@Pseudo
 @Mixin(value = IrisChunkShaderInterface.class, remap = false)
 public class IrisChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
     private FadeShaderInterface fadeInterface;

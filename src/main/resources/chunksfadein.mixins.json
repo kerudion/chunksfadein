@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "com.koteinik.chunksfadein.mixin",
   "compatibilityLevel": "JAVA_17",
+  "plugin": "com.koteinik.chunksfadein.ChunkFadeInMixinConfig",
   "mixins": [
     "shader.ShaderLoaderMixin",
     "shader.ChunkShaderInterfaceMixin",

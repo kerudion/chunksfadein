@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extenstions.RenderRegionExt;
@@ -24,10 +26,9 @@ import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
 import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
-import net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt;
 
 @Mixin(value = RegionChunkRenderer.class, remap = false)
-public abstract class IrisRegionChunkRendererMixin implements ShaderChunkRendererExt {
+public abstract class IrisRegionChunkRendererMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/RegionChunkRenderer;setModelMatrixUniforms", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
     @SuppressWarnings("rawtypes")
     private void modifyChunkRender(ChunkRenderMatrices matrices, CommandList commandList,
@@ -38,7 +39,9 @@ public abstract class IrisRegionChunkRendererMixin implements ShaderChunkRendere
         if (!Config.isModEnabled || !IrisApiHook.isShaderPackInUse())
             return;
 
-        final ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) (iris$getOverride().getInterface());
+        final net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt rendererExt = (net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt) this;
+        final ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) (rendererExt.iris$getOverride()
+                .getInterface());
         final RenderRegionExt regionExt = (RenderRegionExt) region;
         regionExt.updateChunksFade(chunks, ext, commandList);
     }
