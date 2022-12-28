@@ -2,52 +2,102 @@ package com.koteinik.chunksfadein.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
-
-import io.github.douira.glsl_transformer.ast.node.TranslationUnit;
-import io.github.douira.glsl_transformer.ast.node.statement.CompoundStatement;
-import io.github.douira.glsl_transformer.ast.print.PrintType;
-import io.github.douira.glsl_transformer.ast.query.Root;
-import io.github.douira.glsl_transformer.ast.transform.ASTInjectionPoint;
-import io.github.douira.glsl_transformer.ast.transform.SingleASTTransformer;
-import io.github.douira.glsl_transformer.job_parameter.NonFixedJobParameters;
+import java.util.function.Function;
 
 public class ShaderInjector {
-    private final SingleASTTransformer<NonFixedJobParameters> transformer = new SingleASTTransformer<>();
-    private final List<BiConsumer<TranslationUnit, Root>> transformations = new ArrayList<>();
+    private final List<Function<String, String>> transformations = new ArrayList<>();
 
-    public ShaderInjector() {
-        transformer.setPrintType(PrintType.INDENTED);
-    }
+    public void addCode(int lineOffset, String... code) {
+        transformations.add((src) -> {
+            String toInsert = "\n" + String.join("\n", code);
 
-    public void injectTo(ASTInjectionPoint point, String... code) {
-        transformations.add((translationUnit, root) -> {
-            translationUnit.injectNodes(point, transformer.parseExternalDeclarations(translationUnit, code));
+            int newlineIdx = src.indexOf("\n");
+            for (int i = 0; i < lineOffset; i++)
+                newlineIdx = src.indexOf("\n", newlineIdx + 1);
+
+            return insertAt(newlineIdx, src, toInsert);
         });
     }
 
-    public void appendToFunction(String functionName, String... code) {
-        transformations.add((translationUnit, root) -> {
-            CompoundStatement body = translationUnit.getFunctionDefinitionBody(functionName);
-            body.getStatements().addAll(transformer.parseStatements(translationUnit, code));
+    public static void main(String[] args) {
+        ShaderInjector test = new ShaderInjector();
+
+        // test.addCode(0, "float test code;", "float test code2;", "float test
+        // code3;");
+        test.appendToFunction("int main()",
+                "float test code;",
+                "float test code2;",
+                "float test code3;");
+        test.addToFunction("int main()",
+                "float test code;",
+                "float test code2;",
+                "float test code3;");
+
+        System.out.println(
+                test.get("// test string\nint main() {\n    test = 3;\n    if (test) {\n        test = 4;\n    }\n}"));
+    }
+
+    public void appendToFunction(String function, String... code) {
+        transformations.add((src) -> {
+            String indentation = getIndentation(0);
+            String toInsert = "\n" + indentation + String.join("\n" + indentation, code) + "\n";
+
+            return insertToFunction(src, toInsert, function, -1);
         });
     }
 
-    public void addToFunction(String functionName, String... code) {
-        transformations.add((translationUnit, root) -> {
-            CompoundStatement body = translationUnit.getFunctionDefinitionBody(functionName);
-            body.getStatements().addAll(0, transformer.parseStatements(translationUnit, code));
+    public void addToFunction(String function, String... code) {
+        transformations.add((src) -> {
+            String indentation = getIndentation(0);
+            String toInsert = "\n" + indentation + String.join("\n" + indentation, code);
+
+            return insertToFunction(src, toInsert, function, 1);
         });
     }
 
-    public void commit() {
-        transformer.setTransformation((translationUnit, root) -> {
-            for (BiConsumer<TranslationUnit, Root> transformation : transformations)
-                transformation.accept(translationUnit, root);
-        });
+    private static String insertToFunction(String src, String code, String function, int offset) {
+        int functionIdx = src.indexOf(function);
+        if (functionIdx == -1)
+            throw new IllegalStateException(
+                    "Failed to append code, function '" + function + "' was not found!");
+
+        int firstBracketIdx = src.indexOf('{', functionIdx);
+        int bracketCount = 0;
+
+        if (offset > 0)
+            return insertAt(firstBracketIdx + offset, src, code);
+        else if (offset < 0)
+            for (int i = firstBracketIdx; i < src.length(); i++) {
+                char symbol = src.charAt(i);
+                if (symbol == '{')
+                    bracketCount++;
+                else if (symbol == '}')
+                    bracketCount--;
+
+                if (bracketCount == 0)
+                    return insertAt(i + offset, src, code);
+            }
+
+        throw new IllegalStateException(
+                "Failed to append code, end of function '" + function + "' was not found!");
     }
 
     public String get(String code) {
-        return transformer.transform(code);
+        for (Function<String, String> function : transformations)
+            code = function.apply(code);
+
+        return code;
+    }
+
+    private static String getIndentation(int bracketCount) {
+        String str = "";
+        for (int i = 0; i < bracketCount + 1; i++)
+            str += "    ";
+
+        return str;
+    }
+
+    private static String insertAt(int i, String original, String target) {
+        return original.substring(0, i) + target + original.substring(i);
     }
 }

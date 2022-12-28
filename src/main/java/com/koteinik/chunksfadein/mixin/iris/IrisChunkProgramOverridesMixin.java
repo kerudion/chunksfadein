@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 
-import io.github.douira.glsl_transformer.ast.transform.ASTInjectionPoint;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkProgramOverrides;
 
 @Pseudo
@@ -18,29 +17,22 @@ public class IrisChunkProgramOverridesMixin {
     private static final ShaderInjector fragmentInjector = new ShaderInjector();
 
     static {
-        vertexInjector.injectTo(ASTInjectionPoint.BEFORE_DECLARATIONS,
-                "out float fadeCoeff;");
-        vertexInjector.injectTo(ASTInjectionPoint.BEFORE_DECLARATIONS,
-                "layout(std140) uniform ubo_ChunkFadeDatas { ChunkFadeData Chunk_FadeDatas[256]; };");
-        vertexInjector.injectTo(ASTInjectionPoint.BEFORE_DECLARATIONS,
-                "struct ChunkFadeData { vec4 fadeData; };");
-        vertexInjector.appendToFunction("_vert_init",
-                "fadeCoeff = Chunk_FadeDatas[_draw_id].fadeData.w;");
-        vertexInjector.appendToFunction("_vert_init",
+        vertexInjector.addCode(1,
+                "out float fadeCoeff;",
+                "struct ChunkFadeData {",
+                "    vec4 fadeData;",
+                "};",
+                "layout(std140) uniform ubo_ChunkFadeDatas {",
+                "    ChunkFadeData Chunk_FadeDatas[256];",
+                "};");
+        vertexInjector.appendToFunction("void _vert_init()",
+                "fadeCoeff = Chunk_FadeDatas[_draw_id].fadeData.w;",
                 "_vert_position = _vert_position + Chunk_FadeDatas[_draw_id].fadeData.xyz;");
-        vertexInjector.commit();
 
-        fragmentInjector.injectTo(ASTInjectionPoint.BEFORE_DECLARATIONS,
+        fragmentInjector.addCode(1,
                 "in float fadeCoeff;");
-        // fragmentInjector.appendToFunction("main",
-        // "iris_FragData0 = vec4(1.0,1.0,1.0,1.0);");
-        // fragmentInjector.appendToFunction("main",
-        // "iris_FragData1 = vec4(0.0,1.0,1.0,1.0);");
-        // fragmentInjector.appendToFunction("main",
-        // "iris_FragData2 = vec4(0.0,1.0,0.0,1.0);");
-        fragmentInjector.appendToFunction("main",
+        fragmentInjector.appendToFunction("void main()",
                 "iris_FragData0 = mix(iris_FragData0, iris_FogColor, 1.0 - fadeCoeff);");
-        fragmentInjector.commit();
     }
 
     @ModifyVariable(method = "createVertexShader", at = @At(value = "STORE", ordinal = 0), remap = false)
