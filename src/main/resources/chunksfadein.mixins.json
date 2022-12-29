@@ -16,6 +16,7 @@
     "entity.ItemFrameEntityRendererMixin",
     "iris.IrisChunkProgramOverridesMixin",
     "iris.IrisChunkShaderInterfaceMixin",
+    "iris.OldIrisChunkShaderInterfaceMixin",
     "iris.IrisRegionChunkRendererMixin",
     "misc.ClientPacketListenerMixin"
   ],

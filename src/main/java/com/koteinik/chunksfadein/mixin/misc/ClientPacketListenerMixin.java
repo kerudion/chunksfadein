@@ -39,7 +39,7 @@ public class ClientPacketListenerMixin {
                 textList.addAll(Text.of("§7§nClick to download").getWithStyle(linkStyle));
 
                 for (Text text : textList)
-                    MinecraftClient.getInstance().player.sendMessage(text);
+                    MinecraftClient.getInstance().player.sendMessage(text, false);
             }
         }).start();
     }
