@@ -16,6 +16,7 @@ import net.fabricmc.loader.api.Version;
 
 public class ModrinthApi {
     private static final String API_LINK = "https://api.modrinth.com/v2/";
+    private static final String MOD_VERSIONS = "https://modrinth.com/mod/chunks-fade-in/version/";
     private static final String VERSIONS_ENDPOINT = API_LINK + "project/chunks-fade-in/version";
     private static String minecraftVersion;
 
@@ -42,7 +43,7 @@ public class ModrinthApi {
             String version = (String) versionObj;
             String changelog = (String) changelogObj;
 
-            return new ModrinthVersion(Version.parse(version.replaceAll("v", "")), changelog);
+            return new ModrinthVersion(Version.parse(version.replaceAll("v", "")), changelog, MOD_VERSIONS + version);
         } catch (Exception e) {
             Logger.warn("Failed to get latest mod version! Cause: " + e.getMessage());
             return null;
@@ -90,10 +91,12 @@ public class ModrinthApi {
     public static class ModrinthVersion {
         public final Version version;
         public final String changelog;
+        public final String downloadUrl;
 
-        public ModrinthVersion(Version version, String changelog) {
+        public ModrinthVersion(Version version, String changelog, String downloadUrl) {
             this.version = version;
             this.changelog = changelog;
+            this.downloadUrl = downloadUrl;
         }
     }
 }

@@ -20,7 +20,7 @@ import net.minecraft.world.chunk.ChunkSection;
 
 @Mixin(value = ItemFrameEntityRenderer.class)
 public class ItemFrameEntityRendererMixin {
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;multiply(Lnet/minecraft/util/math/Quaternion;)V", ordinal = 1, shift = Shift.BEFORE))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;multiply(Lorg/joml/Quaternionf;)V", ordinal = 1, shift = Shift.BEFORE))
     private void modifyRender(ItemFrameEntity entity, float f, float g, MatrixStack matrixStack,
             VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
         if (!Config.isModEnabled)

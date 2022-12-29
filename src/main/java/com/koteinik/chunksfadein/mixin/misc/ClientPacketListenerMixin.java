@@ -1,5 +1,8 @@
 package com.koteinik.chunksfadein.mixin.misc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,6 +15,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 @Mixin(value = LoginSuccessS2CPacket.class)
@@ -23,13 +28,18 @@ public class ClientPacketListenerMixin {
             ModrinthVersion latestVersion = ModrinthApi.getLatestModVersion();
 
             if (isNewerVersion(latestVersion)) {
-                String textStr = "§7New version of §2Chunks fade in §7is available!\n";
-                textStr += "§2v" + latestVersion.version.getFriendlyString() + " §7changelog:\n";
-                textStr += "§7" + latestVersion.changelog;
+                List<Text> textList = new ArrayList<>();
+                textList.add(Text.of("§7New version of §2Chunks fade in §7is available!"));
 
-                Text text = Text.of(textStr);
+                Style linkStyle = Style.EMPTY.withClickEvent(
+                        new ClickEvent(net.minecraft.text.ClickEvent.Action.OPEN_URL, latestVersion.downloadUrl));
 
-                MinecraftClient.getInstance().player.sendMessage(text);
+                textList.add(Text.of("§7v" + latestVersion.version.getFriendlyString() + "§r§7 changelog:"));
+                textList.add(Text.of("§7" + latestVersion.changelog));
+                textList.addAll(Text.of("§7§nClick to download").getWithStyle(linkStyle));
+
+                for (Text text : textList)
+                    MinecraftClient.getInstance().player.sendMessage(text);
             }
         }).start();
     }
