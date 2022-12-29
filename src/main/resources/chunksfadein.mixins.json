@@ -16,7 +16,8 @@
     "entity.ItemFrameEntityRendererMixin",
     "iris.IrisChunkProgramOverridesMixin",
     "iris.IrisChunkShaderInterfaceMixin",
-    "iris.IrisRegionChunkRendererMixin"
+    "iris.IrisRegionChunkRendererMixin",
+    "misc.ClientPacketListenerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
