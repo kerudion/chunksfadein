@@ -36,6 +36,7 @@ public class ConfigEntry<T> {
         pollListeners();
     }
 
+    @SuppressWarnings("unchecked")
     public void load(Toml toml) {
         T tomlValue = (T) type.get(toml, configKey);
 

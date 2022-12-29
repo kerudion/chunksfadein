@@ -83,11 +83,8 @@ public class Config {
         return (double) (1 / animationChangePerMs / 1000);
     }
 
-    public static void loadConfigFile() {
-        configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "chunksfadein.properties");
-    }
-
     public static void load() {
+        configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "chunksfadein.properties");
         Toml toml = new Toml();
 
         try {
@@ -121,14 +118,17 @@ public class Config {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static void setInteger(String key, Integer value) {
         ((ConfigEntry<Integer>) get(key)).set(value);
     }
 
+    @SuppressWarnings("unchecked")
     public static void setBoolean(String key, Boolean value) {
         ((ConfigEntry<Boolean>) get(key)).set(value);
     }
 
+    @SuppressWarnings("unchecked")
     public static void setDouble(String key, Double value) {
         ((ConfigEntry<Double>) get(key)).set(value);
     }

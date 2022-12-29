@@ -27,7 +27,6 @@ public class MathUtils {
         return in >= 0f ? in : -in;
     }
 
-
     public static Vec3d abs(Vec3d in) {
         return new Vec3d(Math.abs(in.x), Math.abs(in.y), Math.abs(in.z));
     }
