@@ -47,12 +47,15 @@ public class MathUtils {
         return RenderRegion.getChunkIndex(rX, rY, rZ);
     }
 
-    public static int chunkDistance(int aX, int aY, int aZ, int bX, int bY, int bZ) {
-        int xDiff = Math.abs(aX - bX);
-        int yDiff = Math.abs(aY - bY);
-        int zDiff = Math.abs(aZ - bZ);
+    public static boolean chunkInRange(int aX, int aY, int aZ, int bX, int bY, int bZ, int radius) {
+        if (Math.abs(aX - bX) > radius)
+            return false;
+        if (Math.abs(aY - bY) > radius)
+            return false;
+        if (Math.abs(aZ - bZ) > radius)
+            return false;
 
-        return Math.max(xDiff, Math.max(yDiff, zDiff));
+        return true;
     }
 
     public static float sqrt(float f) {

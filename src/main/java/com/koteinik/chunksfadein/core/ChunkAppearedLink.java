@@ -22,7 +22,7 @@ public class ChunkAppearedLink {
         return ext.getChunkData(x, y, z);
     }
 
-    public static void completeChunkFade(int x, int y, int z) {
+    public static void completeChunkFade(int x, int y, int z, boolean completeFade) {
         if (regionManager == null)
             return;
 
@@ -33,6 +33,6 @@ public class ChunkAppearedLink {
 
         RenderRegionExt ext = (RenderRegionExt) region;
 
-        ext.completeChunkFade(x, y, z);
+        ext.completeChunkFade(x, y, z, completeFade);
     }
 }
