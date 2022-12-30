@@ -33,7 +33,6 @@ public class RegionChunkRendererMixin {
             ChunkCameraContext camera,
             CallbackInfo ci, ChunkShaderInterface shader, Iterator i, Map.Entry e, RenderRegion region,
             List<RenderSection> chunks) {
-        // Logger.info("1 " + shader.getClass().getCanonicalName() + " " + Arrays.copyOf(shader.getClass().getInterfaces(), shader.getClass().getInterfaces().length, String[].class));
         if (!Config.isModEnabled || shader == null)
             return;
 

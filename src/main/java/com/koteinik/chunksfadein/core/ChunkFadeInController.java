@@ -1,6 +1,5 @@
 package com.koteinik.chunksfadein.core;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.koteinik.chunksfadein.MathUtils;
@@ -65,11 +64,12 @@ public class ChunkFadeInController {
     public void updateChunksFade(List<RenderSection> chunks, ChunkShaderInterfaceExt shader, CommandList commandList) {
         checkMutableBuffer(commandList);
 
-        final long currentFrameTime = ZonedDateTime.now().toInstant().toEpochMilli();
-        final float delta = lastFrameTime == 0L ? 0 : currentFrameTime - lastFrameTime;
+        final long currentFrameTime = System.nanoTime();
+        final long delta = lastFrameTime == 0L ? 0 : (currentFrameTime - lastFrameTime) / 1000000;
 
-        for (RenderSection chunk : chunks)
-            processChunk(delta, chunk);
+        final int chunksSize = chunks.size();
+        for (int i = 0; i < chunksSize; i++)
+            processChunk(delta, chunks.get(i));
 
         chunkFadeDatasBuffer.uploadData(commandList, chunkGlFadeDataBuffer);
         shader.setFadeDatas(chunkGlFadeDataBuffer);
@@ -88,11 +88,11 @@ public class ChunkFadeInController {
             chunkGlFadeDataBuffer = commandList.createMutableBuffer();
     }
 
-    private void processChunk(final float delta, RenderSection chunk) {
+    private void processChunk(final long delta, RenderSection chunk) {
         final int chunkId = chunk.getChunkId();
 
         if (Config.isFadeEnabled) {
-            final float fadeCoeffChange = delta * Config.fadeChangePerMs;
+            final float fadeCoeffChange = Config.fadeChangePerMs * delta;
             float fadeCoeff = chunkFadeDatasBuffer.get(chunkId, 3);
 
             if (fadeCoeff != 1f) {
