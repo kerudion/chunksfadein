@@ -19,24 +19,6 @@ public class ShaderInjector {
         });
     }
 
-    public static void main(String[] args) {
-        ShaderInjector test = new ShaderInjector();
-
-        // test.addCode(0, "float test code;", "float test code2;", "float test
-        // code3;");
-        test.appendToFunction("int main()",
-                "float test code;",
-                "float test code2;",
-                "float test code3;");
-        test.addToFunction("int main()",
-                "float test code;",
-                "float test code2;",
-                "float test code3;");
-
-        System.out.println(
-                test.get("// test string\nint main() {\n    test = 3;\n    if (test) {\n        test = 4;\n    }\n}"));
-    }
-
     public void appendToFunction(String function, String... code) {
         transformations.add((src) -> {
             String indentation = getIndentation(0);
