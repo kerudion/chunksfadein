@@ -46,22 +46,25 @@ public class RenderRegionMixin implements RenderRegionExt {
         if (!Config.isModEnabled)
             return;
 
-        boolean resetAnimation = true;
+        boolean completeAnimation = false;
         if (!Config.animateNearPlayer) {
             final int chunkX = chunk.getChunkX();
             final int chunkY = chunk.getChunkY();
             final int chunkZ = chunk.getChunkZ();
 
             Entity camera = MinecraftClient.getInstance().cameraEntity;
-            final int camChunkX = MathUtils.floor((float) camera.lastRenderX / 16);
-            final int camChunkY = MathUtils.floor((float) camera.lastRenderY / 16);
-            final int camChunkZ = MathUtils.floor((float) camera.lastRenderZ / 16);
+            final int camChunkX = MathUtils.floor((float) (camera.lastRenderX / 16));
+            final int camChunkY = MathUtils.floor((float) (camera.lastRenderY / 16));
+            final int camChunkZ = MathUtils.floor((float) (camera.lastRenderZ / 16));
 
-            if (MathUtils.chunkDistance(chunkX, chunkY, chunkZ, camChunkX, camChunkY, camChunkZ) < 2)
-                resetAnimation = false;
+            if (MathUtils.chunkInRange(chunkX, chunkY, chunkZ, camChunkX, camChunkY, camChunkZ, 1))
+                completeAnimation = true;
         }
 
-        fadeController.resetFadeForChunk(chunk.getChunkId(), resetAnimation);
+        if (!completeAnimation)
+            fadeController.resetFadeForChunk(chunk.getChunkId());
+        else
+            fadeController.completeChunkFade(chunk.getChunkId(), false);
     }
 
     @Inject(method = "deleteResources", at = @At(value = "TAIL"))
@@ -83,7 +86,7 @@ public class RenderRegionMixin implements RenderRegionExt {
     }
 
     @Override
-    public void completeChunkFade(int x, int y, int z) {
-        fadeController.completeChunkFade(x, y, z);
+    public void completeChunkFade(int x, int y, int z, boolean completeFade) {
+        fadeController.completeChunkFade(x, y, z, completeFade);
     }
 }

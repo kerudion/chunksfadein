@@ -34,6 +34,6 @@ public abstract class WorldChunkMixin extends Chunk {
             return;
 
         ChunkPos chunkPos = getPos();
-        ChunkAppearedLink.completeChunkFade(chunkPos.x, MathUtils.floor(i / 16), chunkPos.z);
+        ChunkAppearedLink.completeChunkFade(chunkPos.x, MathUtils.floor(i / 16), chunkPos.z, true);
     }
 }

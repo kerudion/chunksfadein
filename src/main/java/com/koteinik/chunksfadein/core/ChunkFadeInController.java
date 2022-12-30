@@ -21,7 +21,7 @@ public class ChunkFadeInController {
 
     public ChunkFadeInController() {
         for (int i = 0; i < RenderRegion.REGION_SIZE; i++)
-            resetFadeForChunk(i, true);
+            resetFadeForChunk(i);
     }
 
     public float[] getChunkData(int x, int y, int z) {
@@ -37,28 +37,27 @@ public class ChunkFadeInController {
         return new float[] { x, y, z, w };
     }
 
-    public void completeChunkFade(int x, int y, int z) {
-        completeChunkFade(MathUtils.chunkIdFromGlobal(x, y, z));
+    public void completeChunkFade(int x, int y, int z, boolean completeFade) {
+        completeChunkFade(MathUtils.chunkIdFromGlobal(x, y, z), completeFade);
     }
 
-    public void completeChunkFade(int chunkId) {
+    public void completeChunkFade(int chunkId, boolean completeFade) {
         chunkFadeDatasBuffer.put(chunkId, 0, 0f);
         chunkFadeDatasBuffer.put(chunkId, 1, 0f);
         chunkFadeDatasBuffer.put(chunkId, 2, 0f);
-        chunkFadeDatasBuffer.put(chunkId, 3, 1f);
+        if (completeFade)
+            chunkFadeDatasBuffer.put(chunkId, 3, 1f);
         progressArr[chunkId] = 1;
     }
 
-    public void resetFadeForChunk(int x, int y, int z, boolean resetFade) {
-        resetFadeForChunk(MathUtils.chunkIdFromGlobal(x, y, z), resetFade);
+    public void resetFadeForChunk(int x, int y, int z) {
+        resetFadeForChunk(MathUtils.chunkIdFromGlobal(x, y, z));
     }
 
-    public void resetFadeForChunk(int chunkId, boolean resetAnimation) {
-        if (resetAnimation) {
-            chunkFadeDatasBuffer.put(chunkId, 0, 0f);
-            chunkFadeDatasBuffer.put(chunkId, 1, -Config.animationInitialOffset);
-            chunkFadeDatasBuffer.put(chunkId, 2, 0f);
-        }
+    public void resetFadeForChunk(int chunkId) {
+        chunkFadeDatasBuffer.put(chunkId, 0, 0f);
+        chunkFadeDatasBuffer.put(chunkId, 1, -Config.animationInitialOffset);
+        chunkFadeDatasBuffer.put(chunkId, 2, 0f);
         chunkFadeDatasBuffer.put(chunkId, 3, Config.isFadeEnabled ? 0f : 1f);
         progressArr[chunkId] = 0;
     }
