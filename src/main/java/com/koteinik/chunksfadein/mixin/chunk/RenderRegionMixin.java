@@ -53,12 +53,14 @@ public class RenderRegionMixin implements RenderRegionExt {
             final int chunkZ = chunk.getChunkZ();
 
             Entity camera = MinecraftClient.getInstance().cameraEntity;
-            final int camChunkX = MathUtils.floor((float) (camera.lastRenderX / 16));
-            final int camChunkY = MathUtils.floor((float) (camera.lastRenderY / 16));
-            final int camChunkZ = MathUtils.floor((float) (camera.lastRenderZ / 16));
+            if (camera != null) {
+                final int camChunkX = MathUtils.floor((float) (camera.lastRenderX / 16));
+                final int camChunkY = MathUtils.floor((float) (camera.lastRenderY / 16));
+                final int camChunkZ = MathUtils.floor((float) (camera.lastRenderZ / 16));
 
-            if (MathUtils.chunkInRange(chunkX, chunkY, chunkZ, camChunkX, camChunkY, camChunkZ, 1))
-                completeAnimation = true;
+                if (MathUtils.chunkInRange(chunkX, chunkY, chunkZ, camChunkX, camChunkY, camChunkZ, 1))
+                    completeAnimation = true;
+            }
         }
 
         if (!completeAnimation)
