@@ -9,6 +9,9 @@ import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkProgramOverrides;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.VersionParsingException;
 
 @Pseudo
 @Mixin(value = IrisChunkProgramOverrides.class)
@@ -17,6 +20,13 @@ public class IrisChunkProgramOverridesMixin {
     private static final ShaderInjector fragmentInjector = new ShaderInjector();
 
     static {
+        boolean isIrisV12 = false;
+        try {
+            isIrisV12 = FabricLoader.getInstance().getModContainer("iris").get().getMetadata()
+                    .getVersion().compareTo(Version.parse("1.4")) < 0;
+        } catch (VersionParsingException e) {
+        }
+
         vertexInjector.addCode(1,
                 "out float fadeCoeff;",
                 "struct ChunkFadeData {",
@@ -31,8 +41,12 @@ public class IrisChunkProgramOverridesMixin {
 
         fragmentInjector.addCode(1,
                 "in float fadeCoeff;");
-        fragmentInjector.appendToFunction("void main()",
-                "iris_FragData0 = mix(iris_FragData0, iris_FogColor, 1.0 - fadeCoeff);");
+        if (isIrisV12)
+            fragmentInjector.appendToFunction("void main()",
+                    "iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, 1.0 - fadeCoeff);");
+        else
+            fragmentInjector.appendToFunction("void main()",
+                    "iris_FragData0 = mix(iris_FragData0, iris_FogColor, 1.0 - fadeCoeff);");
     }
 
     @ModifyVariable(method = "createVertexShader", at = @At(value = "STORE", ordinal = 0), remap = false)
