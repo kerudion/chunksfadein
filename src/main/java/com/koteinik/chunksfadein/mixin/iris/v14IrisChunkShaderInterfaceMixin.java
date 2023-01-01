@@ -23,7 +23,7 @@ import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
 
 @Pseudo
 @Mixin(value = IrisChunkShaderInterface.class, remap = false)
-public class IrisChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
+public class v14IrisChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
     private FadeShaderInterface fadeInterface;
 
     @Inject(method = "<init>", at = @At("TAIL"))

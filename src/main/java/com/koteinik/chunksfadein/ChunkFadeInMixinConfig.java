@@ -7,16 +7,40 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.Version;
+
 public class ChunkFadeInMixinConfig implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (!mixinClassName.equals("com.koteinik.chunksfadein.mixin.iris.IrisRegionChunkRendererMixin"))
+        boolean isIrisShaderMixinV14 = mixinClassName
+                .equals("com.koteinik.chunksfadein.mixin.iris.v14IrisChunkShaderInterfaceMixin");
+        boolean isIrisShaderMixinV15 = mixinClassName
+                .equals("com.koteinik.chunksfadein.mixin.iris.v15IrisChunkShaderInterfaceMixin");
+        boolean isIrisRegionMixin = mixinClassName
+                .equals("com.koteinik.chunksfadein.mixin.iris.IrisRegionChunkRendererMixin");
+
+        boolean isIrisMixin = isIrisShaderMixinV14 || isIrisShaderMixinV15 || isIrisRegionMixin;
+
+        if (!isIrisMixin)
             return true;
 
         try {
             Class.forName("net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt", false,
                     getClass().getClassLoader());
-            return true;
+            if (isIrisRegionMixin)
+                return true;
+
+            boolean isIrisV15 = FabricLoader.getInstance().getModContainer("iris").get().getMetadata()
+                    .getVersion().compareTo(Version.parse("1.5")) >= 0;
+
+            Logger.info("Is iris V15: " + isIrisV15);
+            if (isIrisV15 && isIrisShaderMixinV15)
+                return true;
+            else if (!isIrisV15 && isIrisShaderMixinV14)
+                return true;
+            else
+                return false;
         } catch (Exception e) {
             return false;
         }
