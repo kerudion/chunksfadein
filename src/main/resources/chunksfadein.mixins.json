@@ -15,9 +15,10 @@
     "entity.SodiumWorldRendererMixin",
     "entity.ItemFrameEntityRendererMixin",
     "iris.IrisChunkProgramOverridesMixin",
-    "iris.IrisChunkShaderInterfaceMixin",
-    "iris.OldIrisChunkShaderInterfaceMixin",
     "iris.IrisRegionChunkRendererMixin",
+    "iris.v12IrisChunkShaderInterfaceMixin",
+    "iris.v14IrisChunkShaderInterfaceMixin",
+    "iris.v15IrisChunkShaderInterfaceMixin",
     "misc.ClientPacketListenerMixin"
   ],
   "injectors": {

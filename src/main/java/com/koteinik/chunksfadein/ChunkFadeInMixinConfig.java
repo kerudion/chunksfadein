@@ -13,37 +13,39 @@ import net.fabricmc.loader.api.Version;
 public class ChunkFadeInMixinConfig implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        boolean isRegionRenderer = mixinClassName
+        boolean isIrisShaderMixinV12 = mixinClassName
+                .equals("com.koteinik.chunksfadein.mixin.iris.v12IrisChunkShaderInterfaceMixin");
+        boolean isIrisShaderMixinV14 = mixinClassName
+                .equals("com.koteinik.chunksfadein.mixin.iris.v14IrisChunkShaderInterfaceMixin");
+        boolean isIrisShaderMixinV15 = mixinClassName
+                .equals("com.koteinik.chunksfadein.mixin.iris.v15IrisChunkShaderInterfaceMixin");
+        boolean isIrisRegionMixin = mixinClassName
                 .equals("com.koteinik.chunksfadein.mixin.iris.IrisRegionChunkRendererMixin");
-        boolean isShaderInterface = mixinClassName
-                .equals("com.koteinik.chunksfadein.mixin.iris.IrisChunkShaderInterfaceMixin");
-        boolean isOldShaderInterface = mixinClassName
-                .equals("com.koteinik.chunksfadein.mixin.iris.OldIrisChunkShaderInterfaceMixin");
 
-        if (!(isRegionRenderer || isShaderInterface || isOldShaderInterface))
+        boolean isIrisMixin = isIrisShaderMixinV12 || isIrisShaderMixinV14 || isIrisShaderMixinV15 || isIrisRegionMixin;
+
+        if (!isIrisMixin)
             return true;
 
         try {
             Class.forName("net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt", false,
                     getClass().getClassLoader());
+            if (isIrisRegionMixin)
+                return true;
 
-            boolean isOldIris = FabricLoader.getInstance().getModContainer("iris").get()
-                    .getMetadata()
+            boolean isIrisV15 = FabricLoader.getInstance().getModContainer("iris").get().getMetadata()
+                    .getVersion().compareTo(Version.parse("1.5")) >= 0;
+            boolean isIrisV12 = FabricLoader.getInstance().getModContainer("iris").get().getMetadata()
                     .getVersion().compareTo(Version.parse("1.4")) < 0;
 
-            if (isRegionRenderer) {
-                Logger.info("allowing mixin " + mixinClassName);
+            if (isIrisV12 && isIrisShaderMixinV12)
                 return true;
-            } else if (isOldIris && isOldShaderInterface) {
-                Logger.info("allowing old mixin " + mixinClassName);
+            else if (!isIrisV12 && isIrisV15 && isIrisShaderMixinV15)
                 return true;
-            } else if (!isOldIris && isShaderInterface) {
-                Logger.info("allowing new mixin " + mixinClassName);
+            else if (!isIrisV12 && !isIrisV15 && isIrisShaderMixinV14)
                 return true;
-            } else {
-                Logger.info("disallowing mixin " + mixinClassName);
+            else
                 return false;
-            }
         } catch (Exception e) {
             return false;
         }
