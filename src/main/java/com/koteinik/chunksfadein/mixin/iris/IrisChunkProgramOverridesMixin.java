@@ -3,13 +3,18 @@ package com.koteinik.chunksfadein.mixin.iris;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 
+import me.jellysquid.mods.sodium.client.gl.shader.GlShader;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkProgramOverrides;
+import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisTerrainPass;
+import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;

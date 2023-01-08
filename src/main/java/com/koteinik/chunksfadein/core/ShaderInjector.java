@@ -15,6 +15,7 @@ public class ShaderInjector {
             for (int i = 0; i < lineOffset; i++)
                 newlineIdx = src.indexOf("\n", newlineIdx + 1);
 
+            toInsert = replaceParts(src, toInsert);
             return insertAt(newlineIdx, src, toInsert);
         });
     }
@@ -45,6 +46,8 @@ public class ShaderInjector {
 
         int firstBracketIdx = src.indexOf('{', functionIdx);
         int bracketCount = 0;
+
+        code = replaceParts(src, code);
 
         if (offset > 0)
             return insertAt(firstBracketIdx + offset, src, code);
