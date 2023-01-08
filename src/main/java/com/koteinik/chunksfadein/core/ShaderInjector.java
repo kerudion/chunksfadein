@@ -104,14 +104,18 @@ public class ShaderInjector {
     }
 
     private static String replaceParts(String shaderCode, String toInject) {
-        UniformData uniform = getUniformAtLayout(shaderCode, 0);
+        if (toInject.contains("${mix_uniform_0_and_fog}") || toInject.contains("${uniform_0}")) {
+            UniformData uniform = getUniformAtLayout(shaderCode, 0);
+            if (!uniform.type.equals("uvec4") && !uniform.type.equals("vec4"))
+                return "";
 
-        boolean isUvec = uniform.type.equals("uvec4");
-        toInject = toInject.replaceAll("\\$\\{mix_uniform_0_and_fog\\}",
-                (isUvec ? "uvec4(" : "")
-                        + "mix(\\$\\{uniform_0\\}, iris_FogColor, 1.0 - fadeCoeff)"
-                        + (isUvec ? ")" : ""));
-        toInject = toInject.replaceAll("\\$\\{uniform_0\\}", uniform.name);
+            boolean isUvec = uniform.type.equals("uvec4");
+            toInject = toInject.replaceAll("\\$\\{mix_uniform_0_and_fog\\}",
+                    (isUvec ? "uvec4(" : "")
+                            + "mix(\\$\\{uniform_0\\}, iris_FogColor, 1.0 - fadeCoeff)"
+                            + (isUvec ? ")" : ""));
+            toInject = toInject.replaceAll("\\$\\{uniform_0\\}", uniform.name);
+        }
         return toInject;
     }
 
