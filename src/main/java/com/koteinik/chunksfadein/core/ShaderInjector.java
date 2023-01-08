@@ -15,6 +15,7 @@ public class ShaderInjector {
             for (int i = 0; i < lineOffset; i++)
                 newlineIdx = src.indexOf("\n", newlineIdx + 1);
 
+            toInsert = replaceParts(src, toInsert);
             return insertAt(newlineIdx, src, toInsert);
         });
     }
@@ -45,6 +46,8 @@ public class ShaderInjector {
 
         int firstBracketIdx = src.indexOf('{', functionIdx);
         int bracketCount = 0;
+
+        code = replaceParts(src, code);
 
         if (offset > 0)
             return insertAt(firstBracketIdx + offset, src, code);
@@ -82,4 +85,34 @@ public class ShaderInjector {
     private static String insertAt(int i, String original, String target) {
         return original.substring(0, i) + target + original.substring(i);
     }
+
+    private static UniformData getUniformAtLayout(String code, int uniform) {
+        int index = code.indexOf("layout(location = " + uniform + ")");
+        if (index == -1)
+            return new UniformData("vec4", "iris_FragData0");
+        String line = "";
+        for (int i = index; i < code.length(); i++)
+            if (code.charAt(i) == '\n')
+                break;
+            else
+                line += code.charAt(i);
+
+        line = line.replaceAll(";", "");
+        String[] splitted = line.split(" ");
+
+        return new UniformData(splitted[splitted.length - 2], splitted[splitted.length - 1]);
+    }
+
+    private static String replaceParts(String shaderCode, String toInject) {
+        UniformData uniform = getUniformAtLayout(shaderCode, 0);
+
+        boolean isUvec = uniform.type.equals("uvec4");
+        toInject = toInject.replaceAll("\\$\\{mix_uniform_0_and_fog\\}",
+                (isUvec ? "uvec4(" : "")
+                        + "mix(\\$\\{uniform_0\\}, iris_FogColor, 1.0 - fadeCoeff)"
+                        + (isUvec ? ")" : ""));
+        toInject = toInject.replaceAll("\\$\\{uniform_0\\}", uniform.name);
+        return toInject;
+    }
+
 }
