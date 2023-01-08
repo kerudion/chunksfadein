@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import com.koteinik.chunksfadein.Logger;
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkProgramOverrides;
@@ -19,6 +20,7 @@ public class IrisChunkProgramOverridesMixin {
     private static final ShaderInjector vertexInjector = new ShaderInjector();
     private static final ShaderInjector fragmentInjector = new ShaderInjector();
     private static boolean isOldIris;
+
     static {
         try {
             isOldIris = FabricLoader.getInstance().getModContainer("iris").get()
@@ -49,7 +51,7 @@ public class IrisChunkProgramOverridesMixin {
                     "iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, 1.0 - fadeCoeff);");
         else
             fragmentInjector.appendToFunction("void main()",
-                    "iris_FragData0 = mix(iris_FragData0, iris_FogColor, 1.0 - fadeCoeff);");
+                    "if(fadeCoeff != 0.0) ${uniform_0} = ${mix_uniform_0_and_fog};");
     }
 
     @ModifyVariable(method = "createVertexShader", at = @At(value = "STORE", ordinal = 0), remap = false)
@@ -57,12 +59,11 @@ public class IrisChunkProgramOverridesMixin {
         if (irisVertexShader == null)
             return null;
 
-        Logger.info("----- VERTEX -----");
-        Logger.info(irisVertexShader);
-        String newCode = vertexInjector.get(irisVertexShader);
-        Logger.info("----- VERTEX NEW -----");
-        Logger.info(newCode);
-        return newCode;
+        if (!Config.isModEnabled)
+            return irisVertexShader;
+
+        String code = vertexInjector.get(irisVertexShader);
+        return code;
     }
 
     @ModifyVariable(method = "createFragmentShader", at = @At(value = "STORE", ordinal = 0), remap = false)
@@ -70,11 +71,10 @@ public class IrisChunkProgramOverridesMixin {
         if (irisFragmentShader == null)
             return null;
 
-        Logger.info("----- FRAGMENT -----");
-        Logger.info(irisFragmentShader);
-        String newCode = fragmentInjector.get(irisFragmentShader);
-        Logger.info("----- FRAGMENT NEW -----");
-        Logger.info(newCode);
-        return newCode;
+        if (!Config.isModEnabled)
+            return irisFragmentShader;
+
+        String code = fragmentInjector.get(irisFragmentShader);
+        return code;
     }
 }
