@@ -3,23 +3,23 @@ package com.koteinik.chunksfadein.mixin.iris;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 
-import me.jellysquid.mods.sodium.client.gl.shader.GlShader;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkProgramOverrides;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisTerrainPass;
 import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.VersionParsingException;
 
 @Pseudo
 @Mixin(value = IrisChunkProgramOverrides.class)
 public class IrisChunkProgramOverridesMixin {
     private static final ShaderInjector vertexInjector = new ShaderInjector();
     private static final ShaderInjector fragmentInjector = new ShaderInjector();
-    private IrisTerrainPass fragmentPass;
 
     static {
         vertexInjector.addCode(1,
@@ -37,7 +37,7 @@ public class IrisChunkProgramOverridesMixin {
         fragmentInjector.addCode(1,
                 "in float fadeCoeff;");
         fragmentInjector.appendToFunction("void main()",
-                "${uniform_0} = ${mix_uniform_0_and_fog};");
+                "if(fadeCoeff != 0.0) ${uniform_0} = ${mix_uniform_0_and_fog};");
     }
 
     @ModifyVariable(method = "createVertexShader", at = @At(value = "STORE", ordinal = 0), remap = false)
@@ -45,7 +45,11 @@ public class IrisChunkProgramOverridesMixin {
         if (irisVertexShader == null)
             return null;
 
-        return vertexInjector.get(irisVertexShader);
+        if (!Config.isModEnabled)
+            return irisVertexShader;
+
+        String code = vertexInjector.get(irisVertexShader);
+        return code;
     }
 
     @ModifyVariable(method = "createFragmentShader", at = @At(value = "STORE", ordinal = 0), remap = false)
@@ -53,15 +57,10 @@ public class IrisChunkProgramOverridesMixin {
         if (irisFragmentShader == null)
             return null;
 
-        if (fragmentPass != IrisTerrainPass.GBUFFER_CUTOUT)
+        if (!Config.isModEnabled)
             return irisFragmentShader;
 
-        return fragmentInjector.get(irisFragmentShader);
-    }
-
-    @Inject(method = "createFragmentShader", at = @At(value = "HEAD"), remap = false)
-    private void modifyCreateFragmentShader(IrisTerrainPass pass, SodiumTerrainPipeline pipeline,
-            CallbackInfoReturnable<GlShader> shader) {
-        fragmentPass = pass;
+        String code = fragmentInjector.get(irisFragmentShader);
+        return code;
     }
 }

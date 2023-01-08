@@ -16,6 +16,7 @@ import com.koteinik.chunksfadein.extenstions.RenderRegionExt;
 import com.koteinik.chunksfadein.hooks.IrisApiHook;
 
 import me.jellysquid.mods.sodium.client.gl.device.CommandList;
+import me.jellysquid.mods.sodium.client.gl.shader.GlProgram;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkCameraContext;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderList;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderMatrices;
@@ -24,6 +25,8 @@ import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
 import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
+import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkShaderInterface;
+import net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt;
 
 @Mixin(value = RegionChunkRenderer.class, remap = false)
 public abstract class IrisRegionChunkRendererMixin {
@@ -38,8 +41,11 @@ public abstract class IrisRegionChunkRendererMixin {
             return;
 
         final net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt rendererExt = (net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt) this;
-        final ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) (rendererExt.iris$getOverride()
-                .getInterface());
+        GlProgram<IrisChunkShaderInterface> override = rendererExt.iris$getOverride();
+        if (override == null)
+            return;
+
+        final ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) (override.getInterface());
         final RenderRegionExt regionExt = (RenderRegionExt) region;
         regionExt.updateChunksFade(chunks, ext, commandList);
     }
