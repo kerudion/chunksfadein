@@ -27,7 +27,7 @@ public class IrisChunkProgramOverridesMixin {
         } catch (VersionParsingException e) {
         }
 
-        vertexInjector.addCode(1,
+        vertexInjector.insertAfterDefines(
                 "out float fadeCoeff;",
                 "struct ChunkFadeData {",
                 "    vec4 fadeData;",
@@ -39,8 +39,7 @@ public class IrisChunkProgramOverridesMixin {
                 "fadeCoeff = Chunk_FadeDatas[_draw_id].fadeData.w;",
                 "_vert_position = _vert_position + Chunk_FadeDatas[_draw_id].fadeData.xyz;");
 
-        fragmentInjector.addCode(1,
-                "in float fadeCoeff;");
+        fragmentInjector.insertAfterDefines("in float fadeCoeff;");
         if (isIrisV12)
             fragmentInjector.appendToFunction("void main()",
                     "iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, 1.0 - fadeCoeff);");

@@ -7,13 +7,12 @@ import java.util.function.Function;
 public class ShaderInjector {
     private final List<Function<String, String>> transformations = new ArrayList<>();
 
-    public void addCode(int lineOffset, String... code) {
+    public void insertAfterDefines(String... code) {
         transformations.add((src) -> {
             String toInsert = "\n" + String.join("\n", code);
 
-            int newlineIdx = src.indexOf("\n");
-            for (int i = 0; i < lineOffset; i++)
-                newlineIdx = src.indexOf("\n", newlineIdx + 1);
+            int lastDefineIdx = src.lastIndexOf("#");
+            int newlineIdx = src.indexOf("\n", lastDefineIdx);
 
             toInsert = replaceParts(src, toInsert);
             return insertAt(newlineIdx, src, toInsert);
