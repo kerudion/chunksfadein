@@ -22,7 +22,7 @@ public class IrisChunkProgramOverridesMixin {
     private static final ShaderInjector fragmentInjector = new ShaderInjector();
 
     static {
-        vertexInjector.addCode(1,
+        vertexInjector.insertAfterDefines(
                 "out float fadeCoeff;",
                 "struct ChunkFadeData {",
                 "    vec4 fadeData;",
@@ -34,8 +34,7 @@ public class IrisChunkProgramOverridesMixin {
                 "fadeCoeff = Chunk_FadeDatas[_draw_id].fadeData.w;",
                 "_vert_position = _vert_position + Chunk_FadeDatas[_draw_id].fadeData.xyz;");
 
-        fragmentInjector.addCode(1,
-                "in float fadeCoeff;");
+        fragmentInjector.insertAfterDefines("in float fadeCoeff;");
         fragmentInjector.appendToFunction("void main()",
                 "if(fadeCoeff != 0.0) ${uniform_0} = ${mix_uniform_0_and_fog};");
     }
