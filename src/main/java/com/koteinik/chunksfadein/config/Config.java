@@ -10,6 +10,7 @@ import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.ConfigEntry.Type;
 import com.koteinik.chunksfadein.core.Curves;
+import com.koteinik.chunksfadein.core.FadeTypes;
 import com.moandjiezana.toml.Toml;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -20,9 +21,10 @@ public class Config {
     public static final double MAX_ANIMATION_OFFSET = 319;
     public static final String MOD_ENABLED_KEY = "mod-enabled";
     public static final String FADE_ENABLED_KEY = "fade-enabled";
+    public static final String FADE_TIME_KEY = "fade-time";
+    public static final String FADE_TYPE_KEY = "fade-type";
     public static final String ANIMATION_ENABLED_KEY = "animation-enabled";
     public static final String ANIMATE_NEAR_PLAYER_KEY = "animate-near-player";
-    public static final String FADE_TIME_KEY = "fade-time";
     public static final String ANIMATION_TIME_KEY = "animation-time";
     public static final String ANIMATION_CURVE_KEY = "animation-curve";
     public static final String ANIMATION_OFFSET_KEY = "animation-offset";
@@ -39,28 +41,32 @@ public class Config {
     public static float animationChangePerMs;
     public static float fadeChangePerMs;
 
+    public static FadeTypes fadeType;
     public static Curves animationCurve;
 
     static {
         addEntry(new ConfigEntry<Integer>(Curves.EASE_OUT.ordinal(), ANIMATION_CURVE_KEY, Type.INTEGER))
-                .addListener((o) -> animationCurve = Curves.values()[MathUtils.clamp((Integer) o, 0,
+                .addListener((o) -> animationCurve = Curves.values()[MathUtils.clamp(o, 0,
+                        Curves.values().length - 1)]);
+        addEntry(new ConfigEntry<Integer>(FadeTypes.FULL.ordinal(), FADE_TYPE_KEY, Type.INTEGER))
+                .addListener((o) -> fadeType = FadeTypes.values()[MathUtils.clamp(o, 0,
                         Curves.values().length - 1)]);
 
         addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_FADE_TIME, 0.64, FADE_TIME_KEY))
-                .addListener((o) -> fadeChangePerMs = fadeChangeFromSeconds((Double) o));
+                .addListener((o) -> fadeChangePerMs = fadeChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_ANIMATION_TIME, 1, ANIMATION_TIME_KEY))
-                .addListener((o) -> animationChangePerMs = animationChangeFromSeconds((Double) o));
+                .addListener((o) -> animationChangePerMs = animationChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(1, MAX_ANIMATION_OFFSET, 64, ANIMATION_OFFSET_KEY))
-                .addListener((o) -> animationInitialOffset = ((Double) o).floatValue());
+                .addListener((o) -> animationInitialOffset = (o).floatValue());
 
         addEntry(new ConfigEntry<Boolean>(true, MOD_ENABLED_KEY, Type.BOOLEAN))
-                .addListener((o) -> isModEnabled = (Boolean) o);
+                .addListener((o) -> isModEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, FADE_ENABLED_KEY, Type.BOOLEAN))
-                .addListener((o) -> isFadeEnabled = (Boolean) o);
+                .addListener((o) -> isFadeEnabled = o);
         addEntry(new ConfigEntry<Boolean>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
-                .addListener((o) -> isAnimationEnabled = (Boolean) o);
+                .addListener((o) -> isAnimationEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, ANIMATE_NEAR_PLAYER_KEY, Type.BOOLEAN))
-                .addListener((o) -> animateNearPlayer = (Boolean) o);
+                .addListener((o) -> animateNearPlayer = o);
     }
 
     public static float fadeChangeFromSeconds(double seconds) {
