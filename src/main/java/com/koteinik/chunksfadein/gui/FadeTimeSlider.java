@@ -10,7 +10,7 @@ public class FadeTimeSlider extends SliderWidget {
     private static final int sliderH = 20;
 
     public FadeTimeSlider(int parentW, int parentH) {
-        super(parentW / 2 - sliderW / 2, parentH / 2 - sliderH / 2 - 28,
+        super(parentW / 2 - sliderW / 2 + sliderW / 2 + 4, parentH / 2 - sliderH / 2 - 28,
                 sliderW, sliderH,
                 Text.of(getText(Config.secondsFromFadeChange())), 10);
 
