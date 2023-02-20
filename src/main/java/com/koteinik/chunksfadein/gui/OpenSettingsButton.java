@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class OpenSettingsButton extends ButtonWidget {
@@ -17,7 +17,7 @@ public class OpenSettingsButton extends ButtonWidget {
     private static final int buttonH = 20;
 
     public OpenSettingsButton(Screen parent, MinecraftClient client, int parentW, int parentH) {
-        super(parentW / 2 - 155 - buttonW - 5, parentH / 6 + 72 - 6, buttonH, buttonW, ScreenTexts.EMPTY,
+        super(parentW / 2 - 155 - buttonW - 5, parentH / 6 + 72 - 6, buttonH, buttonW, Text.of(null),
                 new PressAction() {
                     @Override
                     public void onPress(ButtonWidget button) {
