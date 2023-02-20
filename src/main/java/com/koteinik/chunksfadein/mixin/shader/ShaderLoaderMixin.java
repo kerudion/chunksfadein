@@ -5,7 +5,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeTypes;
 import com.koteinik.chunksfadein.hooks.IrisApiHook;
