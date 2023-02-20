@@ -36,7 +36,7 @@ public class IrisChunkProgramOverridesMixin {
                 "struct ChunkFadeData {",
                 "    vec4 fadeData;",
                 "};",
-                "layout(std140) uniform ubo_ChunkFadeDats {",
+                "layout(std140) uniform ubo_ChunkFadeDatas {",
                 "    ChunkFadeData Chunk_FadeDatas[256];",
                 "};");
         vertexInjectorFull.appendToFunction("void _vert_init()",

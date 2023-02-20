@@ -47,7 +47,6 @@ public class ChunkFadeInMixinConfig implements IMixinConfigPlugin {
             boolean isIrisV15 = FabricLoader.getInstance().getModContainer("iris").get().getMetadata()
                     .getVersion().compareTo(Version.parse("1.5")) >= 0;
 
-            Logger.info("Is iris V15: " + isIrisV15);
             if (isIrisV15 && isIrisShaderMixinV15)
                 return true;
             else if (!isIrisV15 && isIrisShaderMixinV14)
