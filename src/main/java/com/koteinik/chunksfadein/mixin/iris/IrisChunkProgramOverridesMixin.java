@@ -6,11 +6,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.FadeTypes;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkProgramOverrides;
-import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisTerrainPass;
-import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
@@ -18,25 +17,57 @@ import net.fabricmc.loader.api.VersionParsingException;
 @Pseudo
 @Mixin(value = IrisChunkProgramOverrides.class)
 public class IrisChunkProgramOverridesMixin {
-    private static final ShaderInjector vertexInjector = new ShaderInjector();
-    private static final ShaderInjector fragmentInjector = new ShaderInjector();
+    private static final ShaderInjector vertexInjectorFull = new ShaderInjector();
+    private static final ShaderInjector fragmentInjectorFull = new ShaderInjector();
+
+    private static final ShaderInjector vertexInjectorLined = new ShaderInjector();
+    private static final ShaderInjector fragmentInjectorLined = new ShaderInjector();
 
     static {
-        vertexInjector.insertAfterDefines(
+        boolean isIrisV12 = false;
+        try {
+            isIrisV12 = FabricLoader.getInstance().getModContainer("iris").get().getMetadata()
+                    .getVersion().compareTo(Version.parse("1.4")) < 0;
+        } catch (VersionParsingException e) {
+        }
+
+        vertexInjectorFull.insertAfterDefines(
                 "out float fadeCoeff;",
                 "struct ChunkFadeData {",
                 "    vec4 fadeData;",
                 "};",
-                "layout(std140) uniform ubo_ChunkFadeDatas {",
+                "layout(std140) uniform ubo_ChunkFadeDats {",
                 "    ChunkFadeData Chunk_FadeDatas[256];",
                 "};");
-        vertexInjector.appendToFunction("void _vert_init()",
+        vertexInjectorFull.appendToFunction("void _vert_init()",
                 "fadeCoeff = Chunk_FadeDatas[_draw_id].fadeData.w;",
                 "_vert_position = _vert_position + Chunk_FadeDatas[_draw_id].fadeData.xyz;");
+        vertexInjectorLined.copyFrom(vertexInjectorFull);
 
-        fragmentInjector.insertAfterDefines("in float fadeCoeff;");
-        fragmentInjector.appendToFunction("void main()",
-                "if(fadeCoeff != 0.0) ${uniform_0} = ${mix_uniform_0_and_fog};");
+        vertexInjectorLined.insertAfterDefines("out float localHeight;");
+        vertexInjectorLined.appendToFunction("void _vert_init()",
+                "localHeight = _vert_position.y;");
+
+        fragmentInjectorFull.insertAfterDefines("in float fadeCoeff;");
+
+        fragmentInjectorLined.copyFrom(fragmentInjectorFull);
+        fragmentInjectorLined.insertAfterDefines("in float localHeight;");
+
+        fragmentInjectorLined.appendToFunction("void main()",
+                "float fadeLineY = fadeCoeff * 16.0;");
+        if (isIrisV12) {
+            fragmentInjectorFull.appendToFunction("void main()",
+                    "if(fadeCoeff != 0.0) iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, 1.0 - fadeCoeff);");
+
+            fragmentInjectorLined.appendToFunction("void main()",
+                    "if(fadeCoeff != 0.0) iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, localHeight <= fadeLineY ? 0.0 : 1.0);");
+        } else {
+            fragmentInjectorFull.appendToFunction("void main()",
+                    "if(fadeCoeff != 0.0) ${uniform_0} = ${uniform_0_prefix}mix(${uniform_0}, iris_FogColor, 1.0 - fadeCoeff)${uniform_0_postfix};");
+
+            fragmentInjectorLined.appendToFunction("void main()",
+                    "if(fadeCoeff != 0.0) ${uniform_0} = ${uniform_0_prefix}mix(${uniform_0}, iris_FogColor, localHeight <= fadeLineY ? 0.0 : 1.0)${uniform_0_postfix};");
+        }
     }
 
     @ModifyVariable(method = "createVertexShader", at = @At(value = "STORE", ordinal = 0), remap = false)
@@ -47,7 +78,8 @@ public class IrisChunkProgramOverridesMixin {
         if (!Config.isModEnabled)
             return irisVertexShader;
 
-        String code = vertexInjector.get(irisVertexShader);
+        String code = (Config.fadeType == FadeTypes.FULL ? vertexInjectorFull : vertexInjectorLined)
+                .get(irisVertexShader);
         return code;
     }
 
@@ -59,7 +91,8 @@ public class IrisChunkProgramOverridesMixin {
         if (!Config.isModEnabled)
             return irisFragmentShader;
 
-        String code = fragmentInjector.get(irisFragmentShader);
+        String code = (Config.fadeType == FadeTypes.FULL ? fragmentInjectorFull : fragmentInjectorLined)
+                .get(irisFragmentShader);
         return code;
     }
 }

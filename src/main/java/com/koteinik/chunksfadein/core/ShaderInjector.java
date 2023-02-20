@@ -73,6 +73,10 @@ public class ShaderInjector {
         return code;
     }
 
+    public void copyFrom(ShaderInjector injector) {
+        transformations.addAll(injector.transformations);
+    }
+
     private static String getIndentation(int bracketCount) {
         String str = "";
         for (int i = 0; i < bracketCount + 1; i++)
@@ -103,19 +107,22 @@ public class ShaderInjector {
     }
 
     private static String replaceParts(String shaderCode, String toInject) {
-        if (toInject.contains("${mix_uniform_0_and_fog}") || toInject.contains("${uniform_0}")) {
+        if (toInject.contains("${uniform_0_prefix}")
+                || toInject.contains("${uniform_0_postfix}")
+                || toInject.contains("${uniform_0}")) {
             UniformData uniform = getUniformAtLayout(shaderCode, 0);
             if (!uniform.type.equals("uvec4") && !uniform.type.equals("vec4"))
                 return "";
 
             boolean isUvec = uniform.type.equals("uvec4");
-            toInject = toInject.replaceAll("\\$\\{mix_uniform_0_and_fog\\}",
-                    (isUvec ? "uvec4(" : "")
-                            + "mix(\\$\\{uniform_0\\}, iris_FogColor, 1.0 - fadeCoeff)"
-                            + (isUvec ? ")" : ""));
-            toInject = toInject.replaceAll("\\$\\{uniform_0\\}", uniform.name);
+
+            toInject = toInject.replaceAll("\\$\\{uniform_0_prefix\\}",
+                    isUvec ? "uvec4(" : "");
+            toInject = toInject.replaceAll("\\$\\{uniform_0_postfix\\}",
+                    isUvec ? ")" : "");
+            toInject = toInject.replaceAll("\\$\\{uniform_0\\}",
+                    uniform.name);
         }
         return toInject;
     }
-
 }
