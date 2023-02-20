@@ -18,7 +18,7 @@ public class UpdateNotifierEnabledButton extends ButtonWidget {
                         Config.setBoolean(Config.UPDATE_NOTIFIER_ENABLED_KEY, !Config.isUpdateNotifierEnabled);
                         button.setMessage(createText());
                     }
-                });
+                }, DEFAULT_NARRATION_SUPPLIER);
     }
 
     private static Text createText() {

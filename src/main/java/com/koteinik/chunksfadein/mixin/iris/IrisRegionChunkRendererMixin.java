@@ -26,7 +26,6 @@ import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
 import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkShaderInterface;
-import net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt;
 
 @Mixin(value = RegionChunkRenderer.class, remap = false)
 public abstract class IrisRegionChunkRendererMixin {

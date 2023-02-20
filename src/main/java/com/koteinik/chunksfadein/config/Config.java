@@ -67,7 +67,7 @@ public class Config {
                 .addListener((o) -> isFadeEnabled = o);
         addEntry(new ConfigEntry<Boolean>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isAnimationEnabled = o);
-        addEntry(new ConfigEntry<Boolean>(false, UPDATE_NOTIFIER_ENABLED_KEY, Type.BOOLEAN))
+        addEntry(new ConfigEntry<Boolean>(true, UPDATE_NOTIFIER_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isUpdateNotifierEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, ANIMATE_NEAR_PLAYER_KEY, Type.BOOLEAN))
                 .addListener((o) -> animateNearPlayer = o);

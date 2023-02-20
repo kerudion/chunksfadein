@@ -28,7 +28,7 @@ public class FadeTypeButton extends ButtonWidget {
 
                         ShaderUtils.reloadWorldRenderer();
                     }
-                });
+                }, DEFAULT_NARRATION_SUPPLIER);
     }
 
     private static Text createText() {
