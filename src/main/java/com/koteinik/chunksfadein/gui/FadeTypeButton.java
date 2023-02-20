@@ -12,7 +12,7 @@ public class FadeTypeButton extends ButtonWidget {
     private static final int buttonH = 20;
 
     public FadeTypeButton(SettingsScreen parent, int parentW, int parentH) {
-        super(parentW / 2 - buttonW / 2 - buttonW / 2 - 4, parentH / 2 - buttonH / 2 - 28,
+        super(parentW / 2 - buttonW - 4, parentH / 2 - buttonH / 2 - 28,
                 buttonW, buttonH, createText(),
                 new PressAction() {
                     @Override
