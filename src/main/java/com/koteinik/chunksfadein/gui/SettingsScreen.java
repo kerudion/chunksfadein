@@ -16,6 +16,7 @@ public class SettingsScreen extends GameOptionsScreen {
     private ResetButton animationTimeResetButton;
     private ModEnabledButton modEnabledButton;
     private FadeEnabledButton fadeEnabledButton;
+    private FadeTypeButton fadeTypeButton;
     private AnimationEnabledButton animationEnabledButton;
     private AnimationTimeSlider animationTimeSlider;
     private AnimationCurveButton animationCurveButton;
@@ -35,7 +36,8 @@ public class SettingsScreen extends GameOptionsScreen {
         animationEnabledButton = new AnimationEnabledButton(width, height);
 
         fadeSlider = new FadeTimeSlider(width, height);
-        fadeResetButton = new ResetButton(width, height, 100, -28, () -> {
+        fadeTypeButton = new FadeTypeButton(this, width, height);
+        fadeResetButton = new ResetButton(width, height, 179, -28, () -> {
             Config.reset(Config.FADE_TIME_KEY);
             fadeSlider.setValue(Config.secondsFromFadeChange() / Config.MAX_FADE_TIME);
         });
@@ -59,6 +61,7 @@ public class SettingsScreen extends GameOptionsScreen {
         addDrawableChild(animationEnabledButton);
 
         addDrawableChild(fadeSlider);
+        addDrawableChild(fadeTypeButton);
         addDrawableChild(fadeResetButton);
         addDrawableChild(animationCurveButton);
         addDrawableChild(animationTimeSlider);

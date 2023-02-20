@@ -1,15 +1,17 @@
 package com.koteinik.chunksfadein.mixin.shader;
 
-import me.jellysquid.mods.sodium.client.gl.shader.ShaderLoader;
-import net.minecraft.util.Identifier;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.FadeTypes;
 import com.koteinik.chunksfadein.hooks.IrisApiHook;
+
+import me.jellysquid.mods.sodium.client.gl.shader.ShaderLoader;
+import net.minecraft.util.Identifier;
 
 @Mixin(value = ShaderLoader.class, remap = false)
 public abstract class ShaderLoaderMixin {
@@ -27,24 +29,42 @@ public abstract class ShaderLoaderMixin {
 
         switch (shaderFileName) {
             case "fog.glsl":
-                source = source
-                        .replaceFirst("float fogEnd\\)", "float fogEnd, float fadeCoeff)")
-                        .replaceFirst("float fadeCoeff\\) \\{",
-                                "float fadeCoeff) {\n    fragColor = mix(fragColor, fogColor, 1.0 - fadeCoeff);\n");
+                if (Config.fadeType == FadeTypes.FULL)
+                    source = source
+                            .replaceFirst("float fogEnd\\)", "float fogEnd, float fadeCoeff)")
+                            .replaceFirst("float fadeCoeff\\) \\{",
+                                    "float fadeCoeff) {\n    fragColor = mix(fragColor, fogColor, 1.0 - fadeCoeff);\n");
+                else
+                    source = source
+                            .replaceFirst("float fogEnd\\)", "float fogEnd, float fadeCoeff, float localHeight)")
+                            .replaceFirst("float localHeight\\) \\{",
+                                    "float localHeight) {\n    float fadeLineY = fadeCoeff * 16.0;\n    fragColor = mix(fragColor, fogColor, localHeight <= fadeLineY ? 0.0 : 1.0);\n");
                 break;
 
             case "block_layer_opaque.fsh":
-                source = source
-                        .replaceFirst("in vec4", "in float v_fadeCoeff;\nin vec4")
-                        .replaceFirst("u_FogEnd\\);", "u_FogEnd, v_fadeCoeff);");
+                if (Config.fadeType == FadeTypes.FULL)
+                    source = source
+                            .replaceFirst("in vec4", "in float v_fadeCoeff;\nin vec4")
+                            .replaceFirst("u_FogEnd\\);", "u_FogEnd, v_fadeCoeff);");
+                else
+                    source = source
+                            .replaceFirst("in vec4", "in float v_fadeCoeff;\nin float v_localHeight;\nin vec4")
+                            .replaceFirst("u_FogEnd\\);", "u_FogEnd, v_fadeCoeff, v_localHeight);");
                 break;
 
             case "block_layer_opaque.vsh":
-                source = source
-                        .replaceFirst("out", "out float v_fadeCoeff;\nout")
-                        .replaceFirst("_vert_tex_diffuse_coord;",
-                                "_vert_tex_diffuse_coord;\n    v_fadeCoeff = _fade_coeff;")
-                        .replaceFirst("\\+ _vert_position;", "+ _vert_position + _fade_offset;");
+                if (Config.fadeType == FadeTypes.FULL)
+                    source = source
+                            .replaceFirst("out", "out float v_fadeCoeff;\nout")
+                            .replaceFirst("_vert_tex_diffuse_coord;",
+                                    "_vert_tex_diffuse_coord;\n    v_fadeCoeff = _fade_coeff;")
+                            .replaceFirst("\\+ _vert_position;", "+ _vert_position + _fade_offset;");
+                else
+                    source = source
+                            .replaceFirst("out", "out float v_fadeCoeff;\nout float v_localHeight;\nout")
+                            .replaceFirst("_vert_tex_diffuse_coord;",
+                                    "_vert_tex_diffuse_coord;\n    v_fadeCoeff = _fade_coeff;\n    v_localHeight = _vert_position.y;")
+                            .replaceFirst("\\+ _vert_position;", "+ _vert_position + _fade_offset;");
                 break;
 
             case "chunk_vertex.glsl":

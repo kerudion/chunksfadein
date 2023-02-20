@@ -26,6 +26,9 @@ public class EntityRendererMixin {
         if (!Config.isAnimationEnabled)
             return;
 
+        if (entity.getWorld() == null)
+            return;
+
         ChunkPos chunkPos = entity.getChunkPos();
         int chunkY = MathUtils.floor((float) entity.getY() / 16f);
 
