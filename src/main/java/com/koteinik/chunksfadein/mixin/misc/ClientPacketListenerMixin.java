@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.ModrinthApi;
 import com.koteinik.chunksfadein.core.ModrinthApi.ModrinthVersion;
 
@@ -24,6 +25,9 @@ public class ClientPacketListenerMixin {
     @Inject(method = "apply", at = @At(value = "TAIL"))
     @SuppressWarnings("resource")
     private void modifyApply(ClientLoginPacketListener clientLoginPacketListener, CallbackInfo ci) {
+        if (!Config.isUpdateNotifierEnabled)
+            return;
+
         new Thread(() -> {
             ModrinthVersion latestVersion = ModrinthApi.getLatestModVersion();
 

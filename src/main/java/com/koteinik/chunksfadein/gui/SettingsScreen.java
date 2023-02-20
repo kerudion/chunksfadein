@@ -15,6 +15,7 @@ public class SettingsScreen extends GameOptionsScreen {
     private ResetButton fadeResetButton;
     private ResetButton animationTimeResetButton;
     private ModEnabledButton modEnabledButton;
+    private UpdateNotifierEnabledButton updateNotifierEnabledButton;
     private FadeEnabledButton fadeEnabledButton;
     private FadeTypeButton fadeTypeButton;
     private AnimationEnabledButton animationEnabledButton;
@@ -32,6 +33,7 @@ public class SettingsScreen extends GameOptionsScreen {
     @Override
     public void init() {
         modEnabledButton = new ModEnabledButton(this, width, height);
+        updateNotifierEnabledButton = new UpdateNotifierEnabledButton( width, height);
         fadeEnabledButton = new FadeEnabledButton(width, height);
         animationEnabledButton = new AnimationEnabledButton(width, height);
 
@@ -57,6 +59,7 @@ public class SettingsScreen extends GameOptionsScreen {
         doneButton = new DoneButton(this, client, width, height);
 
         addDrawableChild(modEnabledButton);
+        addDrawableChild(updateNotifierEnabledButton);
         addDrawableChild(fadeEnabledButton);
         addDrawableChild(animationEnabledButton);
 
