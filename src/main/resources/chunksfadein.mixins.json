@@ -19,7 +19,8 @@
     "iris.v12IrisChunkShaderInterfaceMixin",
     "iris.v14IrisChunkShaderInterfaceMixin",
     "iris.v15IrisChunkShaderInterfaceMixin",
-    "misc.ClientPacketListenerMixin"
+    "misc.ClientPacketListenerMixin",
+    "misc.OptionsScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

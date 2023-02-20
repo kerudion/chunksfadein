@@ -24,8 +24,21 @@ public class ChunkFadeInMixinConfig implements IMixinConfigPlugin {
 
         boolean isIrisMixin = isIrisShaderMixinV12 || isIrisShaderMixinV14 || isIrisShaderMixinV15 || isIrisRegionMixin;
 
-        if (!isIrisMixin)
-            return true;
+        if (!isIrisMixin) {
+            boolean isOptionsScreenMixin = mixinClassName
+                    .equals("com.koteinik.chunksfadein.mixin.misc.OptionsScreenMixin");
+
+            if (!isOptionsScreenMixin)
+                return true;
+            try {
+                Class.forName("com.terraformersmc.modmenu.api.ModMenuApi", false,
+                        getClass().getClassLoader());
+
+                return false;
+            } catch (Exception e) {
+                return true;
+            }
+        }
 
         try {
             Class.forName("net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt", false,
