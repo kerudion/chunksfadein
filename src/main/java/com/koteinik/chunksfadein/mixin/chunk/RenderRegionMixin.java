@@ -5,25 +5,20 @@ import java.util.Set;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.ChunkFadeInController;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extenstions.RenderRegionExt;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-
-import org.spongepowered.asm.mixin.injection.At;
-
 import me.jellysquid.mods.sodium.client.gl.device.CommandList;
 import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
 import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
 import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegionManager;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
 
 @Mixin(value = RenderRegion.class, remap = false)
 public class RenderRegionMixin implements RenderRegionExt {
@@ -38,35 +33,6 @@ public class RenderRegionMixin implements RenderRegionExt {
             return;
 
         fadeController = new ChunkFadeInController();
-    }
-
-    @Inject(method = "addChunk", at = @At(value = "TAIL"))
-    @SuppressWarnings("resource")
-    private void modifyAddChunk(RenderSection chunk, CallbackInfo ci) {
-        if (!Config.isModEnabled)
-            return;
-
-        boolean completeAnimation = false;
-        if (!Config.animateNearPlayer) {
-            final int chunkX = chunk.getChunkX();
-            final int chunkY = chunk.getChunkY();
-            final int chunkZ = chunk.getChunkZ();
-
-            Entity camera = MinecraftClient.getInstance().cameraEntity;
-            if (camera != null) {
-                final int camChunkX = MathUtils.floor((float) (camera.lastRenderX / 16));
-                final int camChunkY = MathUtils.floor((float) (camera.lastRenderY / 16));
-                final int camChunkZ = MathUtils.floor((float) (camera.lastRenderZ / 16));
-
-                if (MathUtils.chunkInRange(chunkX, chunkY, chunkZ, camChunkX, camChunkY, camChunkZ, 1))
-                    completeAnimation = true;
-            }
-        }
-
-        if (!completeAnimation)
-            fadeController.resetFadeForChunk(chunk.getChunkId());
-        else
-            fadeController.completeChunkFade(chunk.getChunkId(), false);
     }
 
     @Inject(method = "deleteResources", at = @At(value = "TAIL"))
@@ -90,5 +56,13 @@ public class RenderRegionMixin implements RenderRegionExt {
     @Override
     public void completeChunkFade(int x, int y, int z, boolean completeFade) {
         fadeController.completeChunkFade(x, y, z, completeFade);
+    }
+
+    @Override
+    public RenderSection getSection(int x, int y, int z) {
+        return chunks.stream()
+                .filter(s -> s.getChunkX() == x && s.getChunkY() == y && s.getChunkZ() == z)
+                .findFirst()
+                .orElse(null);
     }
 }

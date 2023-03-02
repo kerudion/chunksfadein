@@ -5,8 +5,8 @@ import java.util.SortedSet;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At.Shift;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -66,17 +66,12 @@ public class SodiumWorldRendererMixin {
             ChunkPos chunkPos = entity.getChunkPos();
             int chunkY = MathUtils.floor((float) entity.getY() / 16f);
 
-            float[] fadeData = ChunkAppearedLink.getChunkData(chunkPos.x, chunkY,
-                    chunkPos.z);
+            int x = chunkPos.x;
+            int y = chunkY;
+            int z = chunkPos.z;
+            float[] fadeData = ChunkAppearedLink.getChunkData(x, y, z);
 
             boolean isVisible = !(fadeData[1] == -Config.animationInitialOffset && fadeData[2] == 0f);
-
-            if (!isVisible) {
-                ChunkSection chunk = ChunkUtils.getChunkOn(entity.getWorld(), chunkPos, chunkY);
-
-                if (chunk == null || chunk.isEmpty())
-                    isVisible = true;
-            }
 
             cir.setReturnValue(isVisible);
         }

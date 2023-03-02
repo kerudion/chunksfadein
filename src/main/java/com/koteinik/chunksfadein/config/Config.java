@@ -9,6 +9,7 @@ import java.util.Map;
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.ConfigEntry.Type;
+import com.koteinik.chunksfadein.core.ChunkData;
 import com.koteinik.chunksfadein.core.Curves;
 import com.koteinik.chunksfadein.core.FadeTypes;
 import com.moandjiezana.toml.Toml;
@@ -59,12 +60,18 @@ public class Config {
         addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_ANIMATION_TIME, 1, ANIMATION_TIME_KEY))
                 .addListener((o) -> animationChangePerMs = animationChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(1, MAX_ANIMATION_OFFSET, 64, ANIMATION_OFFSET_KEY))
-                .addListener((o) -> animationInitialOffset = (o).floatValue());
+                .addListener((o) -> {
+                    animationInitialOffset = (o).floatValue();
+                    ChunkData.reload();
+                });
 
         addEntry(new ConfigEntry<Boolean>(true, MOD_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isModEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, FADE_ENABLED_KEY, Type.BOOLEAN))
-                .addListener((o) -> isFadeEnabled = o);
+                .addListener((o) -> {
+                    isFadeEnabled = o;
+                    ChunkData.reload();
+                });
         addEntry(new ConfigEntry<Boolean>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isAnimationEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, UPDATE_NOTIFIER_ENABLED_KEY, Type.BOOLEAN))

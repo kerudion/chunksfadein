@@ -11,6 +11,7 @@
     "chunk.RenderRegionMixin",
     "chunk.RenderRegionManagerMixin",
     "chunk.WorldChunkMixin",
+    "chunk.RenderSectionMixin",
     "entity.EntityRendererMixin",
     "entity.SodiumWorldRendererMixin",
     "entity.ItemFrameEntityRendererMixin",
