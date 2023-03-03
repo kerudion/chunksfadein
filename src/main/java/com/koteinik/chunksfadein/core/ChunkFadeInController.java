@@ -19,8 +19,6 @@ public class ChunkFadeInController {
     private final DataBuffer chunkFadeDatasBuffer = new DataBuffer(RenderRegion.REGION_SIZE, 4);
     private GlMutableBuffer chunkGlFadeDataBuffer;
 
-    private long lastFrameTime = 0L;
-
     public ChunkFadeInController() {
         for (int i = 0; i < RenderRegion.REGION_SIZE; i++)
             completeChunkFade(i, true);
@@ -67,16 +65,12 @@ public class ChunkFadeInController {
     public void updateChunksFade(List<RenderSection> chunks, ChunkShaderInterfaceExt shader, CommandList commandList) {
         checkMutableBuffer(commandList);
 
-        final long currentFrameTime = System.nanoTime();
-        final long delta = lastFrameTime == 0L ? 0 : (currentFrameTime - lastFrameTime) / 1000000;
-
         final int chunksSize = chunks.size();
         for (int i = 0; i < chunksSize; i++)
-            processChunk(delta, chunks.get(i));
+            processChunk(FrameData.frameDelta, chunks.get(i));
 
         chunkFadeDatasBuffer.uploadData(commandList, chunkGlFadeDataBuffer);
         shader.setFadeDatas(chunkGlFadeDataBuffer);
-        lastFrameTime = currentFrameTime;
     }
 
     public void delete(CommandList commandList) {
