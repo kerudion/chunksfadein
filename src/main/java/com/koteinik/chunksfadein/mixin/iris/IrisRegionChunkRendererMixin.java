@@ -46,6 +46,7 @@ public abstract class IrisRegionChunkRendererMixin {
 
         final ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) (override.getInterface());
         final RenderRegionExt regionExt = (RenderRegionExt) region;
+
         regionExt.updateChunksFade(chunks, ext, commandList);
     }
 }

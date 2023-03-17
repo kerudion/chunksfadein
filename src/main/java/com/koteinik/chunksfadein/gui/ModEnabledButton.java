@@ -37,6 +37,6 @@ public class ModEnabledButton extends ButtonWidget {
     }
 
     private static boolean needToDisable() {
-        return MinecraftClient.getInstance().getSession() == null;
+        return MinecraftClient.getInstance().getServer() == null;
     }
 }

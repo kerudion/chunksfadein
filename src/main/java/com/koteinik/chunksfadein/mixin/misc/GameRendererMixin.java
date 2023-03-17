@@ -15,13 +15,9 @@ public class GameRendererMixin {
     long currentFrameTime;
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void modifyRenderWorldHead(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
+    private void modifyRenderWorld(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
         currentFrameTime = System.nanoTime();
-        FrameData.frameDelta = (lastFrameTime == 0L ? 0 : (currentFrameTime - lastFrameTime) / 1000000) / 4;
-    }
-
-    @Inject(method = "render", at = @At("TAIL"))
-    private void modifyRenderWorldTail(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
+        FrameData.frameDelta = lastFrameTime == 0L ? 0 : (float) (currentFrameTime - lastFrameTime) / 1000000;
         lastFrameTime = currentFrameTime;
     }
 }

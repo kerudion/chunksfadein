@@ -62,7 +62,9 @@ public class ChunkFadeInController {
         progressArr[chunkId] = 0;
     }
 
-    public void updateChunksFade(List<RenderSection> chunks, ChunkShaderInterfaceExt shader, CommandList commandList) {
+    public void updateChunksFade(List<RenderSection> chunks,
+            ChunkShaderInterfaceExt shader,
+            CommandList commandList) {
         checkMutableBuffer(commandList);
 
         final int chunksSize = chunks.size();
@@ -85,7 +87,7 @@ public class ChunkFadeInController {
             chunkGlFadeDataBuffer = commandList.createMutableBuffer();
     }
 
-    private void processChunk(final long delta, RenderSection chunk) {
+    private void processChunk(float delta, RenderSection chunk) {
         final int chunkId = chunk.getChunkId();
 
         RenderSectionExt ext = (RenderSectionExt) chunk;
