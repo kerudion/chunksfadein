@@ -23,6 +23,7 @@ public class Config {
     public static final double MAX_ANIMATION_OFFSET = 319;
     public static final String CONFIG_VERSION_KEY = "config-version";
     public static final String MOD_ENABLED_KEY = "mod-enabled";
+    public static final String SHOW_MOD_BUTTON_IN_SETTINGS_KEY = "show-mod-button-in-settings";
     public static final String UPDATE_NOTIFIER_ENABLED_KEY = "update-notifier-enabled";
     public static final String FADE_ENABLED_KEY = "fade-enabled";
     public static final String FADE_TIME_KEY = "fade-time";
@@ -40,6 +41,7 @@ public class Config {
     public static boolean isFadeEnabled;
     public static boolean isAnimationEnabled;
     public static boolean isUpdateNotifierEnabled;
+    public static boolean showModButtonInSettings;
     public static boolean animateNearPlayer;
 
     public static float animationInitialOffset;
@@ -78,6 +80,8 @@ public class Config {
                 .addListener((o) -> isAnimationEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, UPDATE_NOTIFIER_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isUpdateNotifierEnabled = o);
+        addEntry(new ConfigEntry<Boolean>(true, SHOW_MOD_BUTTON_IN_SETTINGS_KEY, Type.BOOLEAN))
+                .addListener((o) -> showModButtonInSettings = o);
         addEntry(new ConfigEntry<Boolean>(true, ANIMATE_NEAR_PLAYER_KEY, Type.BOOLEAN))
                 .addListener((o) -> animateNearPlayer = o);
     }

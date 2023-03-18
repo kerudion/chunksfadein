@@ -24,6 +24,7 @@ public class SettingsScreen extends GameOptionsScreen {
     private AnimationOffsetSlider animationOffsetSlider;
     private AnimateNearPlayerButton animateNearPlayerButton;
     private ResetButton animationOffsetResetButton;
+    private ShowModButtonInSettingsButton showModButtonInSettingsButton;
 
     @SuppressWarnings("resource")
     public SettingsScreen(Screen parent) {
@@ -57,6 +58,7 @@ public class SettingsScreen extends GameOptionsScreen {
         animateNearPlayerButton = new AnimateNearPlayerButton(width, height);
 
         doneButton = new DoneButton(this, client, width, height);
+        showModButtonInSettingsButton = new ShowModButtonInSettingsButton(width, height);
 
         addDrawableChild(modEnabledButton);
         addDrawableChild(updateNotifierEnabledButton);
@@ -72,6 +74,7 @@ public class SettingsScreen extends GameOptionsScreen {
         addDrawableChild(animationOffsetSlider);
         addDrawableChild(animationOffsetResetButton);
         addDrawableChild(animateNearPlayerButton);
+        addDrawableChild(showModButtonInSettingsButton);
 
         addDrawableChild(doneButton);
     }
