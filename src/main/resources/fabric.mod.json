@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "chunksfadein",
-  "version": "2.0.10-1.19.3",
+  "version": "2.0.11-1.19.3",
   "name": "Chunks Fade In",
   "description": "Adds bedrock-like chunk fade-in animation and chunk animations like in ChunkAnimator mod!",
   "authors": [
