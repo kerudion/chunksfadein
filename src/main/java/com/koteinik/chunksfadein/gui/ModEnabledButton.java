@@ -13,7 +13,7 @@ public class ModEnabledButton extends ButtonWidget {
     private static final int buttonH = 20;
 
     public ModEnabledButton(GameOptionsScreen parent, int parentW, int parentH) {
-        super(parentW / 2 - buttonW - 4, parentH / 2 - buttonH / 2 - 28 * 3,
+        super(parentW / 2 - buttonW - 4, parentH / 2 - buttonH / 2 - 28 * 4,
                 buttonW, buttonH, createText(),
                 new PressAction() {
                     @Override
@@ -37,6 +37,6 @@ public class ModEnabledButton extends ButtonWidget {
     }
 
     private static boolean needToDisable() {
-        return MinecraftClient.getInstance().getGame().getCurrentSession() == null;
+        return MinecraftClient.getInstance().getServer() == null;
     }
 }

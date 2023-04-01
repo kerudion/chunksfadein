@@ -10,7 +10,7 @@ public class UpdateNotifierEnabledButton extends ButtonWidget {
     private static final int buttonH = 20;
 
     public UpdateNotifierEnabledButton(int parentW, int parentH) {
-        super(parentW / 2 + 4, parentH / 2 - buttonH / 2 - 28 * 3,
+        super(parentW / 2 + 4, parentH / 2 - buttonH / 2 - 28 * 4,
                 buttonW, buttonH, createText(),
                 new PressAction() {
                     @Override

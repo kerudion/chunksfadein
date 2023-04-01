@@ -44,7 +44,9 @@ public class RenderRegionMixin implements RenderRegionExt {
     }
 
     @Override
-    public void updateChunksFade(List<RenderSection> chunks, ChunkShaderInterfaceExt shader, CommandList commandList) {
+    public void updateChunksFade(List<RenderSection> chunks,
+            ChunkShaderInterfaceExt shader,
+            CommandList commandList) {
         fadeController.updateChunksFade(chunks, shader, commandList);
     }
 

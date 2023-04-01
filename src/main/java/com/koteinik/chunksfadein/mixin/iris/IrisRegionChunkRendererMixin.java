@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extenstions.RenderRegionExt;
-import com.koteinik.chunksfadein.hooks.IrisApiHook;
+import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 
 import me.jellysquid.mods.sodium.client.gl.device.CommandList;
 import me.jellysquid.mods.sodium.client.gl.shader.GlProgram;
@@ -36,7 +36,7 @@ public abstract class IrisRegionChunkRendererMixin {
             ChunkCameraContext camera,
             CallbackInfo ci, ChunkShaderInterface shader, Iterator i, Map.Entry e, RenderRegion region,
             List<RenderSection> chunks) {
-        if (!Config.isModEnabled || !IrisApiHook.isShaderPackInUse())
+        if (!Config.isModEnabled || !CompatibilityHook.isIrisShaderPackInUse())
             return;
 
         final net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt rendererExt = (net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt) this;
@@ -46,6 +46,7 @@ public abstract class IrisRegionChunkRendererMixin {
 
         final ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) (override.getInterface());
         final RenderRegionExt regionExt = (RenderRegionExt) region;
+
         regionExt.updateChunksFade(chunks, ext, commandList);
     }
 }
