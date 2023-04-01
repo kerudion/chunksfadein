@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeTypes;
-import com.koteinik.chunksfadein.hooks.IrisApiHook;
+import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 
 import me.jellysquid.mods.sodium.client.gl.shader.ShaderLoader;
 import net.minecraft.util.Identifier;
@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 public abstract class ShaderLoaderMixin {
     @Inject(method = "getShaderSource", at = @At("RETURN"), cancellable = true)
     private static void modifyConstructor(Identifier name, CallbackInfoReturnable<String> cir) {
-        if (!Config.isModEnabled || IrisApiHook.isShaderPackInUse())
+        if (!Config.isModEnabled || CompatibilityHook.isIrisShaderPackInUse())
             return;
 
         String path = name.getPath();

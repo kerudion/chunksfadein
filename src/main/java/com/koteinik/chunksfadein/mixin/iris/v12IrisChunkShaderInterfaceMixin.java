@@ -1,6 +1,5 @@
 package com.koteinik.chunksfadein.mixin.iris;
 
-import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeShaderInterface;
 import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
-import com.koteinik.chunksfadein.hooks.IrisApiHook;
 
 import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkShaderInterface;
@@ -31,11 +29,6 @@ public class v12IrisChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt
             return;
 
         fadeInterface = new FadeShaderInterface(ext);
-    }
-
-    @Inject(method = "setModelViewMatrix", at = @At("HEAD"))
-    private void modifySetModelViewMatrix(Matrix4f var1, CallbackInfo ci) {
-        IrisApiHook.irisExt = this;
     }
 
     @Override

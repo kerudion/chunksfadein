@@ -1,5 +1,6 @@
 package com.koteinik.chunksfadein.mixin.chunk;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,6 +26,7 @@ public abstract class WorldChunkMixin extends Chunk {
     }
 
     @Shadow
+    @Final
     World world;
 
     @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/ChunkSection;isEmpty()Z"), locals = LocalCapture.CAPTURE_FAILHARD)

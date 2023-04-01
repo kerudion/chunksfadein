@@ -2,8 +2,8 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.koteinik.chunksfadein.mixin",
-  "plugin": "com.koteinik.chunksfadein.ChunkFadeInMixinConfig",
   "compatibilityLevel": "JAVA_17",
+  "plugin": "com.koteinik.chunksfadein.ChunkFadeInMixinConfig",
   "mixins": [
     "shader.ShaderLoaderMixin",
     "shader.ChunkShaderInterfaceMixin",
@@ -11,17 +11,18 @@
     "chunk.RenderRegionMixin",
     "chunk.RenderRegionManagerMixin",
     "chunk.WorldChunkMixin",
+    "chunk.RenderSectionMixin",
     "entity.EntityRendererMixin",
     "entity.SodiumWorldRendererMixin",
     "entity.ItemFrameEntityRendererMixin",
     "iris.IrisChunkProgramOverridesMixin",
     "iris.IrisRegionChunkRendererMixin",
     "iris.ProgramUniforms$BuilderMixin",
-    "iris.v12IrisChunkShaderInterfaceMixin",
     "iris.v14IrisChunkShaderInterfaceMixin",
     "iris.v15IrisChunkShaderInterfaceMixin",
     "misc.ClientPacketListenerMixin",
-    "misc.OptionsScreenMixin"
+    "misc.OptionsScreenMixin",
+    "misc.GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

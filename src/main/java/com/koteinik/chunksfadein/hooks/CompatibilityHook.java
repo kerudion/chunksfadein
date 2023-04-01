@@ -1,14 +1,12 @@
 package com.koteinik.chunksfadein.hooks;
 
-import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
-
 import net.irisshaders.iris.api.v0.IrisApi;
 
-public class IrisApiHook {
-    public static ChunkShaderInterfaceExt irisExt;
+public class CompatibilityHook {
+    public static final boolean isModMenuLoaded = isModMenuLoaded();
     public static final boolean isIrisLoaded = isIrisLoaded();
 
-    public static boolean isShaderPackInUse() {
+    public static boolean isIrisShaderPackInUse() {
         if (!isIrisLoaded)
             return false;
 
@@ -24,6 +22,15 @@ public class IrisApiHook {
     private static boolean isIrisLoaded() {
         try {
             Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static boolean isModMenuLoaded() {
+        try {
+            Class.forName("com.terraformersmc.modmenu.api.ModMenuApi");
             return true;
         } catch (ClassNotFoundException e) {
             return false;

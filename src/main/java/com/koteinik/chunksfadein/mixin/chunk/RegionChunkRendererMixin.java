@@ -38,6 +38,7 @@ public class RegionChunkRendererMixin {
 
         final ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) shader;
         final RenderRegionExt regionExt = (RenderRegionExt) region;
+
         regionExt.updateChunksFade(chunks, ext, commandList);
     }
 }
