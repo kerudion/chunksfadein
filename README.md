@@ -42,9 +42,10 @@ No more chunks appearing right in front of you out of nowhere! Unlike other mods
 **The [Smooth Chunks] mod was abandoned. Fl0gic (cadenkriese in GitHub) allowed me to use its updated icon in my mod. Thanks to him :)*
 
 ## Versions
-- [`1.18.x`](https://github.com/kerudion/chunksfadein/releases/tag/v1.0.3-1.18)
-- [`1.19`-`1.19.2`](https://github.com/kerudion/chunksfadein/releases/tag/v3.0.5-1.19)
-- [`1.19.3`](https://github.com/kerudion/chunksfadein/releases/tag/v2.0.5-1.19.3)
+- [`1.18.x`](https://github.com/kerudion/chunksfadein/releases/tag/v1.0.6-1.18 )
+- [`1.19`-`1.19.2`](https://github.com/kerudion/chunksfadein/releases/tag/v3.0.10-1.19)
+- [`1.19.3`](https://github.com/kerudion/chunksfadein/releases/tag/v2.0.11-1.19.3)
+- [`1.19.4`](https://github.com/kerudion/chunksfadein/releases/tag/v1.0.2-1.19.4)
 
 ## Dependencies
 - [Sodium] `0.4.x`
