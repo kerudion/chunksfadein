@@ -2,14 +2,11 @@ package com.koteinik.chunksfadein.gui;
 
 import com.koteinik.chunksfadein.config.Config;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.GameOptionsScreen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
-public class SettingsScreen extends GameOptionsScreen {
+public class SettingsScreen extends Screen {
     private FadeTimeSlider fadeSlider;
     private DoneButton doneButton;
     private ResetButton fadeResetButton;
@@ -26,9 +23,8 @@ public class SettingsScreen extends GameOptionsScreen {
     private ResetButton animationOffsetResetButton;
     private ShowModButtonInSettingsButton showModButtonInSettingsButton;
 
-    @SuppressWarnings("resource")
     public SettingsScreen(Screen parent) {
-        super(parent, MinecraftClient.getInstance().options, Text.of("Chunks fade in configuration"));
+        super(Text.of("Chunks fade in settings"));
     }
 
     @Override
@@ -80,14 +76,11 @@ public class SettingsScreen extends GameOptionsScreen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        TextRenderer textRenderer = minecraftClient.textRenderer;
-
-        renderBackground(matrices);
-        drawCenteredTextWithShadow(matrices, textRenderer, Text.of("Chunks fade in mod settings"), width / 2, height / 20,
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context);
+        context.drawCenteredTextWithShadow(textRenderer, title, width / 2, height / 20,
                 16777215 | 255 << 24);
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 
     @Override

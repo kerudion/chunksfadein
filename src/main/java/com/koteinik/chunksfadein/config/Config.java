@@ -122,9 +122,8 @@ public class Config {
             entry.load(toml);
 
         Long configVersion = toml.getLong(CONFIG_VERSION_KEY);
-        if (configVersion != CONFIG_VERSION) {
+        if (configVersion != null && configVersion != CONFIG_VERSION) {
             // To save fade time after upgrading the mod
-            Logger.info((double) get(FADE_TIME_KEY).value);
             setDouble(FADE_TIME_KEY, (double) get(FADE_TIME_KEY).value * 4);
             setDouble(ANIMATION_TIME_KEY, (double) get(ANIMATION_TIME_KEY).value * 4);
         }
