@@ -1,5 +1,8 @@
 package com.koteinik.chunksfadein;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
 import net.minecraft.util.math.Vec3d;
 
@@ -60,5 +63,13 @@ public class MathUtils {
 
     public static float sqrt(float f) {
         return (float) Math.sqrt((double) f);
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+    
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

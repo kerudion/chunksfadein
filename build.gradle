@@ -38,6 +38,10 @@ repositories {
         }
 	}
 
+	maven {
+		url 'https://minecraft.guntram.de/maven/'
+	}
+
 	mavenCentral()
 }
 
@@ -53,8 +57,11 @@ dependencies {
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 	modImplementation "maven.modrinth:iris:${project.iris_version}"
 
-	include 'com.moandjiezana.toml:toml4j:0.7.2'
-	implementation 'com.moandjiezana.toml:toml4j:0.7.2'
+	modImplementation "de.guntram.mcmod:crowdin-translate:${project.crowdin_translate_version}"
+    include "de.guntram.mcmod:crowdin-translate:${project.crowdin_translate_version}"
+
+	include "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
+	implementation "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
 
 	// Uncomment the following line to enable the deprecated Fabric API modules. 
 	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.

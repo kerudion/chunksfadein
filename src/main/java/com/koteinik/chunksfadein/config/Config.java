@@ -164,6 +164,25 @@ public class Config {
         ((ConfigEntry<Double>) get(key)).set(value);
     }
 
+    @SuppressWarnings("unchecked")
+    public static boolean getBoolean(String key) {
+        return ((ConfigEntry<Boolean>) entries.get(key)).get();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static int getInteger(String key) {
+        return ((ConfigEntry<Integer>) entries.get(key)).get();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static double getDouble(String key) {
+        return ((ConfigEntry<Double>) entries.get(key)).get();
+    }
+
+    public static void flipBoolean(String key) {
+        setBoolean(key, !getBoolean(key));
+    }
+
     public static void reset(String key) {
         get(key).reset();
     }
