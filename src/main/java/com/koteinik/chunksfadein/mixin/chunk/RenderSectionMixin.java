@@ -34,7 +34,7 @@ public class RenderSectionMixin implements RenderSectionExt {
     @Final
     private int chunkZ;
 
-    private long lastFrameTime = System.nanoTime();
+    private long lastFrameTime = 0L;
     private boolean hasRenderedBefore;
     private float fadeCoeff = 0f;
     private float animationProgress = 0f;
@@ -111,12 +111,14 @@ public class RenderSectionMixin implements RenderSectionExt {
 
     @Override
     public long calculateAndGetDelta() {
-        long currentFrameTime = System.nanoTime();
-        long delta = currentFrameTime - lastFrameTime;
+        // I needed to sacrifice System.nanoTime() because it is too slow on some OS :(
+        // I hope that the rendering time will be at least 1 milliseconds, otherwise we're screwed :(
+        long currentFrameTime = System.currentTimeMillis();
+        long delta = lastFrameTime == 0L ? 0L : currentFrameTime - lastFrameTime;
 
         lastFrameTime = currentFrameTime;
 
-        return delta;
+        return delta * 1000000;
     }
 
     @Override

@@ -17,8 +17,7 @@
     "iris.IrisChunkProgramOverridesMixin",
     "iris.IrisRegionChunkRendererMixin",
     "iris.ProgramUniforms$BuilderMixin",
-    "iris.v14IrisChunkShaderInterfaceMixin",
-    "iris.v15IrisChunkShaderInterfaceMixin",
+    "iris.IrisChunkShaderInterfaceMixin",
     "misc.ClientPacketListenerMixin",
     "misc.OptionsScreenMixin"
   ],

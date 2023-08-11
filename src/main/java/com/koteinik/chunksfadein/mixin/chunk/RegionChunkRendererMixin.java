@@ -15,7 +15,6 @@ import me.jellysquid.mods.sodium.client.gl.device.CommandList;
 import me.jellysquid.mods.sodium.client.gl.device.MultiDrawBatch;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkCameraContext;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderMatrices;
-import me.jellysquid.mods.sodium.client.render.chunk.LocalSectionIndex;
 import me.jellysquid.mods.sodium.client.render.chunk.RegionChunkRenderer;
 import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
 import me.jellysquid.mods.sodium.client.render.chunk.data.SectionRenderDataStorage;
@@ -56,14 +55,11 @@ public class RegionChunkRendererMixin {
         final RenderRegion region = list.getRegion();
         final RenderSection section = region.getSection(sectionIndex);
 
-        final int originX = region.getChunkX();
-        final int originY = region.getChunkY();
-        final int originZ = region.getChunkZ();
+        final int x = section.getChunkX();
+        final int y = section.getChunkY();
+        final int z = section.getChunkZ();
 
         final RenderRegionExt regionExt = (RenderRegionExt) region;
-        final int x = originX + LocalSectionIndex.unpackX(sectionIndex);
-        final int y = originY + LocalSectionIndex.unpackY(sectionIndex);
-        final int z = originZ + LocalSectionIndex.unpackZ(sectionIndex);
 
         regionExt.processChunk((RenderSectionExt) section, sectionIndex, x, y, z);
     }

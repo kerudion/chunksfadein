@@ -23,7 +23,7 @@ import net.coderbot.iris.uniforms.custom.CustomUniforms;
 
 @Pseudo
 @Mixin(value = IrisChunkShaderInterface.class, remap = false)
-public class v15IrisChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
+public class IrisChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
     private FadeShaderInterface fadeInterface;
 
     @Inject(method = "<init>", at = @At("TAIL"))

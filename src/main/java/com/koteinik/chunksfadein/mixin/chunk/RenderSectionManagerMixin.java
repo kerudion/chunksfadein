@@ -16,6 +16,11 @@ public abstract class RenderSectionManagerMixin implements RenderSectionManagerE
         return ((RenderSectionExt) getRenderSection(x, y, z)).getAnimationOffset();
     }
 
+    @Override
+    public float getFadeCoeff(int x, int y, int z) {
+        return ((RenderSectionExt) getRenderSection(x, y, z)).getFadeCoeff();
+    }
+
     @Shadow
     private RenderSection getRenderSection(int x, int y, int z) {
         return null;
