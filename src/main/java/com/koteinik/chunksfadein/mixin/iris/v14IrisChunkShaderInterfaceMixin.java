@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeShaderInterface;
-import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
+import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
 
 import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkShaderInterface;

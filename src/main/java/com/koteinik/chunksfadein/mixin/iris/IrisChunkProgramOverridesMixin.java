@@ -57,16 +57,16 @@ public class IrisChunkProgramOverridesMixin {
                 "float fadeLineY = fadeCoeff * 16.0;");
         if (isIrisV12) {
             fragmentInjectorFull.appendToFunction("void main()",
-                    "if(fadeCoeff != 0.0) iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, 1.0 - fadeCoeff);");
+                    "if(fadeCoeff >= 0.0 && fadeCoeff < 1.0) iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, 1.0 - fadeCoeff);");
 
             fragmentInjectorLined.appendToFunction("void main()",
-                    "if(fadeCoeff != 0.0) iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, localHeight <= fadeLineY ? 0.0 : 1.0);");
+                    "if(fadeCoeff >= 0.0 && fadeCoeff < 1.0) iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, localHeight <= fadeLineY ? 0.0 : 1.0);");
         } else {
             fragmentInjectorFull.appendToFunction("void main()",
-                    "if(fadeCoeff != 0.0) ${uniform_0} = ${uniform_0_prefix}mix(${uniform_0}, iris_FogColor, 1.0 - fadeCoeff)${uniform_0_postfix};");
+                    "if(fadeCoeff >= 0.0 && fadeCoeff < 1.0) ${uniform_0} = ${uniform_0_prefix}mix(${uniform_0}, iris_FogColor, 1.0 - fadeCoeff)${uniform_0_postfix};");
 
             fragmentInjectorLined.appendToFunction("void main()",
-                    "if(fadeCoeff != 0.0) ${uniform_0} = ${uniform_0_prefix}mix(${uniform_0}, iris_FogColor, localHeight <= fadeLineY ? 0.0 : 1.0)${uniform_0_postfix};");
+                    "if(fadeCoeff >= 0.0 && fadeCoeff < 1.0) ${uniform_0} = ${uniform_0_prefix}mix(${uniform_0}, iris_FogColor, localHeight <= fadeLineY ? 0.0 : 1.0)${uniform_0_postfix};");
         }
     }
 

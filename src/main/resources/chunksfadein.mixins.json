@@ -9,8 +9,7 @@
     "shader.ChunkShaderInterfaceMixin",
     "chunk.RegionChunkRendererMixin",
     "chunk.RenderRegionMixin",
-    "chunk.RenderRegionManagerMixin",
-    "chunk.WorldChunkMixin",
+    "chunk.RenderSectionManagerMixin",
     "chunk.RenderSectionMixin",
     "entity.EntityRendererMixin",
     "entity.SodiumWorldRendererMixin",
@@ -21,8 +20,7 @@
     "iris.v14IrisChunkShaderInterfaceMixin",
     "iris.v15IrisChunkShaderInterfaceMixin",
     "misc.ClientPacketListenerMixin",
-    "misc.OptionsScreenMixin",
-    "misc.GameRendererMixin"
+    "misc.OptionsScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

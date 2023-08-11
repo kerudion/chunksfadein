@@ -9,7 +9,6 @@ import java.util.Map;
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.ConfigEntry.Type;
-import com.koteinik.chunksfadein.core.ChunkData;
 import com.koteinik.chunksfadein.core.Curves;
 import com.koteinik.chunksfadein.core.FadeTypes;
 import com.moandjiezana.toml.Toml;
@@ -45,8 +44,8 @@ public class Config {
     public static boolean animateNearPlayer;
 
     public static float animationInitialOffset;
-    public static float animationChangePerMs;
-    public static float fadeChangePerMs;
+    public static float animationChangePerNano;
+    public static float fadeChangePerNano;
 
     public static FadeTypes fadeType;
     public static Curves animationCurve;
@@ -60,13 +59,12 @@ public class Config {
                         Curves.values().length - 1)]);
 
         addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_FADE_TIME, 2.56, FADE_TIME_KEY))
-                .addListener((o) -> fadeChangePerMs = fadeChangeFromSeconds(o));
+                .addListener((o) -> fadeChangePerNano = fadeChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_ANIMATION_TIME, 2.56, ANIMATION_TIME_KEY))
-                .addListener((o) -> animationChangePerMs = animationChangeFromSeconds(o));
+                .addListener((o) -> animationChangePerNano = animationChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(1, MAX_ANIMATION_OFFSET, 64, ANIMATION_OFFSET_KEY))
                 .addListener((o) -> {
                     animationInitialOffset = (o).floatValue();
-                    ChunkData.reload();
                 });
 
         addEntry(new ConfigEntry<Boolean>(true, MOD_ENABLED_KEY, Type.BOOLEAN))
@@ -74,7 +72,6 @@ public class Config {
         addEntry(new ConfigEntry<Boolean>(true, FADE_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> {
                     isFadeEnabled = o;
-                    ChunkData.reload();
                 });
         addEntry(new ConfigEntry<Boolean>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isAnimationEnabled = o);
@@ -87,23 +84,23 @@ public class Config {
     }
 
     public static float fadeChangeFromSeconds(double seconds) {
-        final float secondsInMs = (float) (seconds * 1000);
+        final float secondsInMs = (float) (seconds * 1E+9);
 
         return 1f / secondsInMs;
     }
 
     public static float secondsFromFadeChange() {
-        return 1f / fadeChangePerMs / 1000f;
+        return 1f / fadeChangePerNano / 1E+9f;
     }
 
     public static float animationChangeFromSeconds(double seconds) {
-        final float secondsInMs = (float) (seconds * 1000);
+        final float secondsInMs = (float) (seconds * 1E+9);
 
         return 1 / secondsInMs;
     }
 
     public static double secondsFromAnimationChange() {
-        return (double) (1 / animationChangePerMs / 1000);
+        return (double) (1 / animationChangePerNano / 1E+9);
     }
 
     public static void load() {

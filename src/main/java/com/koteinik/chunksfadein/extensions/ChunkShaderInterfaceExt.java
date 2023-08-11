@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.extenstions;
+package com.koteinik.chunksfadein.extensions;
 
 import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
 

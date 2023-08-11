@@ -10,14 +10,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeShaderInterface;
-import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
+import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
 
 import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
+import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkShaderInterface;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderBindingContextExt;
 import net.coderbot.iris.gl.blending.BlendModeOverride;
 import net.coderbot.iris.gl.blending.BufferBlendOverride;
 import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
+import net.coderbot.iris.uniforms.custom.CustomUniforms;
 
 @Pseudo
 @Mixin(value = IrisChunkShaderInterface.class, remap = false)
@@ -25,9 +27,9 @@ public class v15IrisChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt
     private FadeShaderInterface fadeInterface;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void modifyConstructor(int var1, ShaderBindingContextExt ext, SodiumTerrainPipeline var3, boolean var4,
-            BlendModeOverride var5, List<BufferBlendOverride> var6, float var7,
-            net.coderbot.iris.uniforms.custom.CustomUniforms uniforms,
+    private void modifyConstructor(int var1, ShaderBindingContextExt ext, SodiumTerrainPipeline var3,
+            ChunkShaderOptions var4, boolean var5, BlendModeOverride var6, List<BufferBlendOverride> var7, float var8,
+            CustomUniforms var9,
             CallbackInfo ci) {
         if (!Config.isModEnabled)
             return;
