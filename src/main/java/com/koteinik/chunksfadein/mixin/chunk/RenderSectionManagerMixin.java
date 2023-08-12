@@ -13,12 +13,20 @@ import me.jellysquid.mods.sodium.client.render.chunk.RenderSectionManager;
 public abstract class RenderSectionManagerMixin implements RenderSectionManagerExt {
     @Override
     public float[] getAnimationOffset(int x, int y, int z) {
-        return ((RenderSectionExt) getRenderSection(x, y, z)).getAnimationOffset();
+        RenderSection section = getRenderSection(x, y, z);
+        if (section == null)
+            return null;
+
+        return ((RenderSectionExt) section).getAnimationOffset();
     }
 
     @Override
     public float getFadeCoeff(int x, int y, int z) {
-        return ((RenderSectionExt) getRenderSection(x, y, z)).getFadeCoeff();
+        RenderSection section = getRenderSection(x, y, z);
+        if (section == null)
+            return 0f;
+
+        return ((RenderSectionExt) section).getFadeCoeff();
     }
 
     @Shadow

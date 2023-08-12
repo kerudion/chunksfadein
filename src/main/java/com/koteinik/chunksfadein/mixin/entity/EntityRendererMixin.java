@@ -30,6 +30,8 @@ public class EntityRendererMixin {
                 chunkPos.getX(),
                 chunkPos.getY(),
                 chunkPos.getZ());
+        if (offset == null)
+            return;
 
         cir.setReturnValue(new Vec3d(offset[0], offset[1], offset[2]));
     }

@@ -33,6 +33,8 @@ public class ItemFrameEntityRendererMixin {
                 chunkPos.getX(),
                 chunkPos.getY(),
                 chunkPos.getZ());
+        if (offset == null)
+            return;
 
         matrixStack.translate(offset[0], offset[1], offset[2]);
     }
