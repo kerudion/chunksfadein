@@ -3,7 +3,6 @@ package com.koteinik.chunksfadein;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
 import net.minecraft.util.math.Vec3d;
 
 public class MathUtils {
@@ -42,14 +41,6 @@ public class MathUtils {
         return f >= 0.5f ? (int) (x - 0.5f) : (int) x;
     }
 
-    public static int chunkIdFromGlobal(int x, int y, int z) {
-        int rX = x & (RenderRegion.REGION_WIDTH - 1);
-        int rY = y & (RenderRegion.REGION_HEIGHT - 1);
-        int rZ = z & (RenderRegion.REGION_LENGTH - 1);
-
-        return RenderRegion.getChunkIndex(rX, rY, rZ);
-    }
-
     public static boolean chunkInRange(int aX, int aY, int aZ, int bX, int bY, int bZ, int radius) {
         if (Math.abs(aX - bX) > radius)
             return false;
@@ -66,8 +57,9 @@ public class MathUtils {
     }
 
     public static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-    
+        if (places < 0)
+            throw new IllegalArgumentException();
+
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
