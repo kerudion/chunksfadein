@@ -27,13 +27,13 @@ public abstract class ShaderLoaderMixin {
         fragmentInjectorLined.copyFrom(fragmentInjectorFull);
 
         fragmentInjectorFull.appendToFunction("void main()",
-                "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) fragColor = mix(fragColor, u_FogColor, 1.0 - v_FadeCoeff);");
+                "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) out_FragColor = mix(out_FragColor, u_FogColor, 1.0 - v_FadeCoeff);");
 
         fragmentInjectorLined.insertAfterInVars("in float v_LocalHeight;");
         fragmentInjectorLined.appendToFunction("void main()",
-                "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) { float fadeLineY = v_FadeCoeff * 16.0; fragColor = mix(fragColor, u_FogColor, v_LocalHeight <= fadeLineY ? 0.0 : 1.0); }");
+                "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) { float fadeLineY = v_FadeCoeff * 16.0; out_FragColor = mix(out_FragColor, u_FogColor, v_LocalHeight <= fadeLineY ? 0.0 : 1.0); }");
 
-        vertexInjectorFull.insertAfterOutVars("out float v_FadeCoeff;");
+        vertexInjectorFull.insertAfterOutVars(true, "out float v_FadeCoeff;");
         vertexInjectorFull.insertAfterUniforms(
                 "struct ChunkFadeData {",
                 "    vec4 fadeData;",
@@ -42,10 +42,10 @@ public abstract class ShaderLoaderMixin {
                 "    ChunkFadeData Chunk_FadeDatas[256];",
                 "};");
         vertexInjectorFull.insertAfterVariable("vec3 position",
-                "vec4 fadeData = Chunk_FadeDatas[_draw_id].fadeData;",
-                "position.y = position.y + fadeData.y;");
+                "vec4 chunkFadeData = Chunk_FadeDatas[_vert_mesh_id].fadeData;",
+                "position.y = position.y + chunkFadeData.y;");
         vertexInjectorFull.appendToFunction("void main()",
-                "v_FadeCoeff = fadeData.w;");
+                "v_FadeCoeff = chunkFadeData.w;");
 
         vertexInjectorLined.copyFrom(vertexInjectorFull);
         vertexInjectorLined.insertAfterOutVars("out float v_LocalHeight;");

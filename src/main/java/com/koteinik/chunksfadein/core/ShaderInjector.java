@@ -8,29 +8,49 @@ public class ShaderInjector {
     private final List<Function<String, String>> transformations = new ArrayList<>();
 
     public void insertAfterDefines(String... code) {
-        transformations.add(insertAfter("#define ", code));
+        insertAfterDefines(false, code);
     }
 
     public void insertAfterUniforms(String... code) {
-        transformations.add(insertAfter("uniform ", code));
+        insertAfterUniforms(false, code);
     }
 
     public void insertAfterInVars(String... code) {
-        transformations.add(insertAfter("in ", code));
+        insertAfterInVars(false, code);
     }
 
     public void insertAfterOutVars(String... code) {
-        transformations.add(insertAfter("out ", code));
+        insertAfterOutVars(false, code);
     }
 
     public void insertAfterVariable(String variable, String... code) {
-        transformations.add(insertAfter(variable, code));
+        insertAfterVariable(variable, false, code);
+    }
+
+    public void insertAfterDefines(boolean first, String... code) {
+        transformations.add(insertAfter("#define ", first, code));
+    }
+
+    public void insertAfterUniforms(boolean first, String... code) {
+        transformations.add(insertAfter("uniform ", first, code));
+    }
+
+    public void insertAfterInVars(boolean first, String... code) {
+        transformations.add(insertAfter("in ", first, code));
+    }
+
+    public void insertAfterOutVars(boolean first, String... code) {
+        transformations.add(insertAfter("out ", first, code));
+    }
+
+    public void insertAfterVariable(String variable, boolean first, String... code) {
+        transformations.add(insertAfter(variable, first, code));
     }
 
     public void appendToFunction(String function, String... code) {
         transformations.add((src) -> {
             String indentation = getIndentation(0);
-            String toInsert = "\n" + indentation + String.join("\n" + indentation, code) + "\n";
+            String toInsert = applyIndentation(indentation, code);
 
             return insertToFunction(src, toInsert, function, -1);
         });
@@ -39,18 +59,24 @@ public class ShaderInjector {
     public void addToFunction(String function, String... code) {
         transformations.add((src) -> {
             String indentation = getIndentation(0);
-            String toInsert = "\n" + indentation + String.join("\n" + indentation, code);
+            String toInsert = applyIndentation(indentation, code);
 
             return insertToFunction(src, toInsert, function, 1);
         });
     }
 
-    private static Function<String, String> insertAfter(String what, String... code) {
-        return (src) -> {
-            String toInsert = "\n" + String.join("\n", code);
+    private static String applyIndentation(String indentation, String... code) {
+        return "\n" + indentation + String.join("\n" + indentation, code);
+    }
 
-            int lastIdx = src.lastIndexOf(what);
+    private static Function<String, String> insertAfter(String what, boolean first, String... code) {
+        return (src) -> {
+            int lastIdx = first ? src.indexOf(what) : src.lastIndexOf(what);
+
+            String indentation = getIndentationForLine(src, lastIdx);
             int newlineIdx = src.indexOf("\n", lastIdx);
+
+            String toInsert = applyIndentation(indentation, code);
 
             toInsert = replaceParts(src, toInsert);
             return insertAt(newlineIdx, src, toInsert);
@@ -95,6 +121,21 @@ public class ShaderInjector {
 
     public void copyFrom(ShaderInjector injector) {
         transformations.addAll(injector.transformations);
+    }
+
+    private static String getIndentationForLine(String str, int pos) {
+        String indentation = "";
+
+        for (int i = pos; i >= 0; i--) {
+            char ch = str.charAt(i);
+            if (ch == '\n')
+                break;
+
+            if (ch == ' ' || ch == '\t')
+                indentation += ch;
+        }
+
+        return indentation;
     }
 
     private static String getIndentation(int bracketCount) {

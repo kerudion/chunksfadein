@@ -7,7 +7,7 @@
   "mixins": [
     "shader.ShaderLoaderMixin",
     "shader.ChunkShaderInterfaceMixin",
-    "chunk.RegionChunkRendererMixin",
+    "chunk.DefaultChunkRendererMixin",
     "chunk.RenderRegionMixin",
     "chunk.RenderSectionManagerMixin",
     "chunk.RenderSectionMixin",
@@ -15,7 +15,6 @@
     "entity.SodiumWorldRendererMixin",
     "entity.ItemFrameEntityRendererMixin",
     "iris.IrisChunkProgramOverridesMixin",
-    "iris.IrisRegionChunkRendererMixin",
     "iris.ProgramUniforms$BuilderMixin",
     "iris.IrisChunkShaderInterfaceMixin",
     "misc.ClientPacketListenerMixin",
