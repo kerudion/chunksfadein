@@ -46,7 +46,7 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
         return ((RenderSectionManagerExt) renderSectionManager).getFadeCoeff(x, y, z);
     }
 
-    @Inject(method = "renderTileEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(DDD)V", shift = Shift.AFTER, remap = false), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "renderTileEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(DDD)V", shift = Shift.AFTER, remap = true), locals = LocalCapture.CAPTURE_FAILHARD)
     private void modifyRenderTileEntities(MatrixStack matrices, BufferBuilderStorage bufferBuilders,
             Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions, Camera camera, float tickDelta,
             CallbackInfo ci, Immediate immediate, Vec3d cameraPos, double x, double y, double z,
