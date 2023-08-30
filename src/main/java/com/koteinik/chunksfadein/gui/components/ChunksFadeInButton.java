@@ -14,15 +14,15 @@ public class ChunksFadeInButton extends ButtonWidget {
     }
 
     public ChunksFadeInButton(int x, int y, int width, int height, Supplier<Text> createText, Runnable onPress,
-            Boolean forsedValue, Text tooltip) {
+            Boolean forcedValue, Text tooltip) {
         super(x, y, width, height, createText.get(), (btn) -> {
             onPress.run();
             ((ChunksFadeInButton) btn).updateText();
         }, DEFAULT_NARRATION_SUPPLIER);
-        this.active = forsedValue == null;
+        this.active = forcedValue == null;
         this.createText = createText;
 
-        if (forsedValue != null && tooltip != null)
+        if (forcedValue != null && tooltip != null)
             this.setTooltip(Tooltip.of(tooltip));
     }
 

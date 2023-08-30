@@ -8,6 +8,7 @@ import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.text.Text;
 
 public class SettingsScreen extends Screen {
@@ -37,9 +38,11 @@ public class SettingsScreen extends Screen {
 
     @Override
     public void init() {
+        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+        
         addDrawableChild(GuiUtils.choiceButton(
                 this, -1, -4,
-                MOD_ENABLED, Config.MOD_ENABLED_KEY, MinecraftClient.getInstance().getServer() == null ? null : Config.isModEnabled, MOD_ENABLED_TOOLTIP));
+                MOD_ENABLED, Config.MOD_ENABLED_KEY, networkHandler == null || !networkHandler.getConnection().isOpen() ? null : Config.isModEnabled, MOD_ENABLED_TOOLTIP));
         addDrawableChild(GuiUtils.toggledButton(
                 this, 1, -4,
                 UPDATE_NOTIFIER_ENABLED, Config.UPDATE_NOTIFIER_ENABLED_KEY));
