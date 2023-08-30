@@ -39,7 +39,7 @@ public class SettingsScreen extends Screen {
     public void init() {
         addDrawableChild(GuiUtils.choiceButton(
                 this, -1, -4,
-                MOD_ENABLED, Config.MOD_ENABLED_KEY, MinecraftClient.getInstance().getServer() == null ? null : Config.isModEnabled, MOD_ENABLED_TOOLTIP));
+                MOD_ENABLED, Config.MOD_ENABLED_KEY, !MinecraftClient.getInstance().getNetworkHandler().getConnection().isOpen() ? null : Config.isModEnabled, MOD_ENABLED_TOOLTIP));
         addDrawableChild(GuiUtils.toggledButton(
                 this, 1, -4,
                 UPDATE_NOTIFIER_ENABLED, Config.UPDATE_NOTIFIER_ENABLED_KEY));

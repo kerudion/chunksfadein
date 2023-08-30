@@ -3,6 +3,7 @@ package com.koteinik.chunksfadein.mixin.chunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extensions.RenderSectionExt;
 import com.koteinik.chunksfadein.extensions.RenderSectionManagerExt;
 
@@ -31,7 +32,11 @@ public abstract class RenderSectionManagerMixin implements RenderSectionManagerE
         if (section.isBuilt() && section.isEmpty())
             return 1f;
 
-        return ((RenderSectionExt) section).getFadeCoeff();
+        RenderSectionExt ext = (RenderSectionExt) section;
+        if (ext.hasRenderedBefore() && !Config.isFadeEnabled)
+            return 1f;
+
+        return ext.getFadeCoeff();
     }
 
     @Shadow
