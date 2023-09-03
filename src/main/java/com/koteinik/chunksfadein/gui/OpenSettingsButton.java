@@ -32,7 +32,6 @@ public class OpenSettingsButton extends ButtonWidget {
 
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, MOD_ICON);
-
         RenderSystem.enableDepthTest();
         drawTexture(matrices, getX() + 1, getY() + 1, 0, 0, width - 2, height - 2, width - 2, height - 2);
     }
