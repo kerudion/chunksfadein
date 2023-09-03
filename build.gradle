@@ -17,13 +17,6 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 
-	maven { 
-		url 'https://jitpack.io'
-		content {
-			includeGroup("com.github.CaffeineMC")
-		} 
-	}
-
 	maven {
 		url 'https://maven.terraformersmc.com/releases/'
 		content {
@@ -37,6 +30,10 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
+
+	maven {
+		url 'https://minecraft.guntram.de/maven/'
+	}
 
 	mavenCentral()
 }
@@ -53,8 +50,11 @@ dependencies {
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 	modImplementation "maven.modrinth:iris:${project.iris_version}"
 
-	include 'com.moandjiezana.toml:toml4j:0.7.2'
-	implementation 'com.moandjiezana.toml:toml4j:0.7.2'
+	modImplementation "de.guntram.mcmod:crowdin-translate:${project.crowdin_translate_version}"
+    include "de.guntram.mcmod:crowdin-translate:${project.crowdin_translate_version}"
+
+	include "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
+	implementation "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
 
 	include 'org.joml:joml:1.10.2'
 	implementation 'org.joml:joml:1.10.2'

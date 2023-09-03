@@ -1,6 +1,7 @@
 package com.koteinik.chunksfadein.mixin.iris;
 
-import org.joml.Matrix4f;
+import java.util.List;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -9,33 +10,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeShaderInterface;
-import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
-import com.koteinik.chunksfadein.hooks.IrisApiHook;
+import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
 
 import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkShaderInterface;
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderBindingContextExt;
 import net.coderbot.iris.gl.blending.BlendModeOverride;
+import net.coderbot.iris.gl.blending.BufferBlendOverride;
 import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
+import net.coderbot.iris.uniforms.custom.CustomUniforms;
 
 @Pseudo
 @Mixin(value = IrisChunkShaderInterface.class, remap = false)
-public class v12IrisChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
+public class IrisChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
     private FadeShaderInterface fadeInterface;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void modifyConstructor(int var1, ShaderBindingContextExt ext, SodiumTerrainPipeline var3,
-            boolean var4, BlendModeOverride var5, float var7,
+    private void modifyConstructor(int var1, ShaderBindingContextExt ext, SodiumTerrainPipeline var3, boolean var4,
+            BlendModeOverride var5, List<BufferBlendOverride> var6, float var7, CustomUniforms var8,
             CallbackInfo ci) {
         if (!Config.isModEnabled)
             return;
 
         fadeInterface = new FadeShaderInterface(ext);
-    }
-
-    @Inject(method = "setModelViewMatrix", at = @At("HEAD"))
-    private void modifySetModelViewMatrix(Matrix4f var1, CallbackInfo ci) {
-        IrisApiHook.irisExt = this;
     }
 
     @Override

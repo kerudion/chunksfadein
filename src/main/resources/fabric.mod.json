@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "chunksfadein",
-  "version": "1.0.6-1.18",
+  "version": "1.0.7-1.18",
   "name": "Chunks Fade In",
   "description": "Adds bedrock-like chunk fade-in animation and chunk animations like in ChunkAnimator mod!",
   "authors": [
@@ -20,12 +20,12 @@
   ],
   "depends": {
     "fabricloader": ">=0.14.10",
-    "minecraft": "~1.18",
+    "minecraft": "1.18.2",
     "java": ">=17",
     "sodium": "0.4.x"
   },
   "entrypoints": {
-    "main": [
+    "client": [
       "com.koteinik.chunksfadein.ChunksFadeIn"
     ],
     "modmenu": [

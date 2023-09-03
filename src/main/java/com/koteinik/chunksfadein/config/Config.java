@@ -16,10 +16,13 @@ import com.moandjiezana.toml.Toml;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class Config {
-    public static final double MAX_FADE_TIME = 3;
+    public static final Long CONFIG_VERSION = 1L;
+    public static final double MAX_FADE_TIME = 10;
     public static final double MAX_ANIMATION_TIME = 10;
     public static final double MAX_ANIMATION_OFFSET = 319;
+    public static final String CONFIG_VERSION_KEY = "config-version";
     public static final String MOD_ENABLED_KEY = "mod-enabled";
+    public static final String SHOW_MOD_BUTTON_IN_SETTINGS_KEY = "show-mod-button-in-settings";
     public static final String UPDATE_NOTIFIER_ENABLED_KEY = "update-notifier-enabled";
     public static final String FADE_ENABLED_KEY = "fade-enabled";
     public static final String FADE_TIME_KEY = "fade-time";
@@ -37,11 +40,12 @@ public class Config {
     public static boolean isFadeEnabled;
     public static boolean isAnimationEnabled;
     public static boolean isUpdateNotifierEnabled;
+    public static boolean showModButtonInSettings;
     public static boolean animateNearPlayer;
 
     public static float animationInitialOffset;
-    public static float animationChangePerMs;
-    public static float fadeChangePerMs;
+    public static float animationChangePerNano;
+    public static float fadeChangePerNano;
 
     public static FadeTypes fadeType;
     public static Curves animationCurve;
@@ -54,43 +58,49 @@ public class Config {
                 .addListener((o) -> fadeType = FadeTypes.values()[MathUtils.clamp(o, 0,
                         Curves.values().length - 1)]);
 
-        addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_FADE_TIME, 0.64, FADE_TIME_KEY))
-                .addListener((o) -> fadeChangePerMs = fadeChangeFromSeconds(o));
-        addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_ANIMATION_TIME, 1, ANIMATION_TIME_KEY))
-                .addListener((o) -> animationChangePerMs = animationChangeFromSeconds(o));
+        addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_FADE_TIME, 2.56, FADE_TIME_KEY))
+                .addListener((o) -> fadeChangePerNano = fadeChangeFromSeconds(o));
+        addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_ANIMATION_TIME, 2.56, ANIMATION_TIME_KEY))
+                .addListener((o) -> animationChangePerNano = animationChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(1, MAX_ANIMATION_OFFSET, 64, ANIMATION_OFFSET_KEY))
-                .addListener((o) -> animationInitialOffset = (o).floatValue());
+                .addListener((o) -> {
+                    animationInitialOffset = (o).floatValue();
+                });
 
         addEntry(new ConfigEntry<Boolean>(true, MOD_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isModEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, FADE_ENABLED_KEY, Type.BOOLEAN))
-                .addListener((o) -> isFadeEnabled = o);
+                .addListener((o) -> {
+                    isFadeEnabled = o;
+                });
         addEntry(new ConfigEntry<Boolean>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isAnimationEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, UPDATE_NOTIFIER_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isUpdateNotifierEnabled = o);
+        addEntry(new ConfigEntry<Boolean>(true, SHOW_MOD_BUTTON_IN_SETTINGS_KEY, Type.BOOLEAN))
+                .addListener((o) -> showModButtonInSettings = o);
         addEntry(new ConfigEntry<Boolean>(true, ANIMATE_NEAR_PLAYER_KEY, Type.BOOLEAN))
                 .addListener((o) -> animateNearPlayer = o);
     }
 
     public static float fadeChangeFromSeconds(double seconds) {
-        final float secondsInMs = (float) (seconds * 1000);
+        final float secondsInMs = (float) (seconds * 1E+9);
 
         return 1f / secondsInMs;
     }
 
     public static float secondsFromFadeChange() {
-        return 1f / fadeChangePerMs / 1000f;
+        return 1f / fadeChangePerNano / 1E+9f;
     }
 
     public static float animationChangeFromSeconds(double seconds) {
-        final float secondsInMs = (float) (seconds * 1000);
+        final float secondsInMs = (float) (seconds * 1E+9);
 
         return 1 / secondsInMs;
     }
 
     public static double secondsFromAnimationChange() {
-        return (double) (1 / animationChangePerMs / 1000);
+        return (double) (1 / animationChangePerNano / 1E+9);
     }
 
     public static void load() {
@@ -107,11 +117,19 @@ public class Config {
 
         for (ConfigEntry<?> entry : entries.values())
             entry.load(toml);
+
+        Long configVersion = toml.getLong(CONFIG_VERSION_KEY);
+        if (configVersion != null && configVersion != CONFIG_VERSION) {
+            // To save fade time after upgrading the mod
+            setDouble(FADE_TIME_KEY, (double) get(FADE_TIME_KEY).value * 4);
+            setDouble(ANIMATION_TIME_KEY, (double) get(ANIMATION_TIME_KEY).value * 4);
+        }
     }
 
     public static void save() {
         String string = "";
 
+        string += CONFIG_VERSION_KEY + " = " + CONFIG_VERSION + "\n";
         for (ConfigEntry<?> entry : entries.values())
             string += entry.toString();
 
@@ -141,6 +159,25 @@ public class Config {
     @SuppressWarnings("unchecked")
     public static void setDouble(String key, Double value) {
         ((ConfigEntry<Double>) get(key)).set(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static boolean getBoolean(String key) {
+        return ((ConfigEntry<Boolean>) entries.get(key)).get();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static int getInteger(String key) {
+        return ((ConfigEntry<Integer>) entries.get(key)).get();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static double getDouble(String key) {
+        return ((ConfigEntry<Double>) entries.get(key)).get();
+    }
+
+    public static void flipBoolean(String key) {
+        setBoolean(key, !getBoolean(key));
     }
 
     public static void reset(String key) {

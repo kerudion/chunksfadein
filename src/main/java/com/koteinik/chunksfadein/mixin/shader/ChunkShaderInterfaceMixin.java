@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeShaderInterface;
-import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
-import com.koteinik.chunksfadein.hooks.IrisApiHook;
+import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
+import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 
 import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
@@ -24,7 +24,7 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
     @Inject(method = "<init>", at = @At("RETURN"))
     private void modifyConstructor(ShaderBindingContext context, ChunkShaderOptions options,
             CallbackInfo ci) {
-        if (!Config.isModEnabled || IrisApiHook.isShaderPackInUse())
+        if (!Config.isModEnabled || CompatibilityHook.isIrisShaderPackInUse())
             return;
 
         fadeInterface = new FadeShaderInterface(context);
@@ -33,7 +33,7 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
     @Override
     public void setFadeDatas(GlMutableBuffer buffer) {
         if (fadeInterface == null) {
-            if (IrisApiHook.isShaderPackInUse() && !warned) {
+            if (CompatibilityHook.isIrisShaderPackInUse() && !warned) {
                 Logger.warn("Shader pack is in use, but Sodium's shader interface is used. Something went really wrong!");
                 warned = true;
             }

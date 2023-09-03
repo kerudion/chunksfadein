@@ -30,9 +30,8 @@ public class OpenSettingsButton extends ButtonWidget {
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.renderButton(matrices, mouseX, mouseY, delta);
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionShader);
         RenderSystem.setShaderTexture(0, MOD_ICON);
-
         RenderSystem.enableDepthTest();
         drawTexture(matrices, x + 1, y + 1, 0, 0, width - 2, height - 2, width - 2, height - 2);
     }
