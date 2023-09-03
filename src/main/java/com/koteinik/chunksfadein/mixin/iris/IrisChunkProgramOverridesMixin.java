@@ -10,9 +10,6 @@ import com.koteinik.chunksfadein.core.FadeTypes;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 
 import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkProgramOverrides;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.Version;
-import net.fabricmc.loader.api.VersionParsingException;
 
 @Pseudo
 @Mixin(value = IrisChunkProgramOverrides.class)
@@ -24,13 +21,6 @@ public class IrisChunkProgramOverridesMixin {
     private static final ShaderInjector fragmentInjectorLined = new ShaderInjector();
 
     static {
-        boolean isIrisV12 = false;
-        try {
-            isIrisV12 = FabricLoader.getInstance().getModContainer("iris").get().getMetadata()
-                    .getVersion().compareTo(Version.parse("1.4")) < 0;
-        } catch (VersionParsingException e) {
-        }
-
         vertexInjectorFull.insertAfterDefines(
                 "out float fadeCoeff;",
                 "struct ChunkFadeData {",
@@ -55,19 +45,12 @@ public class IrisChunkProgramOverridesMixin {
 
         fragmentInjectorLined.appendToFunction("void main()",
                 "float fadeLineY = fadeCoeff * 16.0;");
-        if (isIrisV12) {
-            fragmentInjectorFull.appendToFunction("void main()",
-                    "if(fadeCoeff != 0.0) iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, 1.0 - fadeCoeff);");
 
-            fragmentInjectorLined.appendToFunction("void main()",
-                    "if(fadeCoeff != 0.0) iris_FragData[0] = mix(iris_FragData[0], iris_FogColor, localHeight <= fadeLineY ? 0.0 : 1.0);");
-        } else {
-            fragmentInjectorFull.appendToFunction("void main()",
-                    "if(fadeCoeff != 0.0) ${uniform_0} = ${uniform_0_prefix}mix(${uniform_0}, iris_FogColor, 1.0 - fadeCoeff)${uniform_0_postfix};");
+        fragmentInjectorFull.appendToFunction("void main()",
+                "if(fadeCoeff >= 0.0 && fadeCoeff < 1.0) ${uniform_0} = ${uniform_0_prefix}mix(${uniform_0}, iris_FogColor, 1.0 - fadeCoeff)${uniform_0_postfix};");
 
-            fragmentInjectorLined.appendToFunction("void main()",
-                    "if(fadeCoeff != 0.0) ${uniform_0} = ${uniform_0_prefix}mix(${uniform_0}, iris_FogColor, localHeight <= fadeLineY ? 0.0 : 1.0)${uniform_0_postfix};");
-        }
+        fragmentInjectorLined.appendToFunction("void main()",
+                "if(fadeCoeff >= 0.0 && fadeCoeff < 1.0) ${uniform_0} = ${uniform_0_prefix}mix(${uniform_0}, iris_FogColor, localHeight <= fadeLineY ? 0.0 : 1.0)${uniform_0_postfix};");
     }
 
     @ModifyVariable(method = "createVertexShader", at = @At(value = "STORE", ordinal = 0), remap = false)

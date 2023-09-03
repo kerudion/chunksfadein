@@ -3,8 +3,12 @@ package com.koteinik.chunksfadein.core;
 import java.util.function.Function;
 
 import com.koteinik.chunksfadein.MathUtils;
+import com.koteinik.chunksfadein.gui.GuiUtils;
+import com.koteinik.chunksfadein.gui.SettingsScreen;
 
-public enum Curves {
+import net.minecraft.text.Text;
+
+public enum Curves implements TranslatableEnum {
     LINEAR((f) -> f),
     EASE_OUT((f) -> 1f - MathUtils.pow(1 - f, 3)),
     EASE_CIRCULAR((f) -> {
@@ -14,7 +18,6 @@ public enum Curves {
                 ? (1 - MathUtils.sqrt(1f - MathUtils.pow(f1, 2))) / 2f
                 : (MathUtils.sqrt(1f - MathUtils.pow(-f1 + 2, 2)) + 1) / 2f;
     }),
-
     BOUNCE((f) -> {
         if (f < 1 / CurveConstants.d1) {
             return CurveConstants.n1 * f * f;
@@ -27,14 +30,21 @@ public enum Curves {
         }
     });
 
+    public final Text translation;
     private final Function<Float, Float> calculate;
 
     private Curves(Function<Float, Float> calculate) {
         this.calculate = calculate;
+        this.translation = GuiUtils.text(SettingsScreen.ANIMATION_CURVE + "." + name().toLowerCase());
     }
 
     public Float calculate(Float in) {
         return calculate.apply(in);
+    }
+
+    @Override
+    public Text getTranslation() {
+        return translation;
     }
 }
 

@@ -8,15 +8,23 @@ public class ShaderInjector {
     private final List<Function<String, String>> transformations = new ArrayList<>();
 
     public void insertAfterDefines(String... code) {
-        transformations.add((src) -> {
-            String toInsert = "\n" + String.join("\n", code);
+        transformations.add(insertAfter("#define ", code));
+    }
 
-            int lastDefineIdx = src.lastIndexOf("#");
-            int newlineIdx = src.indexOf("\n", lastDefineIdx);
+    public void insertAfterUniforms(String... code) {
+        transformations.add(insertAfter("uniform ", code));
+    }
 
-            toInsert = replaceParts(src, toInsert);
-            return insertAt(newlineIdx, src, toInsert);
-        });
+    public void insertAfterInVars(String... code) {
+        transformations.add(insertAfter("in ", code));
+    }
+
+    public void insertAfterOutVars(String... code) {
+        transformations.add(insertAfter("out ", code));
+    }
+
+    public void insertAfterVariable(String variable, String... code) {
+        transformations.add(insertAfter(variable, code));
     }
 
     public void appendToFunction(String function, String... code) {
@@ -35,6 +43,18 @@ public class ShaderInjector {
 
             return insertToFunction(src, toInsert, function, 1);
         });
+    }
+
+    private static Function<String, String> insertAfter(String what, String... code) {
+        return (src) -> {
+            String toInsert = "\n" + String.join("\n", code);
+
+            int lastIdx = src.lastIndexOf(what);
+            int newlineIdx = src.indexOf("\n", lastIdx);
+
+            toInsert = replaceParts(src, toInsert);
+            return insertAt(newlineIdx, src, toInsert);
+        };
     }
 
     private static String insertToFunction(String src, String code, String function, int offset) {

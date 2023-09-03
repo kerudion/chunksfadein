@@ -1,11 +1,8 @@
 package com.koteinik.chunksfadein.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
@@ -29,11 +26,6 @@ public class OpenSettingsButton extends ButtonWidget {
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.renderButton(matrices, mouseX, mouseY, delta);
-
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderTexture(0, MOD_ICON);
-
-        RenderSystem.enableDepthTest();
-        drawTexture(matrices, getX() + 1, getY() + 1, 0, 0, width - 2, height - 2, width - 2, height - 2);
+        drawTexture(matrices, MOD_ICON, getX() + 1, getY() + 1, 0, 0, 0, width - 2, height - 2, width - 2, height - 2);
     }
 }

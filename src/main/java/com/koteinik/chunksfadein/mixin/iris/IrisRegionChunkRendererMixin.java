@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import com.koteinik.chunksfadein.config.Config;
-import com.koteinik.chunksfadein.extenstions.ChunkShaderInterfaceExt;
-import com.koteinik.chunksfadein.extenstions.RenderRegionExt;
+import com.koteinik.chunksfadein.core.RegionChunkRendererBase;
+import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 
 import me.jellysquid.mods.sodium.client.gl.device.CommandList;
@@ -30,11 +30,10 @@ import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkShaderInte
 @Mixin(value = RegionChunkRenderer.class, remap = false)
 public abstract class IrisRegionChunkRendererMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/RegionChunkRenderer;setModelMatrixUniforms", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
-    @SuppressWarnings("rawtypes")
     private void modifyChunkRender(ChunkRenderMatrices matrices, CommandList commandList,
             ChunkRenderList list, BlockRenderPass pass,
             ChunkCameraContext camera,
-            CallbackInfo ci, ChunkShaderInterface shader, Iterator i, Map.Entry e, RenderRegion region,
+            CallbackInfo ci, ChunkShaderInterface shader, Iterator<?> i, Map.Entry<?, ?> e, RenderRegion region,
             List<RenderSection> chunks) {
         if (!Config.isModEnabled || !CompatibilityHook.isIrisShaderPackInUse())
             return;
@@ -45,8 +44,7 @@ public abstract class IrisRegionChunkRendererMixin {
             return;
 
         final ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) (override.getInterface());
-        final RenderRegionExt regionExt = (RenderRegionExt) region;
 
-        regionExt.updateChunksFade(chunks, ext, commandList);
+        RegionChunkRendererBase.updateFading(commandList, ext, region, chunks);
     }
 }

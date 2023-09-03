@@ -33,7 +33,7 @@ public class DataBuffer {
     }
 
     public void uploadData(CommandList commandList, GlMutableBuffer glBuffer) {
-        commandList.uploadData(glBuffer, buffer, GlBufferUsage.DYNAMIC_DRAW);
+        commandList.uploadData(glBuffer, buffer, GlBufferUsage.STREAM_DRAW);
     }
 
     public void reset(int i) {
@@ -42,7 +42,7 @@ public class DataBuffer {
     }
 
     public void delete() {
-        buffer.clear();
+        MemoryUtil.memFree(buffer);
     }
 
     private int getPosition(int index, int fieldNum) {
