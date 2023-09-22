@@ -26,6 +26,6 @@ public class OpenSettingsButton extends ButtonWidget {
     @Override
     public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
         super.renderButton(context, mouseX, mouseY, delta);
-        drawTexture(context, MOD_ICON, getX() + 1, getY() + 1, 0, 0, 0, width - 2, height - 2, width - 2, height - 2);
+        context.drawTexture(MOD_ICON, getX() + 1, getY() + 1, 0, 0, 0, width - 2, height - 2, width - 2, height - 2);
     }
 }
