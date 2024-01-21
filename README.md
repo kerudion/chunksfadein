@@ -5,6 +5,8 @@
 [Optifine]: https://www.optifine.net
 [Fade In Chunks]: https://modrinth.com/mod/fade-in-chunks
 [Iris]: https://modrinth.com/mod/iris
+[Sinytra Connector]: https://modrinth.com/mod/connector
+[Embeddium]: https://modrinth.com/mod/embeddium
 <a href="https://modrinth.com/mod/fabric-api">
 <img width="150" src="https://raw.githubusercontent.com/kerudion/chunksfadein/main/readme-assets/req_fabric.png" alt="Requires Fabric API">
 </a>
@@ -16,6 +18,9 @@
 </a>
 <a href="https://modrinth.com/mod/iris">
 <img width="150" src="https://raw.githubusercontent.com/kerudion/chunksfadein/main/readme-assets/works_iris.png" alt="Works with Iris Shaders">
+</a>
+<a href="https://modrinth.com/mod/connector">
+<img width="150" src="https://raw.githubusercontent.com/kerudion/chunksfadein/main/readme-assets/works_sinytra.png" alt="Works with Sinytra Connector">
 </a>
 <a href="https://www.curseforge.com/minecraft/mc-mods/optifabric">
 <img width="150" src="https://raw.githubusercontent.com/kerudion/chunksfadein/main/readme-assets/crashes_opti.png" alt="Crashes with Optifabric">
@@ -41,15 +46,44 @@ No more chunks appearing right in front of you out of nowhere! Unlike other mods
 
 **The [Smooth Chunks] mod was abandoned. Fl0gic (cadenkriese in GitHub) allowed me to use its updated icon in my mod. Thanks to him :)*
 
+## Compatibility with Forge
+In order for the mod to work with Forge Mod Loader, you need to complete the following steps:
+
+### Step 1: Install [Sinytra Connector]:
+- Install it from the official page by clicking the link above.
+
+### Step 2: Install [Embeddium]:
+- Install it from the official page by clicking the link above.
+
+### Step 3: Configure version overrides:
+- Navigate to the `config` folder inside **your Minecraft installation folder** (usually `.minecraft`). If there's no `config` folder, create one.
+- Open `fabric_loader_dependencies.json` inside `config` folder. If there's no `fabric_loader_dependencies.json` file, create one.
+- Paste the following text inside:
+```json
+{
+  "version": 1,
+  "overrides": {
+    "chunksfadein": {
+      "+depends": {
+        "embeddium": ">0.2.18+mc1.20.1"
+      },
+      "-depends": {
+        "sodium": "IGNORED"
+      }
+    }
+  }
+}
+```
+- Save the file and restart/launch the game.
+- Done!
+
 ## Versions
-- [`1.18.x`](https://github.com/kerudion/chunksfadein/releases/tag/v1.0.6-1.18)
-- [`1.19`-`1.19.2`](https://github.com/kerudion/chunksfadein/releases/tag/v3.0.11-1.19)
-- [`1.19.3`](https://github.com/kerudion/chunksfadein/releases/tag/v2.0.11-1.19.3)
-- [`1.19.4`](https://github.com/kerudion/chunksfadein/releases/tag/v1.0.3-1.19.4)
-- [`1.20.x`](https://github.com/kerudion/chunksfadein/releases/tag/v1.0.1-1.20)
+- `1.18.x`
+- `1.19.x`
+- `1.20.x`
 
 ## Dependencies
-- [Sodium] `0.4.x`
+- [Sodium] `0.4.x` or `0.5.x` *(depending on version)*
 
 ## Showcase Video
 [![Youtube Video](http://img.youtube.com/vi/CanA5ADOis0/0.jpg)](https://www.youtube.com/watch?v=CanA5ADOis0)
@@ -58,7 +92,5 @@ No more chunks appearing right in front of you out of nowhere! Unlike other mods
 <img src="https://github.com/kerudion/chunksfadein/blob/main/readme-assets/config.png?raw=true" width="60%">
 
 ## FAQ
-### Will there be Vanilla support?
-Yes, I will add support for them after some time.
 ### Where is source code?
 Source code is in other branches, labelled as the game version they belong to.
