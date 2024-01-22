@@ -8,7 +8,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
 
 public class OpenSettingsButton extends ButtonWidget {
-    private static Identifier MOD_ICON = new Identifier("chunksfadein", "icon.jpg");
+    private static Identifier MOD_ICON = new Identifier("chunksfadein", "icon.png");
 
     private static final int buttonW = 20;
     private static final int buttonH = 20;
