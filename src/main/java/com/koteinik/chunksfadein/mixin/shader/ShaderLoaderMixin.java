@@ -27,30 +27,30 @@ public abstract class ShaderLoaderMixin {
         fragmentInjectorLined.copyFrom(fragmentInjectorFull);
 
         fragmentInjectorFull.appendToFunction("void main()",
-                "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) out_FragColor = mix(out_FragColor, u_FogColor, 1.0 - v_FadeCoeff);");
+            "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) {frag_color} = mix({frag_color}, u_FogColor, 1.0 - v_FadeCoeff);");
 
         fragmentInjectorLined.insertAfterInVars("in float v_LocalHeight;");
         fragmentInjectorLined.appendToFunction("void main()",
-                "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) { float fadeLineY = v_FadeCoeff * 16.0; out_FragColor = mix(out_FragColor, u_FogColor, v_LocalHeight <= fadeLineY ? 0.0 : 1.0); }");
+            "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) { float fadeLineY = v_FadeCoeff * 16.0; {frag_color} = mix({frag_color}, u_FogColor, v_LocalHeight <= fadeLineY ? 0.0 : 1.0); }");
 
         vertexInjectorFull.insertAfterOutVars(true, "out float v_FadeCoeff;");
         vertexInjectorFull.insertAfterUniforms(
-                "struct ChunkFadeData {",
-                "    vec4 fadeData;",
-                "};",
-                "layout(std140) uniform ubo_ChunkFadeDatas {",
-                "    ChunkFadeData Chunk_FadeDatas[256];",
-                "};");
+            "struct ChunkFadeData {",
+            "    vec4 fadeData;",
+            "};",
+            "layout(std140) uniform ubo_ChunkFadeDatas {",
+            "    ChunkFadeData Chunk_FadeDatas[256];",
+            "};");
         vertexInjectorFull.insertAfterVariable("vec3 position",
-                "vec4 chunkFadeData = Chunk_FadeDatas[_vert_mesh_id].fadeData;",
-                "position.y = position.y + chunkFadeData.y;");
+            "vec4 chunkFadeData = Chunk_FadeDatas[{mesh_id}].fadeData;",
+            "position.y = position.y + chunkFadeData.y;");
         vertexInjectorFull.appendToFunction("void main()",
-                "v_FadeCoeff = chunkFadeData.w;");
+            "v_FadeCoeff = chunkFadeData.w;");
 
         vertexInjectorLined.copyFrom(vertexInjectorFull);
         vertexInjectorLined.insertAfterOutVars("out float v_LocalHeight;");
         vertexInjectorLined.appendToFunction("void main()",
-                "v_LocalHeight = _vert_position.y;");
+            "v_LocalHeight = _vert_position.y;");
     }
 
     @Inject(method = "getShaderSource", at = @At("RETURN"), cancellable = true)

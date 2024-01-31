@@ -86,8 +86,7 @@ public class ShaderInjector {
     private static String insertToFunction(String src, String code, String function, int offset) {
         int functionIdx = src.indexOf(function);
         if (functionIdx == -1)
-            throw new IllegalStateException(
-                    "Failed to append code, function '" + function + "' was not found!");
+            throw new IllegalStateException("Failed to append code, function '" + function + "' was not found!");
 
         int firstBracketIdx = src.indexOf('{', functionIdx);
         int bracketCount = 0;
@@ -108,8 +107,7 @@ public class ShaderInjector {
                     return insertAt(i + offset, src, code);
             }
 
-        throw new IllegalStateException(
-                "Failed to append code, end of function '" + function + "' was not found!");
+        throw new IllegalStateException("Failed to append code, end of function '" + function + "' was not found!");
     }
 
     public String get(String code) {
@@ -150,40 +148,17 @@ public class ShaderInjector {
         return original.substring(0, i) + target + original.substring(i);
     }
 
-    private static UniformData getUniformAtLayout(String code, int uniform) {
-        int index = code.indexOf("layout(location = " + uniform + ")");
-        if (index == -1)
-            return new UniformData("vec4", "iris_FragData0");
-        String line = "";
-        for (int i = index; i < code.length(); i++)
-            if (code.charAt(i) == '\n')
-                break;
-            else
-                line += code.charAt(i);
-
-        line = line.replaceAll(";", "");
-        String[] splitted = line.split(" ");
-
-        return new UniformData(splitted[splitted.length - 2], splitted[splitted.length - 1]);
-    }
-
     private static String replaceParts(String shaderCode, String toInject) {
-        if (toInject.contains("${uniform_0_prefix}")
-                || toInject.contains("${uniform_0_postfix}")
-                || toInject.contains("${uniform_0}")) {
-            UniformData uniform = getUniformAtLayout(shaderCode, 0);
-            if (!uniform.type.equals("uvec4") && !uniform.type.equals("vec4"))
-                return "";
+        String id = shaderCode.contains("_draw_id")
+            ? "_draw_id"
+            : "_vert_mesh_id";
+        toInject = toInject.replaceAll("\\{mesh_id\\}", id);
 
-            boolean isUvec = uniform.type.equals("uvec4");
+        String fragColor = shaderCode.contains("fragColor")
+            ? "fragColor"
+            : "out_FragColor";
+        toInject = toInject.replaceAll("\\{frag_color\\}", fragColor);
 
-            toInject = toInject.replaceAll("\\$\\{uniform_0_prefix\\}",
-                    isUvec ? "uvec4(" : "");
-            toInject = toInject.replaceAll("\\$\\{uniform_0_postfix\\}",
-                    isUvec ? ")" : "");
-            toInject = toInject.replaceAll("\\$\\{uniform_0\\}",
-                    uniform.name);
-        }
         return toInject;
     }
 }

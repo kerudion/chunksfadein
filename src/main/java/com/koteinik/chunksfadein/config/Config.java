@@ -63,16 +63,12 @@ public class Config {
         addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_ANIMATION_TIME, 2.56, ANIMATION_TIME_KEY))
                 .addListener((o) -> animationChangePerNano = animationChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(1, MAX_ANIMATION_OFFSET, 64, ANIMATION_OFFSET_KEY))
-                .addListener((o) -> {
-                    animationInitialOffset = (o).floatValue();
-                });
+                .addListener((o) -> animationInitialOffset = (o).floatValue());
 
         addEntry(new ConfigEntry<Boolean>(true, MOD_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isModEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, FADE_ENABLED_KEY, Type.BOOLEAN))
-                .addListener((o) -> {
-                    isFadeEnabled = o;
-                });
+                .addListener((o) -> isFadeEnabled = o);
         addEntry(new ConfigEntry<Boolean>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
                 .addListener((o) -> isAnimationEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, UPDATE_NOTIFIER_ENABLED_KEY, Type.BOOLEAN))
@@ -117,13 +113,6 @@ public class Config {
 
         for (ConfigEntry<?> entry : entries.values())
             entry.load(toml);
-
-        Long configVersion = toml.getLong(CONFIG_VERSION_KEY);
-        if (configVersion != null && configVersion != CONFIG_VERSION) {
-            // To save fade time after upgrading the mod
-            setDouble(FADE_TIME_KEY, (double) get(FADE_TIME_KEY).value * 4);
-            setDouble(ANIMATION_TIME_KEY, (double) get(ANIMATION_TIME_KEY).value * 4);
-        }
     }
 
     public static void save() {
@@ -146,34 +135,40 @@ public class Config {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static void setInteger(String key, Integer value) {
-        ((ConfigEntry<Integer>) get(key)).set(value);
+        ConfigEntry<Integer> entry = get(key);
+
+        entry.set(value);
     }
 
-    @SuppressWarnings("unchecked")
     public static void setBoolean(String key, Boolean value) {
-        ((ConfigEntry<Boolean>) get(key)).set(value);
+        ConfigEntry<Boolean> entry = get(key);
+
+        entry.set(value);
     }
 
-    @SuppressWarnings("unchecked")
     public static void setDouble(String key, Double value) {
-        ((ConfigEntry<Double>) get(key)).set(value);
+        ConfigEntry<Double> entry = get(key);
+
+        entry.set(value);
     }
 
-    @SuppressWarnings("unchecked")
     public static boolean getBoolean(String key) {
-        return ((ConfigEntry<Boolean>) entries.get(key)).get();
+        ConfigEntry<Boolean> entry = get(key);
+
+        return entry.get();
     }
 
-    @SuppressWarnings("unchecked")
     public static int getInteger(String key) {
-        return ((ConfigEntry<Integer>) entries.get(key)).get();
+        ConfigEntry<Integer> entry = get(key);
+
+        return entry.get();
     }
 
-    @SuppressWarnings("unchecked")
     public static double getDouble(String key) {
-        return ((ConfigEntry<Double>) entries.get(key)).get();
+        ConfigEntry<Double> entry = get(key);
+
+        return entry.get();
     }
 
     public static void flipBoolean(String key) {
@@ -184,8 +179,9 @@ public class Config {
         get(key).reset();
     }
 
-    private static ConfigEntry<?> get(String key) {
-        return (ConfigEntry<?>) entries.get(key);
+    @SuppressWarnings("unchecked")
+    private static <T> ConfigEntry<T> get(String key) {
+        return (ConfigEntry<T>) entries.get(key);
     }
 
     private static <T> ConfigEntry<T> addEntry(ConfigEntry<T> entry) {
