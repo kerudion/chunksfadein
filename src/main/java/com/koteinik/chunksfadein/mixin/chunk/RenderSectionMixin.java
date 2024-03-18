@@ -109,8 +109,6 @@ public class RenderSectionMixin implements RenderSectionExt {
 
     @Override
     public long calculateAndGetDelta() {
-        // I needed to sacrifice System.nanoTime() because it is too slow on some OS :(
-        // I hope that the rendering time will be at least 1 milliseconds, otherwise we're screwed :(
         long currentFrameTime = System.currentTimeMillis();
         long delta = lastFrameTime == 0L ? 0L : currentFrameTime - lastFrameTime;
 

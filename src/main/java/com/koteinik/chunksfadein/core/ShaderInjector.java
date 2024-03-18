@@ -152,12 +152,12 @@ public class ShaderInjector {
         String id = shaderCode.contains("_draw_id")
             ? "_draw_id"
             : "_vert_mesh_id";
-        toInject = toInject.replaceAll("\\{mesh_id\\}", id);
+        toInject = toInject.replace("{mesh_id}", id);
 
         String fragColor = shaderCode.contains("fragColor")
             ? "fragColor"
             : "out_FragColor";
-        toInject = toInject.replaceAll("\\{frag_color\\}", fragColor);
+        toInject = toInject.replace("{frag_color}", fragColor);
 
         return toInject;
     }
