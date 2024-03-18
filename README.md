@@ -7,9 +7,6 @@
 [Iris]: https://modrinth.com/mod/iris
 [Sinytra Connector]: https://modrinth.com/mod/connector
 [Embeddium]: https://modrinth.com/mod/embeddium
-<a href="https://modrinth.com/mod/fabric-api">
-<img width="150" src="https://raw.githubusercontent.com/kerudion/chunksfadein/main/readme-assets/req_fabric.png" alt="Requires Fabric API">
-</a>
 <a href="https://modrinth.com/mod/sodium">
 <img width="150" src="https://raw.githubusercontent.com/kerudion/chunksfadein/main/readme-assets/req_sodium.png" alt="Requires Sodium">
 </a>
