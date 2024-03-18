@@ -1,0 +1,21 @@
+name: Feature Request
+description: Create a feature request
+title: "[FEATURE]: "
+labels: ["enhancement"]
+assignees:
+  - kerudion
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 'Before creating a request, please make sure you have checked the following:'
+      options:
+        - label: Similar request had not already been reported before in the [issue tracker](https://github.com/kerudion/chunksfadein/issues).
+          required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What has to be improved/added?
+      description: Please, try to be as clear and concise as possible.
+    validations:
+      required: true

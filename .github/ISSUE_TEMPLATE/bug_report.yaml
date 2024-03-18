@@ -1,0 +1,43 @@
+name: Bug Report
+description: Create a bug report
+title: "[BUG]: "
+labels: ["bug"]
+assignees:
+  - kerudion
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 'Before creating an issue, please make sure you have checked the following:'
+      options:
+        - label: This issue does not appear without Chunks Fade In installed.
+          required: true
+        - label: All my mods (not only Chunks Fade In) are up-to-date.
+          required: true
+        - label: Similar issue had not already been reported before in the [issue tracker](https://github.com/kerudion/chunksfadein/issues).
+          required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Describe here what you have done for this issue to occur.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Usually logs are located inside `.minecraft/logs`. Also, usually you need the `latest.log`, since it belongs to your last Minecraft session.
+      placeholder: Drag and drop the file here.
+  - type: textarea
+    id: crash-report
+    attributes:
+      label: Crash Report
+      description: Usually crash reports are located inside `.minecraft/crash-reports`.
+      placeholder: Drag and drop the file here.
