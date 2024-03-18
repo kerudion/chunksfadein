@@ -41,6 +41,10 @@ public class MathUtils {
         return f >= 0.5f ? (int) (x - 0.5f) : (int) x;
     }
 
+    public static boolean chunkInRange(int aX, int aZ, int bX, int bZ, int radius) {
+        return chunkInRange(aX, 0, aZ, bX, 0, bZ, radius);
+    }
+
     public static boolean chunkInRange(int aX, int aY, int aZ, int bX, int bY, int bZ, int radius) {
         if (Math.abs(aX - bX) > radius)
             return false;

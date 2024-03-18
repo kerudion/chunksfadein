@@ -82,13 +82,11 @@ public class RenderSectionMixin implements RenderSectionExt {
                     ChunkSectionPos chunkPos = ChunkSectionPos.from(camera.getPos());
 
                     final int camChunkX = chunkPos.getX();
-                    final int camChunkY = chunkPos.getY();
                     final int camChunkZ = chunkPos.getZ();
                     final int x = chunkX;
-                    final int y = chunkY;
                     final int z = chunkZ;
 
-                    if (MathUtils.chunkInRange(x, y, z, camChunkX, camChunkY, camChunkZ, 1))
+                    if (MathUtils.chunkInRange(x, z, camChunkX, camChunkZ, 1))
                         animationProgress = 1f;
                 }
             }
