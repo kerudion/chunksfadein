@@ -1,12 +1,10 @@
 package com.koteinik.chunksfadein.mixin.chunk;
 
-import java.util.Iterator;
-
+import com.llamalad7.mixinextras.sugar.Local;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
@@ -25,19 +23,18 @@ import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
 import me.jellysquid.mods.sodium.client.render.chunk.terrain.TerrainRenderPass;
 import me.jellysquid.mods.sodium.client.render.viewport.CameraTransform;
-import me.jellysquid.mods.sodium.client.util.iterator.ByteIterator;
 
 @Mixin(value = DefaultChunkRenderer.class, remap = false)
 public class DefaultChunkRendererMixin {
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/DefaultChunkRenderer;executeDrawBatch", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/DefaultChunkRenderer;executeDrawBatch", shift = At.Shift.BEFORE))
     private void modifyChunkRender(ChunkRenderMatrices matrices,
-            CommandList commandList,
-            ChunkRenderListIterable renderLists,
-            TerrainRenderPass renderPass,
-            CameraTransform camera,
-            CallbackInfo ci, boolean useBlockFaceCulling, ChunkShaderInterface shader,
-            Iterator<ChunkRenderList> iterator,
-            ChunkRenderList renderList, RenderRegion region) {
+                                   CommandList commandList,
+                                   ChunkRenderListIterable renderLists,
+                                   TerrainRenderPass renderPass,
+                                   CameraTransform camera,
+                                   CallbackInfo ci,
+                                   @Local(ordinal = 0) ChunkShaderInterface shader,
+                                   @Local(ordinal = 0) RenderRegion region) {
         if (!Config.isModEnabled || shader == null)
             return;
 
@@ -45,7 +42,7 @@ public class DefaultChunkRendererMixin {
         uploadToBuffer(commandList, shader, region);
     }
 
-    @Inject(method = "fillCommandBuffer", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/DefaultChunkRenderer;addDrawCommands", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "fillCommandBuffer", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/DefaultChunkRenderer;addDrawCommands", shift = At.Shift.AFTER))
     private static void modifyFillCommandBuffer(MultiDrawBatch batch,
             RenderRegion region,
             SectionRenderDataStorage renderDataStorage,
@@ -53,8 +50,11 @@ public class DefaultChunkRendererMixin {
             CameraTransform camera,
             TerrainRenderPass pass,
             boolean useBlockFaceCulling,
-            CallbackInfo ci, ByteIterator iterator, int originX, int originY, int originZ, int sectionIndex, int x,
-            int y, int z, long pMeshData, int slices) {
+            CallbackInfo ci,
+            @Local(name = "sectionIndex") int sectionIndex,
+            @Local(name = "chunkX") int x,
+            @Local(name = "chunkY") int y,
+            @Local(name = "chunkZ") int z) {
         if (!Config.isModEnabled)
             return;
 
