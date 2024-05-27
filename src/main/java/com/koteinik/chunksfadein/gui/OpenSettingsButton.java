@@ -8,7 +8,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
 
 public class OpenSettingsButton extends ButtonWidget {
-    private static Identifier MOD_ICON = new Identifier("chunksfadein", "icon.jpg");
+    private static Identifier MOD_ICON = new Identifier("chunksfadein", "icon.png");
 
     private static final int buttonW = 20;
     private static final int buttonH = 20;
@@ -26,6 +26,6 @@ public class OpenSettingsButton extends ButtonWidget {
     @Override
     public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
         super.renderButton(context, mouseX, mouseY, delta);
-        drawTexture(context, MOD_ICON, getX() + 1, getY() + 1, 0, 0, 0, width - 2, height - 2, width - 2, height - 2);
+        context.drawTexture(MOD_ICON, getX() + 1, getY() + 1, 0, 0, 0, width - 2, height - 2, width - 2, height - 2);
     }
 }

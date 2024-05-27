@@ -58,7 +58,7 @@ public class Config {
                 .addListener((o) -> fadeType = FadeTypes.values()[MathUtils.clamp(o, 0,
                         Curves.values().length - 1)]);
 
-        addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_FADE_TIME, 2.56, FADE_TIME_KEY))
+        addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_FADE_TIME, 1, FADE_TIME_KEY))
                 .addListener((o) -> fadeChangePerNano = fadeChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_ANIMATION_TIME, 2.56, ANIMATION_TIME_KEY))
                 .addListener((o) -> animationChangePerNano = animationChangeFromSeconds(o));

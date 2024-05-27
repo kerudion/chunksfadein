@@ -82,13 +82,11 @@ public class RenderSectionMixin implements RenderSectionExt {
                     ChunkSectionPos chunkPos = ChunkSectionPos.from(camera.getPos());
 
                     final int camChunkX = chunkPos.getX();
-                    final int camChunkY = chunkPos.getY();
                     final int camChunkZ = chunkPos.getZ();
                     final int x = chunkX;
-                    final int y = chunkY;
                     final int z = chunkZ;
 
-                    if (MathUtils.chunkInRange(x, y, z, camChunkX, camChunkY, camChunkZ, 1))
+                    if (MathUtils.chunkInRange(x, z, camChunkX, camChunkZ, 1))
                         animationProgress = 1f;
                 }
             }
@@ -111,8 +109,6 @@ public class RenderSectionMixin implements RenderSectionExt {
 
     @Override
     public long calculateAndGetDelta() {
-        // I needed to sacrifice System.nanoTime() because it is too slow on some OS :(
-        // I hope that the rendering time will be at least 1 milliseconds, otherwise we're screwed :(
         long currentFrameTime = System.currentTimeMillis();
         long delta = lastFrameTime == 0L ? 0L : currentFrameTime - lastFrameTime;
 

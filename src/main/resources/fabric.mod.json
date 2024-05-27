@@ -13,7 +13,7 @@
     "issues": "https://github.com/kerudion/chunksfadein/issues"
   },
   "license": "GPLv3",
-  "icon": "assets/chunksfadein/icon.jpg",
+  "icon": "assets/chunksfadein/icon.png",
   "environment": "client",
   "mixins": [
     "chunksfadein.mixins.json"
