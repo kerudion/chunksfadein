@@ -29,8 +29,8 @@ public class ModrinthApi {
     public static ModrinthVersion getLatestModVersion() {
         try {
             String rawBody = executeGet(VERSIONS_ENDPOINT,
-                    "featured=true",
-                    "game_versions=[\"" + minecraftVersion + "\"]");
+                "featured=true",
+                "game_versions=[\"" + minecraftVersion + "\"]");
 
             List<?> jsonList = new Gson().fromJson(rawBody, List.class);
 

@@ -36,7 +36,7 @@ public class ClientPacketListenerMixin {
                 textList.add(Text.of("§7New version of §2Chunks fade in §7is available!"));
 
                 Style linkStyle = Style.EMPTY.withClickEvent(
-                        new ClickEvent(net.minecraft.text.ClickEvent.Action.OPEN_URL, latestVersion.downloadUrl));
+                    new ClickEvent(net.minecraft.text.ClickEvent.Action.OPEN_URL, latestVersion.downloadUrl));
 
                 textList.add(Text.of("§7v" + latestVersion.version.getFriendlyString() + "§r§7 changelog:"));
                 textList.add(Text.of("§7" + latestVersion.changelog));
@@ -49,7 +49,10 @@ public class ClientPacketListenerMixin {
     }
 
     private static boolean isNewerVersion(ModrinthVersion modrinthVersion) {
+        if (modrinthVersion == null)
+            return false;
+
         return FabricLoader.getInstance().getModContainer("chunksfadein").get().getMetadata()
-                .getVersion().compareTo(modrinthVersion.version) < 0;
+            .getVersion().compareTo(modrinthVersion.version) < 0;
     }
 }
