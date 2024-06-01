@@ -39,7 +39,14 @@ jobs:
             fabric
             quilt
 
+          dependencies: |
+            sodium(required){modrinth:AANobbMI}{curseforge:394468}
+            iris(optional){modrinth:YL57xq9U}{curseforge:455508}
+            optifabric(incompatible){curseforge:322385}#(ignore:modrinth)
+
           java: |
             17
             18
             21
+
+          game-version-filter: release
