@@ -49,4 +49,4 @@ jobs:
             18
             21
 
-          game-version-filter: release
+          game-version-filter: releases
