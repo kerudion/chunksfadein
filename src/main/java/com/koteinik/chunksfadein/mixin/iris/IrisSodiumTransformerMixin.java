@@ -31,8 +31,8 @@ import io.github.douira.glsl_transformer.ast.query.index.ExternalDeclarationInde
 import io.github.douira.glsl_transformer.ast.transform.ASTInjectionPoint;
 import io.github.douira.glsl_transformer.ast.transform.ASTParser;
 import io.github.douira.glsl_transformer.util.Type;
-import net.coderbot.iris.pipeline.transform.parameter.SodiumParameters;
-import net.coderbot.iris.pipeline.transform.transformer.SodiumTransformer;
+import net.irisshaders.iris.pipeline.transform.parameter.SodiumParameters;
+import net.irisshaders.iris.pipeline.transform.transformer.SodiumTransformer;
 
 @Mixin(value = SodiumTransformer.class, remap = false)
 public class IrisSodiumTransformerMixin {
@@ -41,8 +41,6 @@ public class IrisSodiumTransformerMixin {
             CallbackInfo ci) {
         boolean isLined = Config.fadeType == FadeTypes.LINED;
 
-        // It's inefficient to use lists and call .add() everywhere, but it looks
-        // cleaner and prettier
         switch (parameters.type.glShaderType) {
             case VERTEX:
                 List<String> vertInitTail = new ArrayList<>();

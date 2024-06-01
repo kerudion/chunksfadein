@@ -14,12 +14,12 @@ import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
 
 import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
-import net.coderbot.iris.compat.sodium.impl.shader_overrides.IrisChunkShaderInterface;
-import net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderBindingContextExt;
-import net.coderbot.iris.gl.blending.BlendModeOverride;
-import net.coderbot.iris.gl.blending.BufferBlendOverride;
-import net.coderbot.iris.pipeline.SodiumTerrainPipeline;
-import net.coderbot.iris.uniforms.custom.CustomUniforms;
+import net.irisshaders.iris.compat.sodium.impl.shader_overrides.IrisChunkShaderInterface;
+import net.irisshaders.iris.compat.sodium.impl.shader_overrides.ShaderBindingContextExt;
+import net.irisshaders.iris.gl.blending.BlendModeOverride;
+import net.irisshaders.iris.gl.blending.BufferBlendOverride;
+import net.irisshaders.iris.pipeline.SodiumTerrainPipeline;
+import net.irisshaders.iris.uniforms.custom.CustomUniforms;
 
 @Pseudo
 @Mixin(value = IrisChunkShaderInterface.class, remap = false)
@@ -28,9 +28,9 @@ public class IrisChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void modifyConstructor(int var1, ShaderBindingContextExt ext, SodiumTerrainPipeline var3,
-            ChunkShaderOptions var4, boolean var5, BlendModeOverride var6, List<BufferBlendOverride> var7, float var8,
-            CustomUniforms var9,
-            CallbackInfo ci) {
+        ChunkShaderOptions var4, boolean var5, boolean var6, BlendModeOverride var7, List<BufferBlendOverride> var8, float var9,
+        CustomUniforms var10,
+        CallbackInfo ci) {
         if (!Config.isModEnabled)
             return;
 

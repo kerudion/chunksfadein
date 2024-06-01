@@ -16,7 +16,7 @@ public class ChunkFadeInMixinConfig implements IMixinConfigPlugin {
             return true;
 
         try {
-            Class.forName("net.coderbot.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt", false,
+            Class.forName("net.irisshaders.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt", false,
                     getClass().getClassLoader());
             return true;
         } catch (Exception e) {

@@ -2,7 +2,7 @@ package com.koteinik.chunksfadein;
 
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 
-import net.coderbot.iris.Iris;
+import net.irisshaders.iris.Iris;
 import net.minecraft.client.MinecraftClient;
 
 public class ShaderUtils {
