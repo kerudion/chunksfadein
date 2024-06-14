@@ -3,6 +3,7 @@ package com.koteinik.chunksfadein.core;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
@@ -22,7 +23,7 @@ public class ModrinthApi {
 
     public static void load() {
         minecraftVersion = FabricLoader.getInstance().getModContainer("minecraft").get().getMetadata()
-                .getVersion().getFriendlyString();
+            .getVersion().getFriendlyString();
     }
 
     @SuppressWarnings("unchecked")
@@ -62,7 +63,7 @@ public class ModrinthApi {
                 paramsStr += URLEncoder.encode(paramsArr[i], "UTF-8").replaceAll("%3D", "=");
             }
 
-            URL url = new URL(urlString + paramsStr);
+            URL url = URL.of(URI.create(urlString + paramsStr), null);
 
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
