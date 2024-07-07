@@ -16,19 +16,15 @@ repositories {
 	}
 
 	maven {
-        url 'https://api.modrinth.com/maven'
-        content {
-            includeGroup("maven.modrinth")
-        }
+		url 'https://api.modrinth.com/maven'
+		content {
+			includeGroup("maven.modrinth")
+		}
 	}
 
-	maven {
-        url = uri("https://maven.pkg.github.com/kerudion/CrowdinTranslate")
-		credentials {
-            username = System.getenv("USERNAME")
-            password = System.getenv("GITHUB_TOKEN")
-        }
-	}
+	flatDir {
+		dirs("libs")
+   	}
 
 	mavenCentral()
 }
@@ -43,8 +39,8 @@ dependencies {
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 	modImplementation "maven.modrinth:iris:${project.iris_version}"
 
-	modImplementation "de.guntram.mcmod:crowdin-translate:${project.crowdin_translate_version}"
-    include "de.guntram.mcmod:crowdin-translate:${project.crowdin_translate_version}"
+	modImplementation ":crowdin-translate:${project.crowdin_translate_version}"
+	include ":crowdin-translate:${project.crowdin_translate_version}"
 
 	include "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
 	implementation "com.moandjiezana.toml:toml4j:${project.toml4j_version}"

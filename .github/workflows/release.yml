@@ -21,9 +21,6 @@ jobs:
           java-version: 21
 
       - name: Build
-        env:
-          USERNAME: "kerudion"
-          GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
         run: ./gradlew clean build
 
       - name: Publish (CurseForge/Modrinth/GitHub)
