@@ -29,6 +29,10 @@ public class ItemFrameEntityRendererMixin {
         if (renderer == null)
             return;
 
+        if(((SodiumWorldRendererExt) renderer).getRenderSectionManager() == null) {
+            return;
+        }
+
         float[] offset = ((SodiumWorldRendererExt) renderer).getAnimationOffset(
                 chunkPos.getX(),
                 chunkPos.getY(),
