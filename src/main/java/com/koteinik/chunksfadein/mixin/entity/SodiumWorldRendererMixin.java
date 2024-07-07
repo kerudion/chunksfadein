@@ -2,8 +2,10 @@ package com.koteinik.chunksfadein.mixin.entity;
 
 import java.util.SortedSet;
 
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,6 +37,11 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
         return ((RenderSectionManagerExt) renderSectionManager).getAnimationOffset(x, y, z);
     }
 
+    @Override
+    public @Nullable RenderSectionManager getRenderSectionManager() {
+        return renderSectionManager;
+    }
+
     @Inject(method = "renderBlockEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(DDD)V", shift = Shift.AFTER, remap = true), locals = LocalCapture.CAPTURE_FAILHARD)
     private static void modifyRenderTileEntities(MatrixStack matrices,
             BufferBuilderStorage bufferBuilders,
@@ -48,6 +55,10 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
             BlockEntity entity, CallbackInfo ci) {
         if (!Config.isModEnabled || !entity.hasWorld() || !Config.isAnimationEnabled)
             return;
+
+        if(((SodiumWorldRendererExt) instance()).getRenderSectionManager() == null) {
+            return;
+        }
 
         ChunkSectionPos chunkPos = ChunkSectionPos.from(entity.getPos());
 
