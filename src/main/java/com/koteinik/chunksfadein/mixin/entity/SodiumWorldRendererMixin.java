@@ -17,8 +17,8 @@ import com.koteinik.chunksfadein.extensions.RenderSectionManagerExt;
 import com.koteinik.chunksfadein.extensions.SodiumWorldRendererExt;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
-import me.jellysquid.mods.sodium.client.render.chunk.RenderSectionManager;
+import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.VertexConsumerProvider;

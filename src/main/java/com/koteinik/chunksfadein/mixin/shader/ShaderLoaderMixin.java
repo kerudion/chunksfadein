@@ -10,7 +10,7 @@ import com.koteinik.chunksfadein.core.FadeTypes;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 
-import me.jellysquid.mods.sodium.client.gl.shader.ShaderLoader;
+import net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader;
 import net.minecraft.util.Identifier;
 
 @Mixin(value = ShaderLoader.class, remap = false)

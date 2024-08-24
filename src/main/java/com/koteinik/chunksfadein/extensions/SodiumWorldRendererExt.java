@@ -1,6 +1,6 @@
 package com.koteinik.chunksfadein.extensions;
 
-import me.jellysquid.mods.sodium.client.render.chunk.RenderSectionManager;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import org.jetbrains.annotations.Nullable;
 
 public interface SodiumWorldRendererExt {

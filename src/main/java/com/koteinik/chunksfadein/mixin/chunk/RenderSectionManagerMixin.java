@@ -7,8 +7,8 @@ import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extensions.RenderSectionExt;
 import com.koteinik.chunksfadein.extensions.RenderSectionManagerExt;
 
-import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
-import me.jellysquid.mods.sodium.client.render.chunk.RenderSectionManager;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 
 @Mixin(value = RenderSectionManager.class, remap = false)
 public abstract class RenderSectionManagerMixin implements RenderSectionManagerExt {
