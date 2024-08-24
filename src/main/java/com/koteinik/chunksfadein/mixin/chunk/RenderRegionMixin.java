@@ -11,10 +11,10 @@ import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extensions.RenderRegionExt;
 import com.koteinik.chunksfadein.extensions.RenderSectionExt;
 
-import me.jellysquid.mods.sodium.client.gl.arena.staging.StagingBuffer;
-import me.jellysquid.mods.sodium.client.gl.device.CommandList;
-import me.jellysquid.mods.sodium.client.gl.device.GLRenderDevice;
-import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
+import net.caffeinemc.mods.sodium.client.gl.arena.staging.StagingBuffer;
+import net.caffeinemc.mods.sodium.client.gl.device.CommandList;
+import net.caffeinemc.mods.sodium.client.gl.device.GLRenderDevice;
+import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
 
 @Mixin(value = RenderRegion.class, remap = false)
 public class RenderRegionMixin implements RenderRegionExt {

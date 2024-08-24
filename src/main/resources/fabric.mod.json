@@ -22,10 +22,10 @@
     "fabricloader": ">=0.15.7",
     "minecraft": "~1.21",
     "java": ">=21",
-    "sodium": ">=0.5.0"
+    "sodium": ">=0.5.20"
   },
   "breaks": {
-    "iris": "<1.7.0",
+    "iris": "<1.7.20",
     "optifabric": "*"
   },
   "entrypoints": {

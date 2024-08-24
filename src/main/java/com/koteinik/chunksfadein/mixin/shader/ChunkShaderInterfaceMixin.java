@@ -1,5 +1,6 @@
 package com.koteinik.chunksfadein.mixin.shader;
 
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.DefaultShaderInterface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -11,12 +12,12 @@ import com.koteinik.chunksfadein.core.FadeShaderInterface;
 import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 
-import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
-import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
-import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
-import me.jellysquid.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
+import net.caffeinemc.mods.sodium.client.gl.buffer.GlMutableBuffer;
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
 
-@Mixin(value = ChunkShaderInterface.class, remap = false)
+@Mixin(value = DefaultShaderInterface.class, remap = false)
 public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
     private FadeShaderInterface fadeInterface;
     private static boolean warned = false;

@@ -3,6 +3,7 @@ package com.koteinik.chunksfadein;
 import java.util.List;
 import java.util.Set;
 
+import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -15,13 +16,7 @@ public class ChunkFadeInMixinConfig implements IMixinConfigPlugin {
         if (!isIrisMixin)
             return true;
 
-        try {
-            Class.forName("net.irisshaders.iris.compat.sodium.impl.shader_overrides.ShaderChunkRendererExt", false,
-                    getClass().getClassLoader());
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return FabricLoader.getInstance().isModLoaded("iris");
     }
 
     @Override

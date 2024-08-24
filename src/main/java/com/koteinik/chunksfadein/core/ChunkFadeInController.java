@@ -4,9 +4,9 @@ import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extensions.RenderSectionExt;
 
-import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
-import me.jellysquid.mods.sodium.client.gl.device.CommandList;
-import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
+import net.caffeinemc.mods.sodium.client.gl.buffer.GlMutableBuffer;
+import net.caffeinemc.mods.sodium.client.gl.device.CommandList;
+import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
 
 public class ChunkFadeInController {
     private final DataBuffer chunkFadeDatasBuffer = new DataBuffer(RenderRegion.REGION_SIZE, 4);

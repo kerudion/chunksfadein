@@ -8,8 +8,8 @@ import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extensions.RenderSectionExt;
 
-import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
-import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
+import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ChunkSectionPos;

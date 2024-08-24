@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.system.MemoryUtil;
 
-import me.jellysquid.mods.sodium.client.gl.buffer.GlBufferUsage;
-import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
-import me.jellysquid.mods.sodium.client.gl.device.CommandList;
+import net.caffeinemc.mods.sodium.client.gl.buffer.GlBufferUsage;
+import net.caffeinemc.mods.sodium.client.gl.buffer.GlMutableBuffer;
+import net.caffeinemc.mods.sodium.client.gl.device.CommandList;
 
 public class DataBuffer {
     private final ByteBuffer buffer;
