@@ -11,29 +11,23 @@ import com.koteinik.chunksfadein.extensions.SodiumWorldRendererExt;
 import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 
 @Mixin(value = EntityRenderer.class)
 public class EntityRendererMixin {
     @Inject(method = "getPositionOffset", at = @At(value = "RETURN"), cancellable = true)
     public void modifyGetPositionOffset(Entity entity, float tickDelta, CallbackInfoReturnable<Vec3d> cir) {
-        if (!Config.isModEnabled || !Config.isAnimationEnabled || entity.getWorld() == null)
+        if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled) || entity.getWorld() == null)
             return;
 
-        ChunkSectionPos chunkPos = ChunkSectionPos.from(entity.getPos());
         SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();
         if (renderer == null)
             return;
 
-        if(((SodiumWorldRendererExt) renderer).getRenderSectionManager() == null) {
+        if (((SodiumWorldRendererExt) renderer).getRenderSectionManager() == null)
             return;
-        }
 
-        float[] offset = ((SodiumWorldRendererExt) renderer).getAnimationOffset(
-                chunkPos.getX(),
-                chunkPos.getY(),
-                chunkPos.getZ());
+        float[] offset = ((SodiumWorldRendererExt) renderer).getAnimationOffset(entity.getPos());
         if (offset == null)
             return;
 

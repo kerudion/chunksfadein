@@ -14,29 +14,23 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.ItemFrameEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.util.math.ChunkSectionPos;
 
 @Mixin(value = ItemFrameEntityRenderer.class)
 public class ItemFrameEntityRendererMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;multiply(Lorg/joml/Quaternionf;)V", ordinal = 1, shift = Shift.BEFORE))
     private void modifyRender(ItemFrameEntity entity, float f, float g, MatrixStack matrixStack,
-            VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
-        if (!Config.isModEnabled || !Config.isAnimationEnabled || entity.getWorld() == null)
+        VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
+        if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled) || entity.getWorld() == null)
             return;
 
-        ChunkSectionPos chunkPos = ChunkSectionPos.from(entity.getPos());
         SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();
         if (renderer == null)
             return;
 
-        if(((SodiumWorldRendererExt) renderer).getRenderSectionManager() == null) {
+        if (((SodiumWorldRendererExt) renderer).getRenderSectionManager() == null)
             return;
-        }
 
-        float[] offset = ((SodiumWorldRendererExt) renderer).getAnimationOffset(
-                chunkPos.getX(),
-                chunkPos.getY(),
-                chunkPos.getZ());
+        float[] offset = ((SodiumWorldRendererExt) renderer).getAnimationOffset(entity.getPos());
         if (offset == null)
             return;
 

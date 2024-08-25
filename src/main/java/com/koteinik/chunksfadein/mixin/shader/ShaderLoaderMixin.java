@@ -15,44 +15,6 @@ import net.minecraft.util.Identifier;
 
 @Mixin(value = ShaderLoader.class, remap = false)
 public abstract class ShaderLoaderMixin {
-    private static final ShaderInjector fragmentInjectorFull = new ShaderInjector();
-    private static final ShaderInjector fragmentInjectorLined = new ShaderInjector();
-
-    private static final ShaderInjector vertexInjectorFull = new ShaderInjector();
-    private static final ShaderInjector vertexInjectorLined = new ShaderInjector();
-
-    static {
-        fragmentInjectorFull.insertAfterInVars("in float v_FadeCoeff;");
-
-        fragmentInjectorLined.copyFrom(fragmentInjectorFull);
-
-        fragmentInjectorFull.appendToFunction("void main()",
-            "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) {frag_color} = mix({frag_color}, u_FogColor, 1.0 - v_FadeCoeff);");
-
-        fragmentInjectorLined.insertAfterInVars("in float v_LocalHeight;");
-        fragmentInjectorLined.appendToFunction("void main()",
-            "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) { float fadeLineY = v_FadeCoeff * 16.0; {frag_color} = mix({frag_color}, u_FogColor, v_LocalHeight <= fadeLineY ? 0.0 : 1.0); }");
-
-        vertexInjectorFull.insertAfterOutVars(true, "out float v_FadeCoeff;");
-        vertexInjectorFull.insertAfterUniforms(
-            "struct ChunkFadeData {",
-            "    vec4 fadeData;",
-            "};",
-            "layout(std140) uniform ubo_ChunkFadeDatas {",
-            "    ChunkFadeData Chunk_FadeDatas[256];",
-            "};");
-        vertexInjectorFull.insertAfterVariable("vec3 position",
-            "vec4 chunkFadeData = Chunk_FadeDatas[{mesh_id}].fadeData;",
-            "position.y = position.y + chunkFadeData.y;");
-        vertexInjectorFull.appendToFunction("void main()",
-            "v_FadeCoeff = chunkFadeData.w;");
-
-        vertexInjectorLined.copyFrom(vertexInjectorFull);
-        vertexInjectorLined.insertAfterOutVars("out float v_LocalHeight;");
-        vertexInjectorLined.appendToFunction("void main()",
-            "v_LocalHeight = _vert_position.y;");
-    }
-
     @Inject(method = "getShaderSource", at = @At("RETURN"), cancellable = true)
     private static void modifyConstructor(Identifier name, CallbackInfoReturnable<String> cir) {
         if (!Config.isModEnabled || CompatibilityHook.isIrisShaderPackInUse())
@@ -64,15 +26,14 @@ public abstract class ShaderLoaderMixin {
         String shaderFileName = splittedPath[splittedPath.length - 1];
 
         String source = cir.getReturnValue();
-        boolean isFull = Config.fadeType == FadeTypes.FULL;
 
         switch (shaderFileName) {
             case "block_layer_opaque.fsh":
-                source = (isFull ? fragmentInjectorFull : fragmentInjectorLined).get(source);
+                source = prepareFragmentInjector().get(source);
                 break;
 
             case "block_layer_opaque.vsh":
-                source = (isFull ? vertexInjectorFull : vertexInjectorLined).get(source);
+                source = prepareVertexInjector().get(source);
                 break;
 
             default:
@@ -80,5 +41,54 @@ public abstract class ShaderLoaderMixin {
         }
 
         cir.setReturnValue(source);
+    }
+
+    private static ShaderInjector prepareFragmentInjector() {
+        ShaderInjector injector = new ShaderInjector();
+
+        injector.insertAfterInVars("in float v_FadeCoeff;");
+
+        if (Config.fadeType == FadeTypes.FULL) {
+            injector.appendToFunction("void main()",
+                "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) {frag_color} = mix({frag_color}, u_FogColor, 1.0 - v_FadeCoeff);");
+        } else {
+            injector.insertAfterInVars("in float v_LocalHeight;");
+            injector.appendToFunction("void main()",
+                "if(v_FadeCoeff >= 0.0 && v_FadeCoeff < 1.0) { float fadeLineY = v_FadeCoeff * 16.0; {frag_color} = mix({frag_color}, u_FogColor, v_LocalHeight <= fadeLineY ? 0.0 : 1.0); }");
+        }
+
+        return injector;
+    }
+
+    private static ShaderInjector prepareVertexInjector() {
+        ShaderInjector injector = new ShaderInjector();
+
+        injector.insertAfterOutVars(true, "out float v_FadeCoeff;");
+        injector.insertAfterUniforms(
+            "struct ChunkFadeData {",
+            "    vec4 fadeData;",
+            "};",
+            "layout(std140) uniform ubo_ChunkFadeDatas {",
+            "    ChunkFadeData Chunk_FadeDatas[256];",
+            "};");
+
+        if (Config.isCurvatureEnabled)
+            injector.insertAfterVariable("vec3 position",
+                "position.y -= dot(position, position) / %s;".formatted(Config.worldCurvature));
+
+        injector.insertAfterVariable("vec3 position",
+            "vec4 chunkFadeData = Chunk_FadeDatas[{mesh_id}].fadeData;",
+            "position.y += chunkFadeData.y;");
+
+        injector.appendToFunction("void main()",
+            "v_FadeCoeff = chunkFadeData.w;");
+
+        if (Config.fadeType == FadeTypes.LINED) {
+            injector.insertAfterOutVars("out float v_LocalHeight;");
+            injector.appendToFunction("void main()",
+                "v_LocalHeight = _vert_position.y;");
+        }
+
+        return injector;
     }
 }

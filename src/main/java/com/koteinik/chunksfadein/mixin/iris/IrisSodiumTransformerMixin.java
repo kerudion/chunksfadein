@@ -38,19 +38,28 @@ import net.irisshaders.iris.pipeline.transform.transformer.SodiumTransformer;
 public class IrisSodiumTransformerMixin {
     @Inject(method = "transform", at = @At("TAIL"))
     private static void modifyTransform(ASTParser t, TranslationUnit tree, Root root, SodiumParameters parameters,
-            CallbackInfo ci) {
+        CallbackInfo ci) {
         boolean isLined = Config.fadeType == FadeTypes.LINED;
+        boolean isCurvatureEnabled = Config.isCurvatureEnabled;
 
         switch (parameters.type.glShaderType) {
             case VERTEX:
                 List<String> vertInitTail = new ArrayList<>();
                 vertInitTail.add("fadeCoeff = Chunk_FadeDatas[_draw_id].fadeData.w;");
-                vertInitTail.add("_vert_position = _vert_position + Chunk_FadeDatas[_draw_id].fadeData.xyz;");
+                vertInitTail.add("_vert_position += Chunk_FadeDatas[_draw_id].fadeData.xyz;");
 
                 if (isLined)
                     vertInitTail.add("localHeight = _vert_position.y;");
 
                 tree.appendFunctionBody("_vert_init", parseStatements(t, root, vertInitTail));
+
+                if (isCurvatureEnabled) {
+                    List<String> mainTail = new ArrayList<>();
+
+                    mainTail.add("gl_Position.y -= dot(gl_Position, gl_Position) / %s;".formatted(Config.worldCurvature));
+
+                    tree.appendMainFunctionBody(parseStatements(t, root, mainTail));
+                }
 
                 List<String> vDefines = new ArrayList<>();
                 vDefines.add("out float fadeCoeff;");
@@ -117,7 +126,7 @@ public class IrisSodiumTransformerMixin {
                 DeclarationEntry declarationEntry = entries.stream().findAny().get();
 
                 DeclarationExternalDeclaration externalDeclaration = (DeclarationExternalDeclaration) declarationEntry
-                        .declaration();
+                    .declaration();
                 TypeAndInitDeclaration declaration = (TypeAndInitDeclaration) externalDeclaration.getDeclaration();
                 FullySpecifiedType type = declaration.getType();
 

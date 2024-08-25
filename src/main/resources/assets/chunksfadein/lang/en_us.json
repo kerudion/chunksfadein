@@ -23,5 +23,8 @@
     "settings.chunksfadein.animation_curve.bounce": "Bounce",
     "settings.chunksfadein.animation_start": "Animation start (-y): %.2f",
     "settings.chunksfadein.animate_near_player": "Animate near player: %s",
-    "settings.chunksfadein.animation_time": "Animation time: %.2f sec"
+    "settings.chunksfadein.animation_time": "Animation time: %.2f sec",
+    "settings.chunksfadein.world_curvature_enabled": "World curvature enabled: %s",
+    "settings.chunksfadein.world_curvature": "World curvature: %.0f",
+    "settings.chunksfadein.iris_warning": "This option can cause issues when used with shaders."
 }

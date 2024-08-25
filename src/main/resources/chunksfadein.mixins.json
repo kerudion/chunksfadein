@@ -14,7 +14,6 @@
     "entity.EntityRendererMixin",
     "entity.SodiumWorldRendererMixin",
     "entity.ItemFrameEntityRendererMixin",
-    "iris.ProgramUniforms$BuilderMixin",
     "iris.IrisChunkShaderInterfaceMixin",
     "iris.IrisSodiumTransformerMixin",
     "misc.ClientPacketListenerMixin",

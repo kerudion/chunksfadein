@@ -4,6 +4,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.gui.GuiUtils;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
 
@@ -20,7 +21,7 @@ public class ChunksFadeInSlider extends SliderWidget {
     final double scale;
 
     public ChunksFadeInSlider(int x, int y, int width, int height, DoubleSupplier updateValue,
-            Function<Double, Text> getText, DoubleConsumer applyValue, double scale) {
+        Function<Double, Text> getText, DoubleConsumer applyValue, double scale) {
         super(x, y, width, height, getText.apply(updateValue.getAsDouble()), updateValue.getAsDouble());
         this.getText = getText;
         this.scale = scale;
@@ -42,12 +43,16 @@ public class ChunksFadeInSlider extends SliderWidget {
         return value * scale;
     }
 
+    public ChunksFadeInButton attachResetButton(String key) {
+        return attachResetButton(() -> Config.reset(key));
+    }
+
     public ChunksFadeInButton attachResetButton(Runnable onPress) {
         return new ChunksFadeInButton(getX() + width + GuiUtils.SPACING_X, getY(), RESET_BUTTON_W, RESET_BUTTON_H,
-                () -> SettingsScreen.RESET, () -> {
-                    onPress.run();
-                    updateMessage();
-                    value = updateValue.getAsDouble();
-                });
+            () -> SettingsScreen.RESET, () -> {
+                onPress.run();
+                updateMessage();
+                value = updateValue.getAsDouble();
+            });
     }
 }

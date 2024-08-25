@@ -1,5 +1,6 @@
 package com.koteinik.chunksfadein.gui;
 
+import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -43,65 +44,73 @@ public class GuiUtils {
     }
 
     public static ChunksFadeInButton choiceButton(Screen screen, int column, int row, String textKey,
-            String configKey) {
+        String configKey) {
         return choiceButton(screen, column, row, textKey, configKey, null, null);
     }
 
     public static ChunksFadeInButton choiceButton(Screen screen, int column, int row, String textKey,
-            String configKey, Boolean forcedValue, Text tooltip) {
+        String configKey, Boolean forcedValue, Text tooltip) {
         return button(screen, column, row,
-                () -> choiceText(textKey, Config.getBoolean(configKey)),
-                () -> Config.flipBoolean(configKey), forcedValue, tooltip);
+            () -> choiceText(textKey, Config.getBoolean(configKey)),
+            () -> Config.flipBoolean(configKey), forcedValue, tooltip);
     }
 
     public static ChunksFadeInButton toggledButton(Screen screen, int column, int row, String textKey,
-            String configKey) {
+        String configKey) {
         return toggledButton(screen, column, row, textKey, configKey, null, null);
     }
 
     public static ChunksFadeInButton toggledButton(Screen screen, int column, int row, String textKey,
-            String configKey, Boolean forcedValue, Text tooltip) {
+        String configKey, Boolean forcedValue, Text tooltip) {
         return button(screen, column, row,
-                () -> toggledText(textKey, Config.getBoolean(configKey)),
-                () -> Config.flipBoolean(configKey), forcedValue, tooltip);
+            () -> toggledText(textKey, Config.getBoolean(configKey)),
+            () -> Config.flipBoolean(configKey), forcedValue, tooltip);
     }
 
     public static ChunksFadeInButton doneButton(Screen screen) {
         return new ChunksFadeInButton(
-                calculateX(screen.width, 0),
-                screen.height - BUTTON_H - 8,
-                BUTTON_W, BUTTON_H,
-                () -> ScreenTexts.DONE, () -> screen.close());
+            calculateX(screen.width, 0),
+            screen.height - BUTTON_H - 8,
+            BUTTON_W, BUTTON_H,
+            () -> ScreenTexts.DONE, () -> screen.close());
     }
 
     public static ChunksFadeInSlider slider(SettingsScreen screen, int column, int row, DoubleSupplier updateValue,
-            DoubleSupplier displayValue,
-            String textKey, String configKey, double scale) {
+        DoubleSupplier displayValue,
+        String textKey, String configKey, double scale) {
+        return slider(screen, column, row,
+            updateValue, displayValue, textKey,
+            (value) -> Config.setDouble(configKey, value), scale);
+    }
+
+    public static ChunksFadeInSlider slider(SettingsScreen screen, int column, int row, DoubleSupplier updateValue,
+        DoubleSupplier displayValue,
+        String textKey, DoubleConsumer applyValue, double scale) {
         ChunksFadeInSlider slider = new ChunksFadeInSlider(
-                calculateX(screen.width, column),
-                calculateY(screen.height, row),
-                BUTTON_W, BUTTON_H,
-                updateValue,
-                (value) -> GuiUtils.doubleText(textKey, displayValue.getAsDouble()),
-                (value) -> Config.setDouble(configKey, value), scale);
+            calculateX(screen.width, column),
+            calculateY(screen.height, row),
+            BUTTON_W, BUTTON_H,
+            updateValue,
+            (value) -> GuiUtils.doubleText(textKey, displayValue.getAsDouble()),
+            applyValue, scale);
         return slider;
     }
 
     public static ChunksFadeInButton button(Screen screen, int column, int row,
-            Supplier<Text> createText, Runnable onPressed) {
+        Supplier<Text> createText, Runnable onPressed) {
         return button(screen, column, row, createText, onPressed, null, null);
     }
 
     public static ChunksFadeInButton button(Screen screen, int column, int row,
-            Supplier<Text> createText, Runnable onPressed, Boolean forcedValue, Text tooltip) {
+        Supplier<Text> createText, Runnable onPressed, Boolean forcedValue, Text tooltip) {
         return new ChunksFadeInButton(
-                calculateX(screen.width, column),
-                calculateY(screen.height, row),
-                BUTTON_W, BUTTON_H,
-                createText,
-                onPressed,
-                forcedValue,
-                tooltip);
+            calculateX(screen.width, column),
+            calculateY(screen.height, row),
+            BUTTON_W, BUTTON_H,
+            createText,
+            onPressed,
+            forcedValue,
+            tooltip);
     }
 
     private static int calculateY(int screenSize, int row) {
@@ -112,8 +121,8 @@ public class GuiUtils {
         int halfScreen = screenSize / 2;
 
         return column == 0
-                ? halfScreen - BUTTON_W / 2
-                : halfScreen + BUTTON_W * (column - (column < 0 ? 0 : 1)) + SPACING_X * column;
+            ? halfScreen - BUTTON_W / 2
+            : halfScreen + BUTTON_W * (column - (column < 0 ? 0 : 1)) + SPACING_X * column;
     }
 
     private static String color(boolean value) {

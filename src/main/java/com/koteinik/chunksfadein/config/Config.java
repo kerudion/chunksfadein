@@ -16,10 +16,14 @@ import com.moandjiezana.toml.Toml;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class Config {
-    public static final Long CONFIG_VERSION = 1L;
+    public static final Long CONFIG_VERSION = 2L;
+
     public static final double MAX_FADE_TIME = 10;
     public static final double MAX_ANIMATION_TIME = 10;
     public static final double MAX_ANIMATION_OFFSET = 319;
+    public static final int MIN_CURVATURE = -65536;
+    public static final int MAX_CURVATURE = -MIN_CURVATURE;
+
     public static final String CONFIG_VERSION_KEY = "config-version";
     public static final String MOD_ENABLED_KEY = "mod-enabled";
     public static final String SHOW_MOD_BUTTON_IN_SETTINGS_KEY = "show-mod-button-in-settings";
@@ -32,6 +36,8 @@ public class Config {
     public static final String ANIMATION_TIME_KEY = "animation-time";
     public static final String ANIMATION_CURVE_KEY = "animation-curve";
     public static final String ANIMATION_OFFSET_KEY = "animation-offset";
+    public static final String CURVATURE_ENABLED_KEY = "world-curvature-enabled";
+    public static final String CURVATURE_KEY = "world-curvature";
 
     private static final Map<String, ConfigEntry<?>> entries = new HashMap<>();
     private static File configFile;
@@ -39,6 +45,7 @@ public class Config {
     public static boolean isModEnabled;
     public static boolean isFadeEnabled;
     public static boolean isAnimationEnabled;
+    public static boolean isCurvatureEnabled;
     public static boolean isUpdateNotifierEnabled;
     public static boolean showModButtonInSettings;
     public static boolean animateNearPlayer;
@@ -47,36 +54,42 @@ public class Config {
     public static float animationChangePerNano;
     public static float fadeChangePerNano;
 
+    public static int worldCurvature;
+
     public static FadeTypes fadeType;
     public static Curves animationCurve;
 
     static {
         addEntry(new ConfigEntry<Integer>(Curves.EASE_OUT.ordinal(), ANIMATION_CURVE_KEY, Type.INTEGER))
-                .addListener((o) -> animationCurve = Curves.values()[MathUtils.clamp(o, 0,
-                        Curves.values().length - 1)]);
+            .addListener((o) -> animationCurve = Curves.values()[MathUtils.clamp(o, 0,
+                Curves.values().length - 1)]);
         addEntry(new ConfigEntry<Integer>(FadeTypes.FULL.ordinal(), FADE_TYPE_KEY, Type.INTEGER))
-                .addListener((o) -> fadeType = FadeTypes.values()[MathUtils.clamp(o, 0,
-                        Curves.values().length - 1)]);
+            .addListener((o) -> fadeType = FadeTypes.values()[MathUtils.clamp(o, 0,
+                Curves.values().length - 1)]);
+        addEntry(new ConfigEntry<Integer>(16384, CURVATURE_KEY, Type.INTEGER))
+            .addListener((o) -> worldCurvature = o);
 
         addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_FADE_TIME, 1, FADE_TIME_KEY))
-                .addListener((o) -> fadeChangePerNano = fadeChangeFromSeconds(o));
+            .addListener((o) -> fadeChangePerNano = fadeChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_ANIMATION_TIME, 2.56, ANIMATION_TIME_KEY))
-                .addListener((o) -> animationChangePerNano = animationChangeFromSeconds(o));
+            .addListener((o) -> animationChangePerNano = animationChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(1, MAX_ANIMATION_OFFSET, 64, ANIMATION_OFFSET_KEY))
-                .addListener((o) -> animationInitialOffset = (o).floatValue());
+            .addListener((o) -> animationInitialOffset = (o).floatValue());
 
         addEntry(new ConfigEntry<Boolean>(true, MOD_ENABLED_KEY, Type.BOOLEAN))
-                .addListener((o) -> isModEnabled = o);
+            .addListener((o) -> isModEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, FADE_ENABLED_KEY, Type.BOOLEAN))
-                .addListener((o) -> isFadeEnabled = o);
+            .addListener((o) -> isFadeEnabled = o);
         addEntry(new ConfigEntry<Boolean>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
-                .addListener((o) -> isAnimationEnabled = o);
+            .addListener((o) -> isAnimationEnabled = o);
+        addEntry(new ConfigEntry<Boolean>(true, CURVATURE_ENABLED_KEY, Type.BOOLEAN))
+            .addListener((o) -> isCurvatureEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, UPDATE_NOTIFIER_ENABLED_KEY, Type.BOOLEAN))
-                .addListener((o) -> isUpdateNotifierEnabled = o);
+            .addListener((o) -> isUpdateNotifierEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, SHOW_MOD_BUTTON_IN_SETTINGS_KEY, Type.BOOLEAN))
-                .addListener((o) -> showModButtonInSettings = o);
+            .addListener((o) -> showModButtonInSettings = o);
         addEntry(new ConfigEntry<Boolean>(true, ANIMATE_NEAR_PLAYER_KEY, Type.BOOLEAN))
-                .addListener((o) -> animateNearPlayer = o);
+            .addListener((o) -> animateNearPlayer = o);
     }
 
     public static float fadeChangeFromSeconds(double seconds) {
