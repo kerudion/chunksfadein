@@ -5,13 +5,12 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
 import com.koteinik.chunksfadein.config.Config;
-import com.koteinik.chunksfadein.gui.GuiUtils;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
 
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
 
-public class ChunksFadeInSlider extends SliderWidget {
+public class CFISlider extends SliderWidget {
     private static final int RESET_BUTTON_W = 40;
     private static final int RESET_BUTTON_H = 20;
 
@@ -20,7 +19,7 @@ public class ChunksFadeInSlider extends SliderWidget {
     final DoubleSupplier updateValue;
     final double scale;
 
-    public ChunksFadeInSlider(int x, int y, int width, int height, DoubleSupplier updateValue,
+    public CFISlider(int x, int y, int width, int height, DoubleSupplier updateValue,
         Function<Double, Text> getText, DoubleConsumer applyValue, double scale) {
         super(x, y, width, height, getText.apply(updateValue.getAsDouble()), updateValue.getAsDouble());
         this.getText = getText;
@@ -43,12 +42,12 @@ public class ChunksFadeInSlider extends SliderWidget {
         return value * scale;
     }
 
-    public ChunksFadeInButton attachResetButton(String key) {
-        return attachResetButton(() -> Config.reset(key));
+    public CFIButton makeResetButton(String key) {
+        return makeResetButton(() -> Config.reset(key));
     }
 
-    public ChunksFadeInButton attachResetButton(Runnable onPress) {
-        return new ChunksFadeInButton(getX() + width + GuiUtils.SPACING_X, getY(), RESET_BUTTON_W, RESET_BUTTON_H,
+    public CFIButton makeResetButton(Runnable onPress) {
+        return new CFIButton(0, 0, RESET_BUTTON_W, RESET_BUTTON_H,
             () -> SettingsScreen.RESET, () -> {
                 onPress.run();
                 updateMessage();
