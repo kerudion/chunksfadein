@@ -13,8 +13,8 @@ public class OpenSettingsButton extends ButtonWidget {
     private static final int buttonW = 20;
     private static final int buttonH = 20;
 
-    public OpenSettingsButton(Screen parent, MinecraftClient client, int parentW, int parentH) {
-        super(parentW / 2 - 155 - buttonW - 5, parentH / 6 + 72 - 6, buttonH, buttonW, ScreenTexts.EMPTY,
+    public OpenSettingsButton(Screen parent, MinecraftClient client, int x, int y) {
+        super(x, y, buttonH, buttonW, ScreenTexts.EMPTY,
                 new PressAction() {
                     @Override
                     public void onPress(ButtonWidget button) {

@@ -14,14 +14,16 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extensions.RenderSectionManagerExt;
 import com.koteinik.chunksfadein.extensions.SodiumWorldRendererExt;
+import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilderStorage;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -70,12 +72,13 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
         BufferBuilderStorage bufferBuilders,
         Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions,
         float tickDelta,
-        VertexConsumerProvider.Immediate immediate,
-        double x,
-        double y,
-        double z,
+        Immediate immediate,
+        double x, double y, double z,
         BlockEntityRenderDispatcher dispatcher,
-        BlockEntity entity, CallbackInfo ci) {
+        BlockEntity entity,
+        ClientPlayerEntity player,
+        LocalBooleanRef ref,
+        CallbackInfo ci) {
         if (!Config.isModEnabled || !entity.hasWorld() || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled))
             return;
 

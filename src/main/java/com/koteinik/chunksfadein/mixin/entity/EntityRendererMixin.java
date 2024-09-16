@@ -17,7 +17,7 @@ import net.minecraft.util.math.Vec3d;
 public class EntityRendererMixin {
     @Inject(method = "getPositionOffset", at = @At(value = "RETURN"), cancellable = true)
     public void modifyGetPositionOffset(Entity entity, float tickDelta, CallbackInfoReturnable<Vec3d> cir) {
-        if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled) || entity.getWorld() == null)
+        if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled) || entity.getWorld() == null || entity.getWorld().getEntityById(entity.getId()) == null)
             return;
 
         SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();
