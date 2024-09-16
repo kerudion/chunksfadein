@@ -61,6 +61,9 @@ public class RenderSectionMixin implements RenderSectionExt {
         if (fadeCoeff > 1f)
             fadeCoeff = 1f;
 
+        if (!hasRenderedBefore() && !Config.fadeNearPlayer && isNearPlayer())
+            fadeCoeff = 1f;
+
         return fadeCoeff;
     }
 
@@ -73,28 +76,12 @@ public class RenderSectionMixin implements RenderSectionExt {
         if (animationProgress > 1f)
             animationProgress = 1f;
 
-        if (!hasRenderedBefore()) {
-            if (!Config.animateNearPlayer) {
-                MinecraftClient client = MinecraftClient.getInstance();
-                Entity camera = client.cameraEntity;
-
-                if (camera != null) {
-                    ChunkSectionPos chunkPos = ChunkSectionPos.from(camera.getPos());
-
-                    final int camChunkX = chunkPos.getX();
-                    final int camChunkZ = chunkPos.getZ();
-                    final int x = chunkX;
-                    final int z = chunkZ;
-
-                    if (MathUtils.chunkInRange(x, z, camChunkX, camChunkZ, 1))
-                        animationProgress = 1f;
-                }
-            }
-        }
+        if (!hasRenderedBefore() && !Config.animateNearPlayer && isNearPlayer())
+            animationProgress = 1f;
 
         float animY;
         float curved = Config.animationInitialOffset
-                - Config.animationCurve.calculate(animationProgress) * Config.animationInitialOffset;
+            - Config.animationCurve.calculate(animationProgress) * Config.animationInitialOffset;
         curved = -curved;
 
         if (curved > 0f)
@@ -125,5 +112,23 @@ public class RenderSectionMixin implements RenderSectionExt {
     @Override
     public float getFadeCoeff() {
         return fadeCoeff;
+    }
+
+    private boolean isNearPlayer() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        Entity camera = client.cameraEntity;
+
+        if (camera != null) {
+            ChunkSectionPos chunkPos = ChunkSectionPos.from(camera.getPos());
+
+            final int camChunkX = chunkPos.getX();
+            final int camChunkZ = chunkPos.getZ();
+            final int x = chunkX;
+            final int z = chunkZ;
+
+            return MathUtils.chunkInRange(x, z, camChunkX, camChunkZ, 1);
+        }
+
+        return false;
     }
 }

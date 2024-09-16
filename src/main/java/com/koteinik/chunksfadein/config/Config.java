@@ -31,6 +31,7 @@ public class Config {
     public static final String FADE_ENABLED_KEY = "fade-enabled";
     public static final String FADE_TIME_KEY = "fade-time";
     public static final String FADE_TYPE_KEY = "fade-type";
+    public static final String FADE_NEAR_PLAYER_KEY = "fade-near-player";
     public static final String ANIMATION_ENABLED_KEY = "animation-enabled";
     public static final String ANIMATE_NEAR_PLAYER_KEY = "animate-near-player";
     public static final String ANIMATION_TIME_KEY = "animation-time";
@@ -49,6 +50,7 @@ public class Config {
     public static boolean isUpdateNotifierEnabled;
     public static boolean showModButtonInSettings;
     public static boolean animateNearPlayer;
+    public static boolean fadeNearPlayer;
 
     public static float animationInitialOffset;
     public static float animationChangePerNano;
@@ -90,6 +92,8 @@ public class Config {
             .addListener((o) -> showModButtonInSettings = o);
         addEntry(new ConfigEntry<Boolean>(true, ANIMATE_NEAR_PLAYER_KEY, Type.BOOLEAN))
             .addListener((o) -> animateNearPlayer = o);
+        addEntry(new ConfigEntry<Boolean>(true, FADE_NEAR_PLAYER_KEY, Type.BOOLEAN))
+            .addListener((o) -> fadeNearPlayer = o);
     }
 
     public static float fadeChangeFromSeconds(double seconds) {

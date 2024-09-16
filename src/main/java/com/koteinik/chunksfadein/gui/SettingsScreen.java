@@ -30,6 +30,7 @@ public class SettingsScreen extends Screen {
     public static final String FADE_ENABLED = "settings.chunksfadein.fade_enabled";
     public static final String FADE_TYPE = "settings.chunksfadein.fade_type";
     public static final String FADE_TIME = "settings.chunksfadein.fade_time";
+    public static final String FADE_NEAR_PLAYER = "settings.chunksfadein.fade_near_player";
     public static final String ANIMATION_ENABLED = "settings.chunksfadein.animation_enabled";
     public static final String ANIMATION_CURVE = "settings.chunksfadein.animation_curve";
     public static final String ANIMATION_START = "settings.chunksfadein.animation_start";
@@ -90,6 +91,9 @@ public class SettingsScreen extends Screen {
             Config.MAX_FADE_TIME);
         list.add(fadeEnabled);
         list.add(fadeType, fadeTime, fadeTime.makeResetButton(Config.FADE_TIME_KEY));
+
+        CFIButton fadeNearPlayer = GuiUtils.choiceButton(FADE_NEAR_PLAYER, Config.FADE_NEAR_PLAYER_KEY);
+        list.add(fadeNearPlayer);
 
         CFIButton animationEnabled = GuiUtils.choiceButton(ANIMATION_ENABLED, Config.ANIMATION_ENABLED_KEY);
         CFIButton animationCurve = GuiUtils.button(

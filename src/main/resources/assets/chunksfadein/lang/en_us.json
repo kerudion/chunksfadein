@@ -15,6 +15,7 @@
     "settings.chunksfadein.fade_type.full": "Full",
     "settings.chunksfadein.fade_type.lined": "Lined",
     "settings.chunksfadein.fade_time": "Fade time: %.2f sec",
+    "settings.chunksfadein.fade_near_player": "Fade near player: %s",
     "settings.chunksfadein.animation_enabled": "Animation enabled: %s",
     "settings.chunksfadein.animation_curve": "Curve: %s",
     "settings.chunksfadein.animation_curve.linear": "Linear",
