@@ -10,14 +10,14 @@ import com.koteinik.chunksfadein.extensions.SodiumWorldRendererExt;
 
 import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 @Mixin(value = EntityRenderer.class)
 public class EntityRendererMixin {
     @Inject(method = "getRenderOffset", at = @At(value = "RETURN"), cancellable = true)
-    public void modifyGetPositionOffsetNew(EntityRenderState state, CallbackInfoReturnable<Vec3> cir) {
-        if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled) || state.isDiscrete)
+    public void modifyGetPositionOffsetNew(Entity entity, float tickDelta, CallbackInfoReturnable<Vec3> cir) {
+        if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled) || entity.level() == null || entity.level().getEntity(entity.getId()) == null)
             return;
     
         SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();
@@ -27,7 +27,7 @@ public class EntityRendererMixin {
         if (((SodiumWorldRendererExt) renderer).getRenderSectionManager() == null)
             return;
     
-        float[] offset = ((SodiumWorldRendererExt) renderer).getAnimationOffset(new Vec3(state.x, state.y, state.z));
+        float[] offset = ((SodiumWorldRendererExt) renderer).getAnimationOffset(entity.position());
         if (offset == null)
             return;
     

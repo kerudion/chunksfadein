@@ -22,6 +22,6 @@ public class OpenSettingsButton extends Button {
     @Override
     public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         super.renderWidget(context, mouseX, mouseY, delta);
-        context.blit(loc -> RenderType.gui(), MOD_ICON, getX() + 1, getY() + 1, 0, 0, 0, width - 2, height - 2, width - 2, height - 2);
+        context.blit(MOD_ICON, getX() + 1, getY() + 1, 0, 0, 0, width - 2, height - 2, width - 2, height - 2);
     }
 }
