@@ -34,9 +34,6 @@ dependencies {
 
     implementation "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
     jarJar "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
-
-    implementation "com.moulberry:mixinconstraints:${project.mixin_constraints_version}"
-    jarJar "com.moulberry:mixinconstraints:${project.mixin_constraints_version}"
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
