@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: ./gradlew clean build
 
-      - name: Publish (CurseForge/Modrinth/GitHub)
+      - name: Publish Fabric/Quilt
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           curseforge-id: 720811
@@ -38,6 +38,39 @@ jobs:
           loaders: |
             fabric
             quilt
+
+          files: |
+            fabric/build/libs/*.jar
+
+          dependencies: |
+            sodium(required){modrinth:AANobbMI}{curseforge:394468}
+            iris(optional){modrinth:YL57xq9U}{curseforge:455508}
+            optifabric(incompatible){curseforge:322385}#(ignore:modrinth)
+
+          java: |
+            17
+            18
+            21
+
+          game-version-filter: releases
+
+      - name: Publish NeoForge
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: 720811
+          curseforge-token: "${{secrets.CURSEFORGE_TOKEN}}"
+
+          modrinth-id: JaNmzvA8
+          modrinth-token: "${{secrets.MODRINTH_TOKEN}}"
+          modrinth-featured: false
+
+          github-token: "${{secrets.GITHUB_TOKEN}}"
+
+          loaders: |
+            neoforge
+
+          files: |
+            neoforge/build/libs/*.jar
 
           dependencies: |
             sodium(required){modrinth:AANobbMI}{curseforge:394468}
