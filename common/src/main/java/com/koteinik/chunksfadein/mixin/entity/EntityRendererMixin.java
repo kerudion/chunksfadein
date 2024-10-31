@@ -17,7 +17,7 @@ import net.minecraft.world.phys.Vec3;
 public class EntityRendererMixin {
     @Inject(method = "getRenderOffset", at = @At(value = "RETURN"), cancellable = true)
     public void modifyGetPositionOffsetNew(EntityRenderState state, CallbackInfoReturnable<Vec3> cir) {
-        if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled) || state.isDiscrete)
+        if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled) || state.isDiscrete || (state.x == 0 && state.y == 0 && state.z == 0))
             return;
     
         SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();
