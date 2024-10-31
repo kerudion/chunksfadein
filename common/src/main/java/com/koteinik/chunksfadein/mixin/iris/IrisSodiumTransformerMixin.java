@@ -43,12 +43,13 @@ public class IrisSodiumTransformerMixin {
         switch (parameters.type.glShaderType) {
             case VERTEX:
                 CompoundStatement vertInit = tree.getOneFunctionDefinitionBody("_vert_init");
-                vertInit.getParent().detachAndDelete();
+                ExternalDeclaration vertInitParent = (ExternalDeclaration) vertInit.getParent();
+                vertInitParent.detach();
 
                 ChildNodeList<ExternalDeclaration> children = tree.getChildren();
 
                 int i = children.indexOf(tree.getOneFunctionDefinitionBody("getVertexPosition").getParent());
-                children.add(i + 1, (ExternalDeclaration) vertInit.getParent());
+                children.add(i + 1, vertInitParent);
 
                 vertInit.getStatements().addAll(
                     parseStatements(t, root, shader
@@ -67,10 +68,9 @@ public class IrisSodiumTransformerMixin {
                 List<Tuple<Type, String>> layouts = findOutputColors(tree);
                 Tuple<Type, String> first = layouts.get(0);
 
-                if (!parameters.name.equals("shadow") && layouts.size() == 1)
-                    tree.appendMainFunctionBody(parseStatements(t, root, shader
-                        .fragColorMod(first.getB() + ".rgb", "iris_FogColor.rgb")
-                        .dumpMultiline()));
+                tree.appendMainFunctionBody(parseStatements(t, root, shader
+                    .fragColorMod(first.getB() + ".rgb", "iris_FogColor.rgb")
+                    .dumpMultiline()));
                 break;
 
             default:

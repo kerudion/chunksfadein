@@ -7,8 +7,6 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import com.koteinik.chunksfadein.hooks.CompatibilityHook;
-
 public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
@@ -17,7 +15,12 @@ public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 		if (!isIrisMixin)
 			return true;
 
-		return CompatibilityHook.isIrisLoaded;
+		try {
+			Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
 	}
 
 	@Override
