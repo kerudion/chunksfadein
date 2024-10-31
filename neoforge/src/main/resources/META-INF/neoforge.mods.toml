@@ -1,0 +1,33 @@
+modLoader = "javafml"
+loaderVersion = "*"
+license = "GPLv3"
+
+[[mods]]
+modId = "chunksfadein"
+version = "${version}"
+displayName = "Chunks Fade In"
+
+logoFile = "assets/chunksfadein/icon.png"
+authors = "kerudion (koteinik)"
+credits = "IMS212, IMB11, cadenkriese, felix14_v2, embeddedt, M4ximumPizza, hexadecimal233, fefe_du_973, yejianfeng, moorey5107, theRookieCoder, qznfbnj"
+description = '''
+Adds fade-in and motion animations for chunks!
+'''
+
+[[mixins]]
+config = "chunksfadein.mixins.json"
+
+[[dependencies.chunksfadein]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.2, 1.22)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.chunksfadein]]
+modId = "sodium"
+type = "required"
+reason = "Sodium is required for Chunks Fade In."
+versionRange = "[0.6.0-beta.4,)"
+ordering = "NONE"
+side = "CLIENT"

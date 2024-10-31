@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "id": "chunksfadein",
+  "version": "${version}",
+  "name": "Chunks Fade In",
+  "description": "Adds fade-in and motion animations for chunks!",
+  "authors": [
+    {
+      "name": "kerudion (koteinik)",
+      "contact": {
+        "email": "kerudion@proton.me"
+      }
+    }
+  ],
+  "contributors": [
+    "IMS212",
+    "IMB11",
+    "cadenkriese",
+    "felix14_v2",
+    "embeddedt",
+    "M4ximumPizza",
+    "hexadecimal233",
+    "fefe_du_973",
+    "yejianfeng",
+    "moorey5107",
+    "theRookieCoder",
+    "qznfbnj"
+  ],
+  "contact": {
+    "homepage": "https://github.com/kerudion/chunksfadein",
+    "sources": "https://github.com/kerudion/chunksfadein",
+    "issues": "https://github.com/kerudion/chunksfadein/issues"
+  },
+  "license": "GPLv3",
+  "icon": "assets/chunksfadein/icon.png",
+  "environment": "client",
+  "mixins": [
+    "chunksfadein.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.7",
+    "minecraft": ">=1.21.2",
+    "java": ">=21",
+    "sodium": ">=0.6.0-beta.4"
+  },
+  "breaks": {
+    "iris": "<=1.7.5",
+    "optifabric": "*"
+  },
+  "entrypoints": {
+    "client": [
+      "com.koteinik.chunksfadein.ChunksFadeIn"
+    ],
+    "modmenu": [
+      "com.koteinik.chunksfadein.hooks.ModMenuHook"
+    ]
+  }
+}

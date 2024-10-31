@@ -1,0 +1,31 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.koteinik.chunksfadein.mixin",
+  "refmap": "chunksfadein.refmap.json",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [],
+  "client": [
+    "shader.ShaderLoaderMixin",
+    "shader.ChunkShaderInterfaceMixin",
+    "chunk.DefaultChunkRendererMixin",
+    "chunk.RenderRegionMixin",
+    "chunk.RenderSectionManagerMixin",
+    "chunk.RenderSectionMixin",
+    "entity.EntityRendererMixin",
+    "entity.SodiumWorldRendererMixin",
+    "entity.ItemFrameEntityRendererMixin",
+    "iris.IrisSodiumShaderMixin",
+    "iris.IrisSodiumTransformerMixin",
+    "misc.SodiumOptionsGUIMixin",
+    "misc.ReloadableResourceManagerMixin",
+    "misc.ClientboundLoginPacketMixin",
+    "misc.MinecraftMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "plugin": "com.koteinik.chunksfadein.ChunksFadeInMixinPlugin"
+}
+

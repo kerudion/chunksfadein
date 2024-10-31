@@ -1,0 +1,43 @@
+plugins {
+    id 'multiloader-common'
+    id 'fabric-loom'
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+
+    compileOnly "org.ow2.asm:asm-tree:9.5"
+    compileOnly "org.spongepowered:mixin:0.8.5"
+    compileOnly "io.github.llamalad7:mixinextras-common:0.3.5"
+    annotationProcessor "io.github.llamalad7:mixinextras-common:0.3.5"
+
+    modImplementation "maven.modrinth:sodium:${project.sodium_version.replace("fabric", "neoforge")}"
+    modImplementation "maven.modrinth:iris:${project.iris_version.replace("fabric", "neoforge")}"
+    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    compileOnly "com.moulberry:mixinconstraints:${project.mixin_constraints_version}"
+    compileOnly "org.antlr:antlr4-runtime:4.13.1"
+    compileOnly "io.github.douira:glsl-transformer:2.0.1"
+    compileOnly "org.anarres:jcpp:1.4.14"
+    compileOnly "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
+    compileOnly "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"
+}
+
+configurations {
+    commonJava {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+    commonResources {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+}
+
+artifacts {
+    commonJava sourceSets.main.java.sourceDirectories.singleFile
+    commonResources sourceSets.main.resources.sourceDirectories.singleFile
+}

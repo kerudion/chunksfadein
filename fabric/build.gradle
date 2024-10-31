@@ -1,0 +1,36 @@
+plugins {
+    id 'multiloader-loader'
+    id 'fabric-loom'
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+ 
+    modImplementation "maven.modrinth:sodium:${project.sodium_version}"
+    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modImplementation "maven.modrinth:iris:${project.iris_version}"
+    modRuntimeOnly "org.antlr:antlr4-runtime:4.13.1"
+    modRuntimeOnly "io.github.douira:glsl-transformer:2.0.1"
+    modRuntimeOnly "org.anarres:jcpp:1.4.14"
+
+    include "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
+    implementation "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
+
+    implementation "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"
+
+    include "com.moulberry:mixinconstraints:${project.mixin_constraints_version}"
+    implementation "com.moulberry:mixinconstraints:${project.mixin_constraints_version}"
+}
+
+loom {
+    mixin {
+        defaultRefmapName.set("chunksfadein.refmap.json")
+    }
+}
