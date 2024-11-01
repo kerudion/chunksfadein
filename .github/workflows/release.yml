@@ -35,6 +35,9 @@ jobs:
 
           github-token: "${{secrets.GITHUB_TOKEN}}"
 
+          name: "${{github.event.release.name}} for Fabric"
+          version: "${{github.ref_name}}-fabric"
+
           loaders: |
             fabric
             quilt
@@ -65,6 +68,9 @@ jobs:
           modrinth-featured: false
 
           github-token: "${{secrets.GITHUB_TOKEN}}"
+
+          name: "${{github.event.release.name}} for NeoForge"
+          version: "${{github.ref_name}}-neoforge"
 
           loaders: |
             neoforge
