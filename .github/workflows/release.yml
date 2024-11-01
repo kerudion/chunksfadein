@@ -68,6 +68,9 @@ jobs:
 
           loaders: |
             neoforge
+          
+          game-versions: |
+            [1.21.2, 1.22)
 
           files: |
             neoforge/build/libs/*.jar
