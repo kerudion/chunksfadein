@@ -43,7 +43,8 @@ jobs:
             quilt
 
           files: |
-            fabric/build/libs/*.jar
+            fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+            fabric/build/libs/*-@(dev|sources|javadocs).jar
 
           dependencies: |
             sodium(required){modrinth:AANobbMI}{curseforge:394468}
@@ -74,12 +75,13 @@ jobs:
 
           loaders: |
             neoforge
-          
+
           game-versions: |
             [1.21.2, 1.22)
 
           files: |
-            neoforge/build/libs/*.jar
+            neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
+            neoforge/build/libs/*-@(dev|sources|javadocs).jar
 
           dependencies: |
             sodium(required){modrinth:AANobbMI}{curseforge:394468}
