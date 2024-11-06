@@ -17,14 +17,14 @@ public class Keybinds {
 	private static final Component FADING_ENABLED = Component.translatable("chunksfadein.alerts.fading.enabled");
 	private static final Component FADING_DISABLED = Component.translatable("chunksfadein.alerts.fading.disabled");
 
-	public static KeyMapping toggleModKeybind;
+	public static KeyMapping toggleModKeybind = null;
 
 	public static void initKeybinds() {
 		toggleModKeybind = Services.PLATFORM.registerKeyBind(new KeyMapping(TOGGLE_MOD, InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), KEYBINDS));
 	}
 
 	public static void handleKeybinds(Minecraft minecraft) {
-		if (toggleModKeybind.consumeClick()) {
+		if (toggleModKeybind != null && toggleModKeybind.consumeClick()) {
 			boolean enabled = Config.flipBoolean(Config.MOD_ENABLED_KEY);
 
 			ShaderUtils.reloadWorldRenderer();
