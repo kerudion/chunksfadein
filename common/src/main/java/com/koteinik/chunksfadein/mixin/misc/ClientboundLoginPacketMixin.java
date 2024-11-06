@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.UpdateNotifier;
 
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
@@ -13,6 +14,7 @@ import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 public class ClientboundLoginPacketMixin {
 	@Inject(method = "handle", at = @At("RETURN"))
 	private void modifyHandle(CallbackInfo ci) {
-		UpdateNotifier.checkAndNotify();
+		if (Config.isUpdateNotifierEnabled)
+			UpdateNotifier.checkAndNotify();
 	}
 }
