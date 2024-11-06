@@ -34,6 +34,14 @@ public class ConfigEntryDoubleLimitable extends ConfigEntry<Double> {
         return super.value;
     }
 
+    public double getMin() {
+        return min;
+    }
+
+    public double getMax() {
+        return max;
+    }
+
     private void clampValue() {
         value = MathUtils.clamp(value, min, max);
     }

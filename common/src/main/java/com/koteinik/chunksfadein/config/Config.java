@@ -18,10 +18,14 @@ import com.moandjiezana.toml.Toml;
 public class Config {
     private static final int CONFIG_VERSION = 3;
 
+    public static final double MIN_FADE_TIME = 0.01;
     public static final double MAX_FADE_TIME = 10;
+    public static final double MIN_ANIMATION_TIME = 0.01;
     public static final double MAX_ANIMATION_TIME = 10;
     public static final double MIN_ANIMATION_OFFSET = -128;
     public static final double MAX_ANIMATION_OFFSET = 128;
+    public static final double MIN_ANIMATION_FACTOR = 0.01;
+    public static final double MAX_ANIMATION_FACTOR = 1;
     public static final double MIN_ANIMATION_ANGLE = 0;
     public static final double MAX_ANIMATION_ANGLE = 90;
     public static final int MIN_CURVATURE = -65536;
@@ -86,15 +90,15 @@ public class Config {
         addEntry(new ConfigEntry<Integer>(16384, CURVATURE_KEY, Type.INTEGER))
             .addListener((o) -> worldCurvature = o);
 
-        addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_FADE_TIME, 1, FADE_TIME_KEY))
+        addEntry(new ConfigEntryDoubleLimitable(MIN_FADE_TIME, MAX_FADE_TIME, 1, FADE_TIME_KEY))
             .addListener((o) -> fadeChangePerNano = fadeChangeFromSeconds(o));
-        addEntry(new ConfigEntryDoubleLimitable(0.01, MAX_ANIMATION_TIME, 2.56, ANIMATION_TIME_KEY))
+        addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_TIME, MAX_ANIMATION_TIME, 2.56, ANIMATION_TIME_KEY))
             .addListener((o) -> animationChangePerNano = animationChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_OFFSET, MAX_ANIMATION_OFFSET, -64, ANIMATION_OFFSET_KEY))
             .addListener((o) -> animationOffset = o.floatValue());
         addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_ANGLE, MAX_ANIMATION_ANGLE, 0, ANIMATION_ANGLE_KEY))
             .addListener((o) -> animationAngle = o.floatValue());
-        addEntry(new ConfigEntryDoubleLimitable(0.01, 1, 1, ANIMATION_FACTOR_KEY))
+        addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_FACTOR, MAX_ANIMATION_FACTOR, 1, ANIMATION_FACTOR_KEY))
             .addListener((o) -> animationFactor = o.floatValue());
 
         addEntry(new ConfigEntry<Boolean>(true, MOD_ENABLED_KEY, Type.BOOLEAN))
@@ -214,6 +218,24 @@ public class Config {
 
     public static boolean flipBoolean(String key) {
         return setBoolean(key, !getBoolean(key));
+    }
+
+    public static double getMin(String key) {
+        ConfigEntry<Double> entry = get(key);
+
+        if (entry instanceof ConfigEntryDoubleLimitable limitable)
+            return limitable.getMin();
+
+        throw new UnsupportedOperationException();
+    }
+
+    public static double getMax(String key) {
+        ConfigEntry<Double> entry = get(key);
+
+        if (entry instanceof ConfigEntryDoubleLimitable limitable)
+            return limitable.getMax();
+
+        throw new UnsupportedOperationException();
     }
 
     public static void reset(String key) {

@@ -23,14 +23,18 @@ public class ModrinthApi {
             JsonElement body = NetworkUtils.executeGet(VERSIONS_ENDPOINT,
                 Map.of(),
                 Map.of("featured", "true",
-                    "game_versions", "[\"" + minecraftVersion + "\"]"));
+                    "game_versions", "[\"" + minecraftVersion + "\"]",
+                    "loaders", "[\"" + (Services.PLATFORM.isForge() ? "neoforge" : "fabric") + "\"]"));
 
             JsonObject first = body.getAsJsonArray().get(0).getAsJsonObject();
 
-            String version = first.get("version_number").getAsString();
             String changelog = first.get("changelog").getAsString();
+            String version = first.get("version_number").getAsString();
+            version = version.replace("v", "")
+                .replace("-fabric", "")
+                .replace("-neoforge", "");
 
-            return new ModrinthVersion(new SemanticVersion(version.replaceAll("v", ""), false), changelog, MOD_VERSIONS + version);
+            return new ModrinthVersion(new SemanticVersion(version, false), changelog, MOD_VERSIONS + version);
         } catch (Exception e) {
             Logger.warn("Failed to get latest mod version! Cause: " + e.getMessage());
             return null;

@@ -73,7 +73,27 @@ public class MathUtils {
         return bd.doubleValue();
     }
 
+    public static int roundToInt(double value) {
+        return (int) Math.round(value);
+    }
+
+    public static int roundToInt(float value) {
+        return Math.round(value);
+    }
+
     public static float lerp(float a, float b, float factor) {
         return a + (b - a) * factor;
+    }
+
+    public static float rlerp(float a, float b, float value) {
+        return (value - a) / (b - a);
+    }
+
+    public static double lerp(double a, double b, double factor) {
+        return a + (b - a) * factor;
+    }
+
+    public static double rlerp(double a, double b, double value) {
+        return (value - a) / (b - a);
     }
 }
