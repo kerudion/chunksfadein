@@ -3,7 +3,6 @@ package com.koteinik.chunksfadein.core;
 import java.util.function.Function;
 
 import com.koteinik.chunksfadein.MathUtils;
-import com.koteinik.chunksfadein.gui.GuiUtils;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
 
 import net.minecraft.network.chat.Component;
@@ -35,7 +34,7 @@ public enum Curve implements TranslatableEnum {
 
     private Curve(Function<Float, Float> calculate) {
         this.calculate = calculate;
-        this.translation = GuiUtils.text(SettingsScreen.ANIMATION_CURVE + "." + name().toLowerCase());
+        this.translation = Component.translatable(SettingsScreen.ANIMATION_CURVE + "." + name().toLowerCase());
     }
 
     public Float calculate(Float in) {
