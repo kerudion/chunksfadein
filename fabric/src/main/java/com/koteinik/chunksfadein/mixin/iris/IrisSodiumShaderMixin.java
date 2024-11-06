@@ -1,7 +1,6 @@
 package com.koteinik.chunksfadein.mixin.iris;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +26,7 @@ public class IrisSodiumShaderMixin implements ChunkShaderInterfaceExt {
     private FadeShaderInterface fadeInterface;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void modifyConstructor(IrisRenderingPipeline pipeline, Pass pass, ShaderBindingContext context, int handle, Optional<BlendModeOverride> blendModeOverride, List<BufferBlendOverride> bufferBlendOverrides, CustomUniforms customUniforms, Supplier<ImmutableSet<Integer>> flipState, float alphaTest, boolean containsTessellation, CallbackInfo ci) {
+    private void modifyConstructor(IrisRenderingPipeline pipeline, Pass pass, ShaderBindingContext context, int handle, BlendModeOverride blendModeOverride, List<BufferBlendOverride> bufferBlendOverrides, CustomUniforms customUniforms, Supplier<ImmutableSet<Integer>> flipState, float alphaTest, boolean containsTessellation, CallbackInfo ci) {
         fadeInterface = new FadeShaderInterface(context);
     }
 
