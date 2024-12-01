@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.AnimationType;
+import com.koteinik.chunksfadein.core.DataBuffer;
 import com.koteinik.chunksfadein.extensions.RenderSectionExt;
 
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
@@ -20,9 +21,6 @@ import net.minecraft.world.phys.Vec3;
 @Mixin(value = RenderSection.class, remap = false)
 public class RenderSectionMixin implements RenderSectionExt {
     private static final Vector3f UP = new Vector3f(0, 1, 0);
-    private static final float[] FULLY_ANIMATED_OFFSET = new float[] {
-            0f, 0f, 0f
-    };
 
     @Shadow
     @Final
@@ -45,9 +43,7 @@ public class RenderSectionMixin implements RenderSectionExt {
     private float fadeCoeff = 0f;
     private float animationProgress = 0f;
 
-    private final float[] offset = new float[] {
-            0f, 0f, 0f
-    };
+    private final float[] offset = new float[3];
 
     @Override
     public boolean hasRenderedBefore() {
@@ -60,11 +56,11 @@ public class RenderSectionMixin implements RenderSectionExt {
     }
 
     @Override
-    public float incrementFadeCoeff(long delta) {
+    public boolean incrementFadeCoeff(long delta, int sectionIndex, DataBuffer buffer) {
         if (fadeCoeff == 1f)
-            return 1f;
+            return false;
 
-        fadeCoeff += delta * Config.fadeChangePerNano;
+        fadeCoeff += delta * Config.fadeChangePerMs;
 
         if (fadeCoeff > 1f)
             fadeCoeff = 1f;
@@ -72,15 +68,17 @@ public class RenderSectionMixin implements RenderSectionExt {
         if (!hasRenderedBefore() && !Config.fadeNearPlayer && isNearPlayer())
             fadeCoeff = 1f;
 
-        return fadeCoeff;
+        buffer.put(sectionIndex, 3, fadeCoeff);
+
+        return true;
     }
 
     @Override
-    public float[] incrementAnimationOffset(long delta) {
+    public boolean incrementAnimationOffset(long delta, int sectionIndex, DataBuffer buffer) {
         if (animationProgress == 1f)
-            return FULLY_ANIMATED_OFFSET;
+            return false;
 
-        animationProgress += delta * Config.animationChangePerNano;
+        animationProgress += delta * Config.animationChangePerMs;
         if (animationProgress > 1f)
             animationProgress = 1f;
 
@@ -117,7 +115,10 @@ public class RenderSectionMixin implements RenderSectionExt {
             }
         }
 
-        return offset;
+        for (int i = 0; i < 3; i++)
+            buffer.put(sectionIndex, i, offset[i]);
+
+        return true;
     }
 
     @Override
@@ -127,7 +128,7 @@ public class RenderSectionMixin implements RenderSectionExt {
 
         lastFrameTime = currentFrameTime;
 
-        return delta * 1000000;
+        return delta;
     }
 
     @Override

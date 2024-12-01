@@ -65,8 +65,8 @@ public class Config {
     public static float animationAngle; // for FULL
     public static float animationOffset; // for FULL, JAGGED
     public static float animationFactor; // for DISPLACEMENT, SCALE
-    public static float animationChangePerNano;
-    public static float fadeChangePerNano;
+    public static float animationChangePerMs;
+    public static float fadeChangePerMs;
 
     public static int worldCurvature;
     public static int configVersion;
@@ -91,9 +91,9 @@ public class Config {
             .addListener((o) -> worldCurvature = o);
 
         addEntry(new ConfigEntryDoubleLimitable(MIN_FADE_TIME, MAX_FADE_TIME, 1, FADE_TIME_KEY))
-            .addListener((o) -> fadeChangePerNano = fadeChangeFromSeconds(o));
+            .addListener((o) -> fadeChangePerMs = fadeChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_TIME, MAX_ANIMATION_TIME, 2.56, ANIMATION_TIME_KEY))
-            .addListener((o) -> animationChangePerNano = animationChangeFromSeconds(o));
+            .addListener((o) -> animationChangePerMs = animationChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_OFFSET, MAX_ANIMATION_OFFSET, -64, ANIMATION_OFFSET_KEY))
             .addListener((o) -> animationOffset = o.floatValue());
         addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_ANGLE, MAX_ANIMATION_ANGLE, 0, ANIMATION_ANGLE_KEY))
@@ -120,23 +120,23 @@ public class Config {
     }
 
     public static float fadeChangeFromSeconds(double seconds) {
-        final float secondsInMs = (float) (seconds * 1E+9);
+        final float secondsInMs = (float) (seconds * 1E+3);
 
         return 1f / secondsInMs;
     }
 
     public static float secondsFromFadeChange() {
-        return 1f / fadeChangePerNano / 1E+9f;
+        return 1f / fadeChangePerMs / 1E+3f;
     }
 
     public static float animationChangeFromSeconds(double seconds) {
-        final float secondsInMs = (float) (seconds * 1E+9);
+        final float secondsInMs = (float) (seconds * 1E+3);
 
         return 1 / secondsInMs;
     }
 
     public static double secondsFromAnimationChange() {
-        return (double) (1 / animationChangePerNano / 1E+9);
+        return (double) (1 / animationChangePerMs / 1E+3);
     }
 
     public static void load() {
