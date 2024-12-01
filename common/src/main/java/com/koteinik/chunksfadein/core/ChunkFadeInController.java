@@ -11,6 +11,7 @@ import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
 public class ChunkFadeInController {
     private final DataBuffer chunkFadeDatasBuffer = new DataBuffer(RenderRegion.REGION_SIZE, 4);
     private GlMutableBuffer chunkGlFadeDataBuffer;
+    private boolean dirty = true;
 
     public ChunkFadeInController(CommandList commandList) {
         chunkGlFadeDataBuffer = commandList.createMutableBuffer();
@@ -25,7 +26,9 @@ public class ChunkFadeInController {
         float z = chunkFadeDatasBuffer.get(chunkId, 2);
         float w = chunkFadeDatasBuffer.get(chunkId, 3);
 
-        return new float[] { x, y, z, w };
+        return new float[] {
+                x, y, z, w
+        };
     }
 
     public void completeChunkFade(int chunkId, boolean completeFade) {
@@ -44,28 +47,30 @@ public class ChunkFadeInController {
     }
 
     public void uploadToBuffer(ChunkShaderInterfaceExt shader, CommandList commandList) {
-        chunkFadeDatasBuffer.uploadData(commandList, chunkGlFadeDataBuffer);
+        if (dirty) {
+            chunkFadeDatasBuffer.uploadData(commandList, chunkGlFadeDataBuffer);
+            dirty = false;
+        }
+
         shader.setFadeDatas(chunkGlFadeDataBuffer);
     }
 
-    public void processChunk(RenderSectionExt chunk, int chunkId, int x, int y, int z) {
-        long delta = chunk.calculateAndGetDelta();
+    public void processChunk(RenderSectionExt section, int sectionIndex) {
+        long delta = section.calculateAndGetDelta();
 
         if (Config.isFadeEnabled)
-            chunkFadeDatasBuffer.put(chunkId, 3, chunk.incrementFadeCoeff(delta));
-        else if (chunkFadeDatasBuffer.get(chunkId, 3) != 1f)
-            chunkFadeDatasBuffer.put(chunkId, 3, 1f);
+            dirty |= section.incrementFadeCoeff(delta, sectionIndex, chunkFadeDatasBuffer);
+        else if (chunkFadeDatasBuffer.get(sectionIndex, 3) != 1f)
+            chunkFadeDatasBuffer.put(sectionIndex, 3, 1f);
 
-        if (Config.isAnimationEnabled) {
-            float[] animationProgress = chunk.incrementAnimationOffset(delta);
+        if (Config.isAnimationEnabled)
+            dirty |= section.incrementAnimationOffset(delta, sectionIndex, chunkFadeDatasBuffer);
+        else
+            for (int i = 0; i < 3; i++)
+                if (chunkFadeDatasBuffer.get(sectionIndex, i) != 0f)
+                    chunkFadeDatasBuffer.put(sectionIndex, i, 0f);
 
-            chunkFadeDatasBuffer.put(chunkId, 0, animationProgress[0]);
-            chunkFadeDatasBuffer.put(chunkId, 1, animationProgress[1]);
-            chunkFadeDatasBuffer.put(chunkId, 2, animationProgress[2]);
-        } else if (chunkFadeDatasBuffer.get(chunkId, 1) != 0f)
-            chunkFadeDatasBuffer.put(chunkId, 1, 0f);
-
-        chunk.setRenderedBefore();
+        section.setRenderedBefore();
     }
 
     public void delete(CommandList commandList) {

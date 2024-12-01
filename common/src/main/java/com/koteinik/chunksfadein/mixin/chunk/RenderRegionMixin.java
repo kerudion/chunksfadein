@@ -30,8 +30,8 @@ public class RenderRegionMixin implements RenderRegionExt {
     }
 
     @Override
-    public void processChunk(RenderSectionExt chunk, int chunkId, int x, int y, int z) {
-        fadeController.processChunk(chunk, chunkId, x, y, z);
+    public void processChunk(RenderSectionExt section, int sectionIndex) {
+        fadeController.processChunk(section, sectionIndex);
     }
 
     @Override

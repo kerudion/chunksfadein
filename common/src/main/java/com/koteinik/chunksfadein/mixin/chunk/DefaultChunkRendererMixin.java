@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.extensions.RenderRegionExt;
 import com.koteinik.chunksfadein.extensions.RenderSectionExt;
@@ -41,7 +42,8 @@ public class DefaultChunkRendererMixin {
             return;
 
         // Made to not interrupt Axiom mixin
-        uploadToBuffer(commandList, shader, region);
+        if (Config.isModEnabled)
+            uploadToBuffer(commandList, shader, region);
     }
 
     @Inject(method = "fillCommandBuffer",
@@ -55,12 +57,10 @@ public class DefaultChunkRendererMixin {
         TerrainRenderPass pass,
         boolean useBlockFaceCulling,
         CallbackInfo ci,
-        @Local(name = "sectionIndex") int sectionIndex,
-        @Local(name = "chunkX") int x,
-        @Local(name = "chunkY") int y,
-        @Local(name = "chunkZ") int z) {
+        @Local(name = "sectionIndex") int sectionIndex) {
         // Made to not interrupt Axiom mixin
-        processChunk(region, sectionIndex, x, y, z);
+        if (Config.isModEnabled)
+            processChunk(region, sectionIndex);
     }
 
     private void uploadToBuffer(CommandList commandList, ChunkShaderInterface shader, RenderRegion region) {
@@ -70,10 +70,10 @@ public class DefaultChunkRendererMixin {
         regionExt.uploadToBuffer(ext, commandList);
     }
 
-    private static void processChunk(RenderRegion region, int sectionIndex, int x, int y, int z) {
+    private static void processChunk(RenderRegion region, int sectionIndex) {
         RenderSection section = region.getSection(sectionIndex);
         RenderRegionExt regionExt = (RenderRegionExt) region;
 
-        regionExt.processChunk((RenderSectionExt) section, sectionIndex, x, y, z);
+        regionExt.processChunk((RenderSectionExt) section, sectionIndex);
     }
 }
