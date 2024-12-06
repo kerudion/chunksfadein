@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 
@@ -57,7 +57,7 @@ public class TranslationsPack implements PackResources {
 	}
 
 	@Override
-	public <T> T getMetadataSection(MetadataSectionSerializer<T> pDeserializer) throws IOException {
+	public <T> T getMetadataSection(MetadataSectionType<T> type) throws IOException {
 		return null;
 	}
 
