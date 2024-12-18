@@ -15,15 +15,20 @@ public class ShaderUtils {
     private static Method clearCache;
 
     static {
-        try {
-            Field cache = TransformPatcher.class.getDeclaredField("cache");
-            cache.setAccessible(true);
+        if (CompatibilityHook.isIrisLoaded) {
+            irisTransformCache = null;
+            clearCache = null;
+        } else {
+            try {
+                Field cache = TransformPatcher.class.getDeclaredField("cache");
+                cache.setAccessible(true);
 
-            irisTransformCache = cache.get(null);
+                irisTransformCache = cache.get(null);
 
-            clearCache = Map.class.getDeclaredMethod("clear");
-        } catch (Exception e) {
-            e.printStackTrace();
+                clearCache = Map.class.getDeclaredMethod("clear");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
