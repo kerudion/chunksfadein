@@ -90,7 +90,7 @@ public class Config {
         addEntry(new ConfigEntry<Integer>(16384, CURVATURE_KEY, Type.INTEGER))
             .addListener((o) -> worldCurvature = o);
 
-        addEntry(new ConfigEntryDoubleLimitable(MIN_FADE_TIME, MAX_FADE_TIME, 1, FADE_TIME_KEY))
+        addEntry(new ConfigEntryDoubleLimitable(MIN_FADE_TIME, MAX_FADE_TIME, 0.75, FADE_TIME_KEY))
             .addListener((o) -> fadeChangePerMs = fadeChangeFromSeconds(o));
         addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_TIME, MAX_ANIMATION_TIME, 2.56, ANIMATION_TIME_KEY))
             .addListener((o) -> animationChangePerMs = animationChangeFromSeconds(o));
@@ -107,7 +107,7 @@ public class Config {
             .addListener((o) -> isFadeEnabled = o);
         addEntry(new ConfigEntry<Boolean>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
             .addListener((o) -> isAnimationEnabled = o);
-        addEntry(new ConfigEntry<Boolean>(true, CURVATURE_ENABLED_KEY, Type.BOOLEAN))
+        addEntry(new ConfigEntry<Boolean>(false, CURVATURE_ENABLED_KEY, Type.BOOLEAN))
             .addListener((o) -> isCurvatureEnabled = o);
         addEntry(new ConfigEntry<Boolean>(true, UPDATE_NOTIFIER_ENABLED_KEY, Type.BOOLEAN))
             .addListener((o) -> isUpdateNotifierEnabled = o);
