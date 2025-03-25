@@ -1,5 +1,6 @@
 package com.koteinik.chunksfadein.core;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +22,7 @@ public class UpdateNotifier {
 				List<Component> textList = new ArrayList<>();
 				textList.add(Component.literal("§7New version of §2Chunks fade in §7is available!"));
 
-				Style linkStyle = Style.EMPTY.withClickEvent(
-					new ClickEvent(ClickEvent.Action.OPEN_URL, latestVersion.downloadUrl));
+				Style linkStyle = Style.EMPTY.withClickEvent(new ClickEvent.OpenUrl(URI.create(latestVersion.downloadUrl)));
 
 				textList.add(Component.literal("§7v" + latestVersion.version + "§r§7 changelog:"));
 				textList.add(Component.literal("§7" + latestVersion.changelog));

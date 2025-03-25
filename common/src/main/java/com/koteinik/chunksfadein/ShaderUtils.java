@@ -15,7 +15,7 @@ public class ShaderUtils {
     private static Method clearCache;
 
     static {
-        if (CompatibilityHook.isIrisLoaded) {
+        if (!CompatibilityHook.isIrisLoaded) {
             irisTransformCache = null;
             clearCache = null;
         } else {

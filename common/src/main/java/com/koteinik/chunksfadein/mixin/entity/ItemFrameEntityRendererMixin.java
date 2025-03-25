@@ -18,7 +18,7 @@ import net.minecraft.world.phys.Vec3;
 
 @Mixin(value = ItemFrameRenderer.class)
 public class ItemFrameEntityRendererMixin {
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionf;)V", ordinal = 1, shift = Shift.BEFORE))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionfc;)V", ordinal = 1, shift = Shift.BEFORE))
     private void modifyRender(ItemFrameRenderState state, PoseStack stack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
         if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled) || state.isDiscrete)
             return;
