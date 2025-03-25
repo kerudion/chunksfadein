@@ -19,18 +19,16 @@ neoForge {
 }
 
 dependencies {
+    annotationProcessor "io.github.llamalad7:mixinextras-common:0.3.5"
+
     compileOnly "org.ow2.asm:asm-tree:9.5"
     compileOnly "org.spongepowered:mixin:0.8.5"
     compileOnly "io.github.llamalad7:mixinextras-common:0.3.5"
-    annotationProcessor "io.github.llamalad7:mixinextras-common:0.3.5"
+    compileOnly "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"    
 
     implementation "maven.modrinth:sodium:${project.sodium_version.replace("fabric", "neoforge")}"
     implementation "maven.modrinth:iris:${project.iris_version.replace("fabric", "neoforge")}"
     implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-    compileOnly "org.antlr:antlr4-runtime:4.13.1"
-    compileOnly "io.github.douira:glsl-transformer:2.0.1"
-    compileOnly "org.anarres:jcpp:1.4.14"
-    compileOnly "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"
 
     implementation "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
     jarJar "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
