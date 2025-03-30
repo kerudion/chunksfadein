@@ -7,8 +7,8 @@ import com.koteinik.chunksfadein.core.SemanticVersion;
 import com.koteinik.chunksfadein.platform.services.IPlatformHelper;
 
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLPaths;
 
 public class NeoForgePlatformHelper implements IPlatformHelper {
     @Override
@@ -23,7 +23,7 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public File getConfigDirectory() {
-        return new File(Minecraft.getInstance().gameDirectory, "config");
+        return new File(FMLPaths.CONFIGDIR.get().toFile(), "config");
     }
 
     @Override
