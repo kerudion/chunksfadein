@@ -74,6 +74,7 @@ public class CFISlider extends AbstractSliderButton {
         private int height = GuiUtils.BUTTON_H;
         private DoubleConsumer applyValue = null;
         private DoubleSupplier getValue = null;
+        private Runnable onChange = null;
         private Function<Double, Component> displayText = null;
         private Component tooltip = null;
 
@@ -122,6 +123,12 @@ public class CFISlider extends AbstractSliderButton {
             return this;
         }
 
+        public CFISliderBuilder onChange(Runnable onChange) {
+            this.onChange = onChange;
+
+            return this;
+        }
+
         public CFISliderBuilder tooltip(String key) {
             return tooltip(Component.translatable(key));
         }
@@ -133,6 +140,14 @@ public class CFISlider extends AbstractSliderButton {
         }
 
         public CFISlider build() {
+            if (onChange != null)
+                applyValue = (value) -> {
+                    if (applyValue != null)
+                        applyValue.accept(value);
+
+                    onChange.run();
+                };
+
             return new CFISlider(x, y, width, height, getValue, applyValue, displayText, tooltip);
         }
 

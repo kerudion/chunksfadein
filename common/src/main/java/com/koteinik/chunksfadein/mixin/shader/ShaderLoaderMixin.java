@@ -46,10 +46,10 @@ public abstract class ShaderLoaderMixin {
         ShaderInjector injector = new ShaderInjector();
         FadeShader shader = new FadeShader();
 
-        injector.insertAfterInVars(shader.fragInVars().dumpMultiline());
+        injector.insertAfterInVars(shader.fragInVars().flushMultiline());
 
         injector.appendToFunction("void main()",
-            shader.fragColorMod("{frag_color}", "u_FogColor").dumpMultiline());
+            shader.fragColorMod("{frag_color}", "u_FogColor").flushMultiline());
 
         return injector;
     }
@@ -58,10 +58,16 @@ public abstract class ShaderLoaderMixin {
         ShaderInjector injector = new ShaderInjector();
         FadeShader shader = new FadeShader();
 
-        injector.insertAfterOutVars(shader.vertOutUniforms().dumpMultiline());
+        injector.insertAfterOutVars(shader
+            .vertInVars()
+            .vertOutVars()
+            .flushMultiline());
 
         injector.insertAfterVariable("vec3 position",
-            shader.vertMod("_vert_position", "position", false, "{mesh_id}").dumpMultiline());
+            shader
+                .vertInitOutVars("_vert_position", "{mesh_id}")
+                .vertInitMod("_vert_position", "position", false, "{mesh_id}", true)
+                .flushMultiline());
 
         return injector;
     }
