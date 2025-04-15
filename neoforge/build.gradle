@@ -25,6 +25,7 @@ dependencies {
     compileOnly "org.spongepowered:mixin:0.8.5"
     compileOnly "io.github.llamalad7:mixinextras-common:0.3.5"
     compileOnly "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"    
+    compileOnly "org.anarres:jcpp:1.4.14"
 
     implementation "maven.modrinth:sodium:${project.sodium_version.replace("fabric", "neoforge")}"
     implementation "maven.modrinth:iris:${project.iris_version.replace("fabric", "neoforge")}"

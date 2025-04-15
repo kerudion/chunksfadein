@@ -11,14 +11,12 @@ import net.irisshaders.iris.pipeline.transform.TransformPatcher;
 import net.minecraft.client.Minecraft;
 
 public class ShaderUtils {
+    private static boolean reloadOnEveryChange = false;
     private static Object irisTransformCache;
     private static Method clearCache;
 
     static {
-        if (!CompatibilityHook.isIrisLoaded) {
-            irisTransformCache = null;
-            clearCache = null;
-        } else {
+        if (CompatibilityHook.isIrisLoaded) {
             try {
                 Field cache = TransformPatcher.class.getDeclaredField("cache");
                 cache.setAccessible(true);
@@ -29,7 +27,18 @@ public class ShaderUtils {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else {
+            irisTransformCache = null;
+            clearCache = null;
         }
+    }
+
+    public static void setReloadOnEveryChange(boolean value) {
+        reloadOnEveryChange = value;
+    }
+
+    public static boolean reloadOnEveryChange() {
+        return CompatibilityHook.isIrisLoaded && reloadOnEveryChange;
     }
 
     public static void reloadWorldRenderer() {

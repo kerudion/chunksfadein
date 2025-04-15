@@ -106,6 +106,7 @@ public class SettingsScreen extends Screen {
 
     private CFIListWidget buildList() {
         Runnable markDirty = () -> dirty = true;
+        Runnable markEveryDirty = () -> dirty |= ShaderUtils.reloadOnEveryChange();
 
         CFIListWidget list = new CFIListWidget(minecraft, this, width, height - 64, 28);
 
@@ -143,23 +144,29 @@ public class SettingsScreen extends Screen {
             .onPress(markDirty)
             .build();
         CFIButton animationCurve = CFIButtonBuilder.cycle(ANIMATION_CURVE, Config.ANIMATION_CURVE_KEY, Curve.class)
+            .onPress(markEveryDirty)
             .build();
         CFIButton animationType = CFIButtonBuilder.cycle(ANIMATION_TYPE, Config.ANIMATION_TYPE_KEY, AnimationType.class)
             .onPress(markDirty)
             .build();
         CFISlider animationOffset = CFISliderBuilder.range(ANIMATION_OFFSET, Config.ANIMATION_OFFSET_KEY, UNITS_BLOCKS)
+            .onChange(markEveryDirty)
             .build();
         CFISlider animationAngle = CFISliderBuilder.range(ANIMATION_ANGLE, Config.ANIMATION_ANGLE_KEY, UNITS_DEGREES)
+            .onChange(markEveryDirty)
             .build();
         CFISlider animationFactor = CFISliderBuilder.range(ANIMATION_FACTOR, Config.ANIMATION_FACTOR_KEY, 2)
+            .onChange(markEveryDirty)
             .build();
         CFISlider animationTime = new CFISliderBuilder()
             .getValue(() -> Config.secondsFromAnimationChange() / Config.MAX_ANIMATION_TIME)
             .applyValue(v -> Config.setDouble(Config.ANIMATION_TIME_KEY, v * Config.MAX_ANIMATION_TIME))
+            .onChange(markEveryDirty)
             .displayText(v -> GuiUtils.text(ANIMATION_TIME, String.valueOf(MathUtils.round(Config.secondsFromAnimationChange(), 2))).append(UNITS_SECONDS))
             .tooltip(GuiUtils.tooltip(ANIMATION_TIME))
             .build();
         CFIButton animateNearPlayer = CFIButtonBuilder.choice(ANIMATE_NEAR_PLAYER, Config.ANIMATE_NEAR_PLAYER_KEY)
+            .onPress(markEveryDirty)
             .build();
         list.add(animationEnabled);
         if (Config.animationType == AnimationType.FULL) {

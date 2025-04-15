@@ -8,7 +8,7 @@ public class FadeShaderInterface {
     private GlUniformBlock uniformFadeDatas;
 
     public FadeShaderInterface(ShaderBindingContext context) {
-        this.uniformFadeDatas = context.bindUniformBlock("ubo_ChunkFadeDatas", 1);
+        this.uniformFadeDatas = context.bindUniformBlock("cfi_ubo_ChunkFadeDatas", 1);
     }
 
     public void setFadeDatas(GlMutableBuffer buffer) {
