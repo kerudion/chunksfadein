@@ -23,7 +23,7 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public File getConfigDirectory() {
-        return new File(FMLPaths.CONFIGDIR.get().toFile(), "config");
+        return FMLPaths.CONFIGDIR.get().toFile();
     }
 
     @Override
