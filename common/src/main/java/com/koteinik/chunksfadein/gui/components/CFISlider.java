@@ -140,13 +140,16 @@ public class CFISlider extends AbstractSliderButton {
         }
 
         public CFISlider build() {
-            if (onChange != null)
+            if (onChange != null) {
+                DoubleConsumer previousApplyValue = applyValue;
+
                 applyValue = (value) -> {
-                    if (applyValue != null)
-                        applyValue.accept(value);
+                    if (previousApplyValue != null)
+                        previousApplyValue.accept(value);
 
                     onChange.run();
                 };
+            }
 
             return new CFISlider(x, y, width, height, getValue, applyValue, displayText, tooltip);
         }
