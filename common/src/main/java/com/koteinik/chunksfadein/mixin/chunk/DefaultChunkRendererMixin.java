@@ -1,6 +1,7 @@
 package com.koteinik.chunksfadein.mixin.chunk;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import net.caffeinemc.mods.sodium.client.util.FogParameters;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.At.Shift;
@@ -27,53 +28,46 @@ import net.caffeinemc.mods.sodium.client.render.viewport.CameraTransform;
 
 @Mixin(value = DefaultChunkRenderer.class, remap = false)
 public class DefaultChunkRendererMixin {
-    @Inject(method = "render", at = @At(value = "INVOKE",
-        target = "Lnet/caffeinemc/mods/sodium/client/render/chunk/DefaultChunkRenderer;executeDrawBatch(Lnet/caffeinemc/mods/sodium/client/gl/device/CommandList;Lnet/caffeinemc/mods/sodium/client/gl/tessellation/GlTessellation;Lnet/caffeinemc/mods/sodium/client/gl/device/MultiDrawBatch;)V",
-        shift = At.Shift.BEFORE))
-    private void modifyChunkRender(ChunkRenderMatrices matrices,
-        CommandList commandList,
-        ChunkRenderListIterable renderLists,
-        TerrainRenderPass renderPass,
-        CameraTransform camera,
-        CallbackInfo ci,
-        @Local(ordinal = 0) ChunkShaderInterface shader,
-        @Local(ordinal = 0) RenderRegion region) {
-        if (shader == null)
-            return;
+	@Inject(method = "render", at = @At(value = "INVOKE",
+		target = "Lnet/caffeinemc/mods/sodium/client/render/chunk/DefaultChunkRenderer;executeDrawBatch(Lnet/caffeinemc/mods/sodium/client/gl/device/CommandList;Lnet/caffeinemc/mods/sodium/client/gl/tessellation/GlTessellation;Lnet/caffeinemc/mods/sodium/client/gl/device/MultiDrawBatch;)V",
+		shift = At.Shift.BEFORE))
+	private void modifyChunkRender(ChunkRenderMatrices matrices, CommandList commandList, ChunkRenderListIterable renderLists, TerrainRenderPass renderPass, CameraTransform camera, FogParameters parameters, CallbackInfo ci, @Local(ordinal = 0) ChunkShaderInterface shader, @Local(ordinal = 0) RenderRegion region) {
+		if (shader == null)
+			return;
 
-        // Made to not interrupt Axiom mixin
-        if (Config.isModEnabled)
-            uploadToBuffer(commandList, shader, region);
-    }
+		// Made to not interrupt Axiom mixin
+		if (Config.isModEnabled)
+			uploadToBuffer(commandList, shader, region);
+	}
 
-    @Inject(method = "fillCommandBuffer",
-        at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/render/chunk/data/SectionRenderDataUnsafe;getSliceMask(J)I",
-            shift = Shift.BEFORE))
-    private static void modifyFillCommandBuffer(MultiDrawBatch batch,
-        RenderRegion region,
-        SectionRenderDataStorage renderDataStorage,
-        ChunkRenderList renderList,
-        CameraTransform camera,
-        TerrainRenderPass pass,
-        boolean useBlockFaceCulling,
-        CallbackInfo ci,
-        @Local(name = "sectionIndex") int sectionIndex) {
-        // Made to not interrupt Axiom mixin
-        if (Config.isModEnabled)
-            processChunk(region, sectionIndex);
-    }
+	@Inject(method = "fillCommandBuffer",
+		at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/render/chunk/data/SectionRenderDataUnsafe;getSliceMask(J)I",
+			shift = Shift.BEFORE))
+	private static void modifyFillCommandBuffer(MultiDrawBatch batch,
+	                                            RenderRegion region,
+	                                            SectionRenderDataStorage renderDataStorage,
+	                                            ChunkRenderList renderList,
+	                                            CameraTransform camera,
+	                                            TerrainRenderPass pass,
+	                                            boolean useBlockFaceCulling,
+	                                            CallbackInfo ci,
+	                                            @Local(name = "sectionIndex") int sectionIndex) {
+		// Made to not interrupt Axiom mixin
+		if (Config.isModEnabled)
+			processChunk(region, sectionIndex);
+	}
 
-    private void uploadToBuffer(CommandList commandList, ChunkShaderInterface shader, RenderRegion region) {
-        ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) shader;
-        RenderRegionExt regionExt = (RenderRegionExt) region;
+	private void uploadToBuffer(CommandList commandList, ChunkShaderInterface shader, RenderRegion region) {
+		ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) shader;
+		RenderRegionExt regionExt = (RenderRegionExt) region;
 
-        regionExt.uploadToBuffer(ext, commandList);
-    }
+		regionExt.uploadToBuffer(ext, commandList);
+	}
 
-    private static void processChunk(RenderRegion region, int sectionIndex) {
-        RenderSection section = region.getSection(sectionIndex);
-        RenderRegionExt regionExt = (RenderRegionExt) region;
+	private static void processChunk(RenderRegion region, int sectionIndex) {
+		RenderSection section = region.getSection(sectionIndex);
+		RenderRegionExt regionExt = (RenderRegionExt) region;
 
-        regionExt.processChunk((RenderSectionExt) section, sectionIndex);
-    }
+		regionExt.processChunk((RenderSectionExt) section, sectionIndex);
+	}
 }

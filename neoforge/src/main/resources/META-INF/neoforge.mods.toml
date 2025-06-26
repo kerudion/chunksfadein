@@ -20,7 +20,7 @@ config = "chunksfadein.mixins.json"
 [[dependencies.chunksfadein]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.5, 1.22)"
+versionRange = "[1.21.6, 1.22)"
 ordering = "NONE"
 side = "CLIENT"
 
