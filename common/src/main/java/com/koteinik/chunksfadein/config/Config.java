@@ -16,7 +16,7 @@ import com.koteinik.chunksfadein.platform.Services;
 import com.moandjiezana.toml.Toml;
 
 public class Config {
-    private static final int CONFIG_VERSION = 3;
+    private static final int CONFIG_VERSION = 4;
 
     public static final double MIN_FADE_TIME = 0.01;
     public static final double MAX_FADE_TIME = 10;
@@ -42,6 +42,7 @@ public class Config {
     public static final String ANIMATION_ENABLED_KEY = "animation-enabled";
     public static final String ANIMATION_TYPE_KEY = "animation-type";
     public static final String ANIMATE_NEAR_PLAYER_KEY = "animate-near-player";
+    public static final String ANIMATE_WITH_DH_KEY = "fade-with-dh";
     public static final String ANIMATION_TIME_KEY = "animation-time";
     public static final String ANIMATION_CURVE_KEY = "animation-curve";
     public static final String ANIMATION_OFFSET_KEY = "animation-offset";
@@ -60,6 +61,7 @@ public class Config {
     public static boolean isUpdateNotifierEnabled;
     public static boolean showModTabInSettings;
     public static boolean animateNearPlayer;
+    public static boolean animateWithDH;
     public static boolean fadeNearPlayer;
 
     public static float animationAngle; // for FULL
@@ -115,6 +117,8 @@ public class Config {
             .addListener((o) -> showModTabInSettings = o);
         addEntry(new ConfigEntry<Boolean>(true, ANIMATE_NEAR_PLAYER_KEY, Type.BOOLEAN))
             .addListener((o) -> animateNearPlayer = o);
+        addEntry(new ConfigEntry<Boolean>(false, ANIMATE_WITH_DH_KEY, Type.BOOLEAN))
+            .addListener((o) -> animateWithDH = o);
         addEntry(new ConfigEntry<Boolean>(true, FADE_NEAR_PLAYER_KEY, Type.BOOLEAN))
             .addListener((o) -> fadeNearPlayer = o);
     }

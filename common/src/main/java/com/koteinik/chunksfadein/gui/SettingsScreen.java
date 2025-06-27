@@ -44,6 +44,7 @@ public class SettingsScreen extends Screen {
     public static final String ANIMATION_ANGLE = "settings.chunksfadein.animation_angle";
     public static final String ANIMATION_FACTOR = "settings.chunksfadein.animation_factor";
     public static final String ANIMATE_NEAR_PLAYER = "settings.chunksfadein.animate_near_player";
+    public static final String ANIMATE_WITH_DH = "settings.chunksfadein.animate_with_dh";
     public static final String ANIMATION_TIME = "settings.chunksfadein.animation_time";
     public static final String CURVATURE_ENABLED = "settings.chunksfadein.world_curvature_enabled";
     public static final String CURVATURE = "settings.chunksfadein.world_curvature";
@@ -168,15 +169,18 @@ public class SettingsScreen extends Screen {
         CFIButton animateNearPlayer = CFIButtonBuilder.choice(ANIMATE_NEAR_PLAYER, Config.ANIMATE_NEAR_PLAYER_KEY)
             .onPress(markEveryDirty)
             .build();
+        CFIButton animateWithDH = CFIButtonBuilder.choice(ANIMATE_WITH_DH, Config.ANIMATE_WITH_DH_KEY)
+            .build();
         list.add(animationEnabled);
         if (Config.animationType == AnimationType.FULL) {
             list.add(animationType, animationOffset, animationOffset.makeResetButton(Config.ANIMATION_OFFSET_KEY));
             list.add(animationCurve, animationAngle, animationAngle.makeResetButton(Config.ANIMATION_ANGLE_KEY));
-            list.add(animateNearPlayer, animationTime, animationTime.makeResetButton(Config.ANIMATION_TIME_KEY));
+            list.add(animateNearPlayer, animateWithDH);
+            list.add(animationTime, animationTime.makeResetButton(Config.ANIMATION_TIME_KEY));
         } else {
             list.add(animationType, animationFactor, animationFactor.makeResetButton(Config.ANIMATION_FACTOR_KEY));
             list.add(animationCurve, animationTime, animationTime.makeResetButton(Config.ANIMATION_TIME_KEY));
-            list.add(animateNearPlayer);
+            list.add(animateNearPlayer, animateWithDH);
         }
 
         CFIButton curvatureEnabled = CFIButtonBuilder.choice(CURVATURE_ENABLED, Config.CURVATURE_ENABLED_KEY)

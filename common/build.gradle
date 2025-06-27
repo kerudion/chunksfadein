@@ -18,9 +18,12 @@ dependencies {
 
     modImplementation "maven.modrinth:sodium:${project.sodium_version.replace("fabric", "neoforge")}"
     modImplementation "maven.modrinth:iris:${project.iris_version.replace("fabric", "neoforge")}"
+    modImplementation "maven.modrinth:distanthorizons:${project.dh_version}"
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
     compileOnly "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
     compileOnly "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"
+
+    compileOnly files(new File(rootDir, "DHApi.jar"))
 }
 
 configurations {

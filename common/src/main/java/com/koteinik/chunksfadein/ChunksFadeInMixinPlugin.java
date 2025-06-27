@@ -11,16 +11,25 @@ public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
 		boolean isIrisMixin = mixinClassName.startsWith("com.koteinik.chunksfadein.mixin.iris");
+		boolean isDHMixin = mixinClassName.startsWith("com.koteinik.chunksfadein.mixin.dh");
 
-		if (!isIrisMixin)
-			return true;
+		if (isIrisMixin)
+			try {
+				Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+				return true;
+			} catch (ClassNotFoundException e) {
+				return false;
+			}
 
-		try {
-			Class.forName("net.irisshaders.iris.api.v0.IrisApi");
-			return true;
-		} catch (ClassNotFoundException e) {
-			return false;
-		}
+		if (isDHMixin)
+			try {
+				Class.forName("com.seibel.distanthorizons.api.DhApi");
+				return true;
+			} catch (ClassNotFoundException e) {
+				return false;
+			}
+
+		return true;
 	}
 
 	@Override

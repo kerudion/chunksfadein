@@ -1,5 +1,7 @@
 package com.koteinik.chunksfadein.crowdin;
 
+import com.koteinik.chunksfadein.Logger;
+
 import java.io.File;
 
 public class Translations {
@@ -16,9 +18,9 @@ public class Translations {
 		thread.start();
 
 		try {
-			thread.join(10000);
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();
+			thread.join(60000);
+		} catch (InterruptedException e) {
+			Logger.warn("Translations download timeout");
 		}
 	}
 }

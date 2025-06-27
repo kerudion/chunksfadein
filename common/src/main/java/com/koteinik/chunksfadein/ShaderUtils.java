@@ -1,60 +1,59 @@
 package com.koteinik.chunksfadein;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Map;
-
+import com.koteinik.chunksfadein.extensions.LodRendererExt;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
-
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.pipeline.transform.TransformPatcher;
 import net.minecraft.client.Minecraft;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Map;
+
 public class ShaderUtils {
-    private static boolean reloadOnEveryChange = false;
-    private static Object irisTransformCache;
-    private static Method clearCache;
+	public static LodRendererExt lodRenderer = null;
 
-    static {
-        if (CompatibilityHook.isIrisLoaded) {
-            try {
-                Field cache = TransformPatcher.class.getDeclaredField("cache");
-                cache.setAccessible(true);
+	private static Object irisTransformCache;
+	private static Method clearCache;
 
-                irisTransformCache = cache.get(null);
+	static {
+		if (CompatibilityHook.isIrisLoaded) {
+			try {
+				Field cache = TransformPatcher.class.getDeclaredField("cache");
+				cache.setAccessible(true);
 
-                clearCache = Map.class.getDeclaredMethod("clear");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            irisTransformCache = null;
-            clearCache = null;
-        }
-    }
+				irisTransformCache = cache.get(null);
 
-    public static void setReloadOnEveryChange(boolean value) {
-        reloadOnEveryChange = value;
-    }
+				clearCache = Map.class.getDeclaredMethod("clear");
+			} catch (Exception e) {
+				Logger.error("Failed to get Iris methods:", e);
+			}
+		} else {
+			irisTransformCache = null;
+			clearCache = null;
+		}
+	}
 
-    public static boolean reloadOnEveryChange() {
-        return CompatibilityHook.isIrisLoaded && reloadOnEveryChange;
-    }
+	public static boolean reloadOnEveryChange() {
+		return CompatibilityHook.isIrisLoaded || CompatibilityHook.isDHRenderingEnabled();
+	}
 
-    public static void reloadWorldRenderer() {
-        try {
-            if (CompatibilityHook.isIrisLoaded)
-                clearCache.invoke(irisTransformCache);
+	public static void reloadWorldRenderer() {
+		try {
+			if (CompatibilityHook.isIrisLoaded)
+				clearCache.invoke(irisTransformCache);
 
-            if (CompatibilityHook.isIrisShaderPackInUse()) {
-                Iris.reload();
-            } else {
-                Minecraft minecraft = Minecraft.getInstance();
-                minecraft.levelRenderer.allChanged();
-            }
-        } catch (Exception e) {
-            Logger.warn("Failed to reload world renderer");
-            e.printStackTrace();
-        }
-    }
+			if (CompatibilityHook.isIrisShaderPackInUse()) {
+				Iris.reload();
+			} else {
+				Minecraft minecraft = Minecraft.getInstance();
+				minecraft.levelRenderer.allChanged();
+			}
+
+			if (CompatibilityHook.isDHRenderingEnabled() && lodRenderer != null)
+				lodRenderer.rebuildShaders();
+		} catch (Exception e) {
+			Logger.warn("Failed to reload renderers:", e);
+		}
+	}
 }

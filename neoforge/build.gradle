@@ -30,9 +30,12 @@ dependencies {
     implementation "maven.modrinth:sodium:${project.sodium_version.replace("fabric", "neoforge")}"
     implementation "maven.modrinth:iris:${project.iris_version.replace("fabric", "neoforge")}"
     implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    implementation "maven.modrinth:distanthorizons:${project.dh_version}"
 
     implementation "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
     jarJar "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
+
+    compileOnly files(new File(rootDir, "DHApi.jar"))
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

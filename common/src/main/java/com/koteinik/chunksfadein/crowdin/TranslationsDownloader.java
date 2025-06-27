@@ -1,5 +1,9 @@
 package com.koteinik.chunksfadein.crowdin;
 
+import com.google.gson.JsonObject;
+import com.koteinik.chunksfadein.Logger;
+import com.koteinik.chunksfadein.NetworkUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,9 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import com.google.gson.JsonObject;
-import com.koteinik.chunksfadein.NetworkUtils;
 
 /**
  * Code taken and modified from https://github.com/gbl/CrowdinTranslate
@@ -164,7 +165,7 @@ public class TranslationsDownloader extends Thread {
 		try {
 			translations = getCrowdinTranslations(CROWDIN_ID);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logger.warn("Failed to get crowdin translations:", e);
 			return;
 		}
 
@@ -192,11 +193,11 @@ public class TranslationsDownloader extends Thread {
 
 		try {
 			String lastBuildId = get(LIST_BUILDS).getAsJsonArray("data").asList().stream()
-				.map(e -> e.getAsJsonObject().getAsJsonObject("data"))
-				.filter(e -> e.get("status").getAsString().equals("finished"))
-				.map(e -> e.get("id").getAsString())
-				.findFirst()
-				.get();
+			                                     .map(e -> e.getAsJsonObject().getAsJsonObject("data"))
+			                                     .filter(e -> e.get("status").getAsString().equals("finished"))
+			                                     .map(e -> e.get("id").getAsString())
+			                                     .findFirst()
+			                                     .get();
 
 			String buildUrl = get(GET_BUILD.formatted(lastBuildId))
 				.getAsJsonObject("data")
@@ -242,7 +243,8 @@ public class TranslationsDownloader extends Thread {
 	}
 
 	private JsonObject get(String url) {
-		return NetworkUtils.executeGet(url, Map.of("Authorization", "Bearer " + CROWDIN_TOKEN), Map.of()).getAsJsonObject();
+		return NetworkUtils.executeGet(url, Map.of("Authorization", "Bearer " + CROWDIN_TOKEN), Map.of())
+		                   .getAsJsonObject();
 	}
 
 	private byte[] getZipStreamContent(InputStream is, int size) throws IOException {
