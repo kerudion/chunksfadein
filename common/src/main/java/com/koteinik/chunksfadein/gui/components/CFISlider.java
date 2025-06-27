@@ -51,8 +51,6 @@ public class CFISlider extends AbstractSliderButton {
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 		super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
-		super.render(guiGraphics, mouseX, mouseY, partialTick);
-//		tooltip.refreshTooltipForNextRenderPass(guiGraphics, mouseX, mouseY, isHovered, active, getRectangle());
 	}
 
 	public CFIButton makeResetButton(String key) {
