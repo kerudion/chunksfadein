@@ -27,7 +27,6 @@
     "dh.ShaderProgramMixin",
     "dh.LodRenderSectionMixin",
     "dh.RenderUtilMixin",
-    "dh.FadeShaderMixin",
     "dh.SSAOApplyShaderMixin",
     "dh.iris.IrisLodRenderProgramMixin",
     "dh.iris.DHTerrainTransformerMixin",
