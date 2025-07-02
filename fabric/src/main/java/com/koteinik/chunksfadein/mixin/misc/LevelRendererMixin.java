@@ -27,13 +27,11 @@ public class LevelRendererMixin {
 	private LevelTargetBundle targets;
 
 	@Inject(method = "renderLevel", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/renderer/LevelRenderer;addSkyPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/Camera;FLnet/minecraft/client/renderer/FogParameters;)V",
-		shift = At.Shift.AFTER))
+		target = "Lnet/minecraft/client/renderer/LevelRenderer;addMainPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/culling/Frustum;Lnet/minecraft/client/Camera;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/FogParameters;ZZLnet/minecraft/client/DeltaTracker;Lnet/minecraft/util/profiling/ProfilerFiller;)V"))
 	private void modifyRenderLevel(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, Matrix4f matrix4f, Matrix4f matrix4f2,
-	                               CallbackInfo ci, @Local FrameGraphBuilder frameGraphBuilder, @Local FramePass skyPass) {
+	                               CallbackInfo ci, @Local FrameGraphBuilder frameGraphBuilder) {
 		FramePass framePass = frameGraphBuilder.addPass("cfi_blit_sky");
 		targets.main = framePass.readsAndWrites(targets.main);
-		framePass.requires(skyPass);
 
 		framePass.executes(() -> {
 			if (!Config.isModEnabled || !Config.isFadeEnabled)
