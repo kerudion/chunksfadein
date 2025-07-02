@@ -57,7 +57,7 @@ public class ChunkFadeInController {
 	public void processChunk(RenderSectionExt section, int sectionIndex) {
 		long delta = section.calculateAndGetDelta();
 
-		section.setRenderedBefore();
+		section.dhMarkRendered();
 
 		if (Config.isFadeEnabled)
 			dirty |= section.incrementFadeCoeff(delta, sectionIndex, chunkFadeDatasBuffer);
@@ -70,6 +70,8 @@ public class ChunkFadeInController {
 			for (int i = 0; i < 3; i++)
 				if (chunkFadeDatasBuffer.get(sectionIndex, i) != 0f)
 					chunkFadeDatasBuffer.put(sectionIndex, i, 0f);
+
+		section.setRenderedBefore();
 	}
 
 	public void delete(CommandList commandList) {

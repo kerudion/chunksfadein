@@ -45,7 +45,10 @@ public class RenderSectionMixin implements RenderSectionExt {
 	@Override
 	public void setRenderedBefore() {
 		fader.setRenderedBefore();
+	}
 
+	@Override
+	public void dhMarkRendered() {
 		if (completedFade)
 			LodMaskTexture.markRendered(chunkX, chunkY, chunkZ);
 	}
