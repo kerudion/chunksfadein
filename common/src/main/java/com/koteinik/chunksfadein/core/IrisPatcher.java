@@ -155,7 +155,7 @@ public class IrisPatcher {
 		boolean injectMod = !hasFn(tree, "_cfi_noInjectModMarker");
 		boolean injectFragMod = injectMod && !hasFn(tree, "_cfi_noInjectFragModMarker");
 		boolean injectVertMod = injectMod && !hasFn(tree, "_cfi_noInjectVertModMarker");
-		boolean injectCurvature = !hasFn(tree, "_cfi_noCurvatureMarker");
+		boolean injectCurvature = injectMod && !hasFn(tree, "_cfi_noCurvatureMarker");
 
 		switch (parameters.type.glShaderType) {
 			case VERTEX:
@@ -227,30 +227,7 @@ public class IrisPatcher {
 					);
 
 				if (injectFragMod) {
-					List<Tuple<Type, String>> layouts = findOutputColors(tree);
-					if (layouts.isEmpty())
-						break;
-
-					Tuple<Type, String> first = layouts.get(0);
-					Type type = first.getA();
-					String name = first.getB();
-
-					if (type == Type.FLOAT32)
-						tree.appendMainFunctionBody(parseStatements(
-							t, root, shader
-								.calculateFade("float fade = ")
-								.newLine(name + " *= fade;")
-								.flushMultiline()
-						));
-
-					if (type != Type.F32VEC3)
-						break;
-
-					tree.appendMainFunctionBody(parseStatements(
-						t, root, shader
-							.fragColorMod(name + ".rgb")
-							.flushMultiline()
-					));
+					injectFragMod(t, tree, root);
 				}
 
 				break;
@@ -260,6 +237,33 @@ public class IrisPatcher {
 		}
 
 		sortUses(tree);
+	}
+
+	public static void injectFragMod(ASTParser t, TranslationUnit tree, Root root) {
+		List<Tuple<Type, String>> layouts = findOutputColors(tree);
+		if (layouts.isEmpty())
+			return;
+
+		FadeShader shader = new FadeShader();
+
+		Tuple<Type, String> first = layouts.get(0);
+		Type type = first.getA();
+		String name = first.getB();
+
+		if (type == Type.FLOAT32)
+			tree.appendMainFunctionBody(parseStatements(
+				t, root, shader
+					.calculateFade("float fade = ")
+					.newLine(name + " *= fade;")
+					.flushMultiline()
+			));
+
+		if (type == Type.F32VEC3)
+			tree.appendMainFunctionBody(parseStatements(
+				t, root, shader
+					.fragColorMod(name + ".rgb")
+					.flushMultiline()
+			));
 	}
 
 	public static void sortUses(TranslationUnit tree) {
@@ -323,7 +327,7 @@ public class IrisPatcher {
 			                                    });
 	}
 
-	private static List<Tuple<Type, String>> findOutputColors(TranslationUnit tree) {
+	public static List<Tuple<Type, String>> findOutputColors(TranslationUnit tree) {
 		List<Tuple<Type, String>> colors = new ArrayList<>();
 
 		ASTListener listener = new ASTListener() {
@@ -379,15 +383,15 @@ public class IrisPatcher {
 		}
 	}
 
-	private static List<ExternalDeclaration> parseDeclarations(ASTParser t, Root root, String... input) {
-		if (input.length == 0 || Arrays.stream(input).allMatch(s -> s.isBlank()))
+	public static List<ExternalDeclaration> parseDeclarations(ASTParser t, Root root, String... input) {
+		if (input.length == 0 || Arrays.stream(input).allMatch(String::isBlank))
 			return List.of();
 
 		return t.parseExternalDeclarations(root, input);
 	}
 
-	private static List<Statement> parseStatements(ASTParser t, Root root, String... input) {
-		if (input.length == 0 || Arrays.stream(input).allMatch(s -> s.isBlank()))
+	public static List<Statement> parseStatements(ASTParser t, Root root, String... input) {
+		if (input.length == 0 || Arrays.stream(input).allMatch(String::isBlank))
 			return List.of();
 
 		return t.parseStatements(root, input);

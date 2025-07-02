@@ -95,6 +95,7 @@ public class JcppProcessorMixin {
 		if (source.contains("CHUNKS_FADE_IN_NO_VERT_MOD_INJECT")) source += "\nvoid _cfi_noInjectVertModMarker() {}\n";
 		if (source.contains("CHUNKS_FADE_IN_NO_INJECT")) source += "\nvoid _cfi_noInjectMarker() {}\n";
 		if (source.contains("CHUNKS_FADE_IN_NO_CURVATURE")) source += "\nvoid _cfi_noCurvatureMarker() {}\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_LOD_MASK")) source += "\nvoid _cfi_noLodMaskMarker() {}\n";
 
 		return source;
 	}

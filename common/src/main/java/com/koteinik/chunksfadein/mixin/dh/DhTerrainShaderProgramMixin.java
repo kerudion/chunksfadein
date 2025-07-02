@@ -196,7 +196,7 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 				.vertInitOutVars("localPos", "offsetPos")
 				.vertInitMod("localPos", "vertexWorldPos", false, "offsetPos", true)
 				// push water and lava slightly down
-				.newLine("if(irisExtra.x == 12.0 || irisExtra.x == 6.0) { vertexWorldPos.y -= 0.115; }")
+				.newLine("if (irisExtra.x == 12.0 || irisExtra.x == 6.0) { vertexWorldPos.y -= 0.115; }")
 				.flushMultiline()
 		);
 
