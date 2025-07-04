@@ -246,14 +246,6 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 
 		shader.dhMaskLod("discard;", "vPos", "vertexWorldPos", true);
 
-		if (Config.isFadeEnabled) {
-			shader.newLine("if (fragColor.a < 1.0) {");
-			shader.newLine(
-				"vec3 destinationColor = texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb;");
-			shader.newLine("cfi_terrainFadeOut.rgb = mix(destinationColor, fragColor.rgb, fragColor.a);");
-			shader.newLine("} else { cfi_terrainFadeOut.rgb = fragColor.rgb; }");
-		}
-
 		injector.appendToFunction(
 			"main",
 			shader.flushMultiline()
