@@ -19,6 +19,10 @@ import com.seibel.distanthorizons.core.render.renderer.shaders.SSAOApplyShader;
 import com.seibel.distanthorizons.core.render.renderer.shaders.SSAOShader;
 import com.seibel.distanthorizons.core.wrapperInterfaces.minecraft.IProfilerWrapper;
 import com.seibel.distanthorizons.core.wrapperInterfaces.world.IClientLevelWrapper;
+import net.irisshaders.iris.Iris;
+import net.irisshaders.iris.compat.dh.DHCompat;
+import net.irisshaders.iris.compat.dh.DHCompatInternal;
+import net.irisshaders.iris.pipeline.WorldRenderingPipeline;
 import org.lwjgl.opengl.GL30;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,6 +34,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class LodRendererMixin implements LodRendererExt {
 	@Shadow
 	private IDhApiShaderProgram lodRenderProgram;
+
+	@Shadow
+	public static int getActiveColorTextureId() {
+		return 0;
+	}
 
 	@Override
 	public DhRenderProgramExt getShader() {
@@ -70,7 +79,7 @@ public abstract class LodRendererMixin implements LodRendererExt {
 
 	@Inject(method = "renderLodPass", at = @At(value = "INVOKE", target = "Lcom/seibel/distanthorizons/api/interfaces/override/rendering/IDhApiShaderProgram;unbind()V", shift = At.Shift.AFTER))
 	private void modifyRenderLodPass(IClientLevelWrapper clientLevelWrapper, DhApiRenderParam renderEventParam, IProfilerWrapper profiler, boolean runningDeferredPass, CallbackInfo ci) {
-		if (!Config.isModEnabled || !Config.isFadeEnabled || !CompatibilityHook.isDHRenderingEnabled() || CompatibilityHook.isIrisShaderPackInUse())
+		if (!Config.isModEnabled || !Config.isFadeEnabled || !CompatibilityHook.isDHRenderingEnabled())
 			return;
 
 		SkyFBO fbo = SkyFBO.getInstance();
@@ -78,7 +87,28 @@ public abstract class LodRendererMixin implements LodRendererExt {
 			return;
 
 		try {
-			fbo.blitFromTexture(Utils.mainColorTexture(), Utils.mainTargetWidth(), Utils.mainTargetHeight(), false);
+			if (CompatibilityHook.isIrisShaderPackInUse()) {
+				DHCompatInternal irisDh = (DHCompatInternal) Iris.getPipelineManager()
+				                                                 .getPipeline()
+				                                                 .map(WorldRenderingPipeline::getDHCompat)
+				                                                 .map(DHCompat::getInstance)
+				                                                 .orElse(null);
+				if (irisDh == null) return;
+
+				fbo.blitFromFramebuffer(
+					irisDh.getSolidFBWrapper().getId(),
+					Utils.mainTargetWidth(),
+					Utils.mainTargetHeight(),
+					false
+				);
+			} else {
+				fbo.blitFromTexture(
+					getActiveColorTextureId(),
+					Utils.mainTargetWidth(),
+					Utils.mainTargetHeight(),
+					false
+				);
+			}
 		} catch (Exception e) {
 			Logger.error("Failed to blit main color texture after DH rendering:", e);
 		}

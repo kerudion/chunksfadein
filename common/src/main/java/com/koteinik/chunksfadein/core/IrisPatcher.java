@@ -277,6 +277,7 @@ public class IrisPatcher {
 		for (int a = 0; a < 2; a++)
 			tree.getRoot().identifierIndex.index.entrySet().stream()
 			                                    .filter(e -> sorterWhitelist.contains(e.getKey()) ||
+				                                    e.getKey().startsWith("_cfi_") ||
 				                                    (!e.getKey().startsWith("_") && e.getKey().contains("cfi_")))
 			                                    .forEach(e -> {
 				                                    ChildNodeList<ExternalDeclaration> children = tree.getChildren();
