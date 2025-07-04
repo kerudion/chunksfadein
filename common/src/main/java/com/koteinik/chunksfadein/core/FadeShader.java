@@ -11,24 +11,6 @@ import static com.koteinik.chunksfadein.core.FadeType.*;
 public class FadeShader {
 	private List<String> lines = new ArrayList<>();
 
-	public FadeShader dummyApiFragScreenCoord() {
-		if (!isModEnabled)
-			return this;
-
-		return newLine("vec2 cfi_screenCoord() { return vec2(0.0); }");
-	}
-
-	public FadeShader apiFragScreenCoord() {
-		if (!isModEnabled)
-			return this;
-
-		newLine("vec2 cfi_screenCoord() {");
-		newLine("return gl_FragCoord.xy / cfi_screenSize;");
-		newLine("}");
-
-		return this;
-	}
-
 	public FadeShader dummyApiFragSampleSkyLodTexture() {
 		if (!isModEnabled)
 			return this;
@@ -41,7 +23,7 @@ public class FadeShader {
 			return this;
 
 		newLine("vec3 cfi_sampleSkyLodTexture() {");
-		newLine("return texture(cfi_sky, cfi_screenCoord()).rgb;");
+		newLine("return texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize)).rgb;");
 		newLine("}");
 
 		return this;
