@@ -100,7 +100,9 @@ public class DHTerrainTransformerMixin {
 					shader.dhApiGetFadeData().flushSingleLine(),
 					shader.apiFragApplyFogFade().flushSingleLine(),
 					shader.apiFragApplyFade().flushSingleLine(),
-					shader.apiFragCalculateFade().flushSingleLine()
+					shader.apiFragCalculateFade().flushSingleLine(),
+					shader.apiFragScreenCoord().flushSingleLine(),
+					shader.apiFragSampleSkyLodTexture().flushSingleLine()
 				);
 
 				if (injectFragMod)

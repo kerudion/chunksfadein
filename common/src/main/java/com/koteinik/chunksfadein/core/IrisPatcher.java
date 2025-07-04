@@ -120,7 +120,9 @@ public class IrisPatcher {
 					shader.dummyApiFragCalculateFade().flushSingleLine(),
 					shader.dummyApiFragApplyFade().flushSingleLine(),
 					shader.dummyApiFragApplyFogFade().flushSingleLine(),
-					shader.dummyApiFragApplySkyFade().flushSingleLine()
+					shader.dummyApiFragApplySkyLodFade().flushSingleLine(),
+					shader.dummyApiFragScreenCoord().flushSingleLine(),
+					shader.dummyApiFragSampleSkyLodTexture().flushSingleLine()
 				);
 
 				tree.parseAndInjectNodes(
@@ -204,7 +206,9 @@ public class IrisPatcher {
 				if (!inject)
 					return;
 
-				removeFn(tree, "cfi_applySkyFade");
+				removeFn(tree, "cfi_screenCoord");
+				removeFn(tree, "cfi_sampleSkyLodTexture");
+				removeFn(tree, "cfi_applySkyLodFade");
 				removeFn(tree, "cfi_applyFogFade");
 				removeFn(tree, "cfi_applyFade");
 				removeFn(tree, "cfi_calculateFade");
@@ -216,7 +220,9 @@ public class IrisPatcher {
 						shader.apiFragCalculateFade().flushSingleLine(),
 						shader.apiFragApplyFade().flushSingleLine(),
 						shader.apiFragApplyFogFade().flushSingleLine(),
-						shader.apiFragApplySkyFade().flushSingleLine()
+						shader.apiFragApplySkyLodFade().flushSingleLine(),
+						shader.apiFragScreenCoord().flushSingleLine(),
+						shader.apiFragSampleSkyLodTexture().flushSingleLine()
 					)
 				);
 

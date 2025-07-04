@@ -11,21 +11,57 @@ import static com.koteinik.chunksfadein.core.FadeType.*;
 public class FadeShader {
 	private List<String> lines = new ArrayList<>();
 
-	public FadeShader dummyApiFragApplySkyFade() {
+	public FadeShader dummyApiFragScreenCoord() {
 		if (!isModEnabled)
 			return this;
 
-		return newLine("vec3 cfi_applySkyFade(vec3 fullyFaded) { return vec3(0.0); }");
+		return newLine("vec2 cfi_screenCoord() { return vec2(0.0); }");
 	}
 
-	public FadeShader apiFragApplySkyFade() {
+	public FadeShader apiFragScreenCoord() {
 		if (!isModEnabled)
 			return this;
 
-		newLine("vec3 cfi_applySkyFade(vec3 fullyFaded) {");
+		newLine("vec2 cfi_screenCoord() {");
+		newLine("return gl_FragCoord.xy / cfi_screenSize;");
+		newLine("}");
+
+		return this;
+	}
+
+	public FadeShader dummyApiFragSampleSkyLodTexture() {
+		if (!isModEnabled)
+			return this;
+
+		return newLine("vec3 cfi_sampleSkyLodTexture() { return vec3(0.0); }");
+	}
+
+	public FadeShader apiFragSampleSkyLodTexture() {
+		if (!isModEnabled)
+			return this;
+
+		newLine("vec3 cfi_sampleSkyLodTexture() {");
+		newLine("return texture(cfi_sky, cfi_screenCoord()).rgb;");
+		newLine("}");
+
+		return this;
+	}
+
+	public FadeShader dummyApiFragApplySkyLodFade() {
+		if (!isModEnabled)
+			return this;
+
+		return newLine("vec3 cfi_applySkyLodFade(vec3 fullyFaded) { return vec3(0.0); }");
+	}
+
+	public FadeShader apiFragApplySkyLodFade() {
+		if (!isModEnabled)
+			return this;
+
+		newLine("vec3 cfi_applySkyLodFade(vec3 fullyFaded) {");
 
 		if (isFadeEnabled)
-			newLine("return cfi_applyFade(texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb, fullyFaded);");
+			newLine("return cfi_applyFade(cfi_sampleSkyLodTexture(), fullyFaded);");
 		else
 			newLine("return fullyFaded;");
 
@@ -412,7 +448,9 @@ public class FadeShader {
 			return this;
 
 		newLine("bool cfi_dhLodIsMasked(vec3 localPos, vec3 worldPos) {");
+
 		dhMaskLod("return true;", "localPos", "worldPos", false);
+
 		newLine("return false;");
 		newLine("}");
 

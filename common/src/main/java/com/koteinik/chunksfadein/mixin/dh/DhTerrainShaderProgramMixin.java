@@ -244,7 +244,7 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 			"uniform float cfi_dhStartFadeBlockDistanceSq;"
 		);
 
-		shader.dhMaskLod("discard;", "vPos", "vertexWorldPos", dhFadeEnabled());
+		shader.dhMaskLod("discard;", "vPos", "vertexWorldPos", true);
 
 		if (Config.isFadeEnabled) {
 			shader.newLine("if (fragColor.a < 1.0) {");
