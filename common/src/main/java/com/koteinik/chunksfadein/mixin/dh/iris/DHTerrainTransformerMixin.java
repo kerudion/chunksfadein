@@ -101,7 +101,6 @@ public class DHTerrainTransformerMixin {
 					shader.apiFragApplyFogFade().flushSingleLine(),
 					shader.apiFragApplyFade().flushSingleLine(),
 					shader.apiFragCalculateFade().flushSingleLine(),
-					shader.apiFragScreenCoord().flushSingleLine(),
 					shader.apiFragSampleSkyLodTexture().flushSingleLine()
 				);
 

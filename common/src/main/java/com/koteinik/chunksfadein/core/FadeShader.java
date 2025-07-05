@@ -23,7 +23,7 @@ public class FadeShader {
 			return this;
 
 		newLine("vec3 cfi_sampleSkyLodTexture() {");
-		newLine("return texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize)).rgb;");
+		newLine("return texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb;");
 		newLine("}");
 
 		return this;
