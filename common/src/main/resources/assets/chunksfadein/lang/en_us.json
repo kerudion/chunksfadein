@@ -49,6 +49,8 @@
     "settings.chunksfadein.animation_factor.tooltip": "Controls the intensity of the animation.\nIgnored if 'Full' animation type is used.",
     "settings.chunksfadein.animate_near_player": "Animate near player",
     "settings.chunksfadein.animate_near_player.tooltip": "Controls whether chunks in the 3x3 area centered at player's position are animated.",
+    "settings.chunksfadein.animate_with_dh": "Animate with DH",
+    "settings.chunksfadein.animate_with_dh.tooltip": "Controls whether to animate Minecraft chunks if Distant Horizons LOD rendering is enabled.",
     "settings.chunksfadein.animation_time": "Animation time",
     "settings.chunksfadein.animation_time.tooltip": "Controls the time it takes for chunk animation to end.",
     "settings.chunksfadein.world_curvature_enabled": "World curvature enabled",

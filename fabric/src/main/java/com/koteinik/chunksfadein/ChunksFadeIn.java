@@ -8,11 +8,11 @@ import com.koteinik.chunksfadein.crowdin.Translations;
 import net.fabricmc.api.ClientModInitializer;
 
 public class ChunksFadeIn implements ClientModInitializer {
-    @Override
-    public void onInitializeClient() {
-        Config.load();
-        ModrinthApi.load();
-        Translations.download();
-        Keybinds.initKeybinds();
-    }
+	@Override
+	public void onInitializeClient() {
+		Config.load();
+		ModrinthApi.load();
+		Translations.download();
+		Keybinds.initKeybinds();
+	}
 }

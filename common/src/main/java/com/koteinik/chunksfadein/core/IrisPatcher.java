@@ -1,13 +1,5 @@
 package com.koteinik.chunksfadein.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import io.github.douira.glsl_transformer.ast.data.ChildNodeList;
 import io.github.douira.glsl_transformer.ast.node.Identifier;
 import io.github.douira.glsl_transformer.ast.node.TranslationUnit;
@@ -20,11 +12,7 @@ import io.github.douira.glsl_transformer.ast.node.external_declaration.ExternalD
 import io.github.douira.glsl_transformer.ast.node.external_declaration.FunctionDefinition;
 import io.github.douira.glsl_transformer.ast.node.statement.Statement;
 import io.github.douira.glsl_transformer.ast.node.type.FullySpecifiedType;
-import io.github.douira.glsl_transformer.ast.node.type.qualifier.LayoutQualifier;
-import io.github.douira.glsl_transformer.ast.node.type.qualifier.LayoutQualifierPart;
-import io.github.douira.glsl_transformer.ast.node.type.qualifier.NamedLayoutQualifierPart;
-import io.github.douira.glsl_transformer.ast.node.type.qualifier.TypeQualifier;
-import io.github.douira.glsl_transformer.ast.node.type.qualifier.TypeQualifierPart;
+import io.github.douira.glsl_transformer.ast.node.type.qualifier.*;
 import io.github.douira.glsl_transformer.ast.node.type.specifier.BuiltinNumericTypeSpecifier;
 import io.github.douira.glsl_transformer.ast.print.ASTPrinter;
 import io.github.douira.glsl_transformer.ast.query.Root;
@@ -39,6 +27,10 @@ import io.github.douira.glsl_transformer.util.Type;
 import net.irisshaders.iris.pipeline.transform.PatchShaderType;
 import net.irisshaders.iris.pipeline.transform.parameter.SodiumParameters;
 import net.minecraft.util.Tuple;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // this class is just a mess, don't look here please
 public class IrisPatcher {
@@ -74,7 +66,12 @@ public class IrisPatcher {
 				TranslationUnit tree = parseTranslationUnit(rootSupplier, input);
 				Root root = tree.getRoot();
 
-				root.indexBuildSession(() -> internalInjectVarsAndDummyAPI(transformer, tree, root, getJobParameters()));
+				root.indexBuildSession(() -> internalInjectVarsAndDummyAPI(
+					transformer,
+					tree,
+					root,
+					getJobParameters()
+				));
 
 				return ASTPrinter.print(getPrintType(), tree);
 			}
@@ -91,34 +88,46 @@ public class IrisPatcher {
 
 		switch (parameters.type) {
 			case VERTEX:
-				tree.parseAndInjectNodes(t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
-					.vertInVars().flushList().stream());
+				tree.parseAndInjectNodes(
+					t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
+						.vertInVars().flushList().stream()
+				);
 
-				tree.parseAndInjectNodes(t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+				tree.parseAndInjectNodes(
+					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
 					shader.dummyApiVertGetFadeData().flushSingleLine(),
 					shader.dummyApiVertCalculateDisplacement().flushSingleLine(),
 					shader.dummyApiVertCalculateDisplacement2().flushSingleLine(),
 					shader.dummyApiVertCalculateCurvature().flushSingleLine(),
-					shader.dummyApiVertCalculateCurvature2().flushSingleLine());
+					shader.dummyApiVertCalculateCurvature2().flushSingleLine()
+				);
 
 				if (!inject)
 					break;
 
-				tree.parseAndInjectNodes(t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
-					.vertOutVars().flushList().stream());
+				tree.parseAndInjectNodes(
+					t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
+						.vertOutVars().flushList().stream()
+				);
 				break;
 
 			case FRAGMENT:
 				if (!inject)
 					break;
 
-				tree.parseAndInjectNodes(t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+				tree.parseAndInjectNodes(
+					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
 					shader.dummyApiFragCalculateFade().flushSingleLine(),
 					shader.dummyApiFragApplyFade().flushSingleLine(),
-					shader.dummyApiFragApplyFogFade().flushSingleLine());
+					shader.dummyApiFragApplyFogFade().flushSingleLine(),
+					shader.dummyApiFragApplySkyLodFade().flushSingleLine(),
+					shader.dummyApiFragSampleSkyLodTexture().flushSingleLine()
+				);
 
-				tree.parseAndInjectNodes(t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
-					.fragInVars().flushList().stream());
+				tree.parseAndInjectNodes(
+					t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
+						.fragInVars().flushList().stream()
+				);
 				break;
 
 			default:
@@ -147,7 +156,7 @@ public class IrisPatcher {
 		boolean injectMod = !hasFn(tree, "_cfi_noInjectModMarker");
 		boolean injectFragMod = injectMod && !hasFn(tree, "_cfi_noInjectFragModMarker");
 		boolean injectVertMod = injectMod && !hasFn(tree, "_cfi_noInjectVertModMarker");
-		boolean injectCurvature = !hasFn(tree, "_cfi_noCurvatureMarker");
+		boolean injectCurvature = injectMod && !hasFn(tree, "_cfi_noCurvatureMarker");
 
 		switch (parameters.type.glShaderType) {
 			case VERTEX:
@@ -156,32 +165,39 @@ public class IrisPatcher {
 				removeFn(tree, "cfi_calculateCurvature");
 
 				if (!injected)
-					tree.parseAndInjectNodes(t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
-						.vertInVars().flushList().stream());
+					tree.parseAndInjectNodes(
+						t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader.vertInVars().flushList().stream()
+					);
 
-				tree.injectNodes(ASTInjectionPoint.BEFORE_FUNCTIONS,
-					parseDeclarations(t, root,
+				tree.injectNodes(
+					ASTInjectionPoint.BEFORE_FUNCTIONS,
+					parseDeclarations(
+						t, root,
 						shader.apiVertGetFadeData("_draw_id").flushSingleLine(),
 						shader.apiVertCalculateDisplacement().flushSingleLine(),
 						shader.apiVertCalculateDisplacement2().flushSingleLine(),
 						shader.apiVertCalculateCurvature().flushSingleLine(),
-						shader.apiVertCalculateCurvature2().flushSingleLine()));
+						shader.apiVertCalculateCurvature2().flushSingleLine()
+					)
+				);
 
 				if (!inject)
 					break;
 
 				shader
 					.newLine("vec3 position = getVertexPosition().xyz;")
-					.vertInitOutVars("_vert_position", "_draw_id");
+					.vertInitOutVarsDrawId("_vert_position", "_draw_id");
 
 				if (injectVertMod)
-					shader.vertInitMod("_vert_position", "position", true, "_draw_id", injectCurvature);
+					shader.vertInitMod("_vert_position", "position", true, "vec3(_draw_id)", injectCurvature);
 
 				tree.appendFunctionBody("_vert_init", parseStatements(t, root, shader.flushArray()));
 
 				if (!injected)
-					tree.parseAndInjectNodes(t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
-						.vertOutVars().flushList().stream());
+					tree.parseAndInjectNodes(
+						t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
+							.vertOutVars().flushList().stream()
+					);
 
 				break;
 
@@ -189,27 +205,32 @@ public class IrisPatcher {
 				if (!inject)
 					return;
 
+				removeFn(tree, "cfi_sampleSkyLodTexture");
+				removeFn(tree, "cfi_applySkyLodFade");
 				removeFn(tree, "cfi_applyFogFade");
 				removeFn(tree, "cfi_applyFade");
 				removeFn(tree, "cfi_calculateFade");
 
-				tree.injectNodes(ASTInjectionPoint.BEFORE_FUNCTIONS,
-					parseDeclarations(t, root,
+				tree.injectNodes(
+					ASTInjectionPoint.BEFORE_FUNCTIONS,
+					parseDeclarations(
+						t, root,
 						shader.apiFragCalculateFade().flushSingleLine(),
 						shader.apiFragApplyFade().flushSingleLine(),
-						shader.apiFragApplyFogFade().flushSingleLine()));
+						shader.apiFragApplyFogFade().flushSingleLine(),
+						shader.apiFragApplySkyLodFade().flushSingleLine(),
+						shader.apiFragSampleSkyLodTexture().flushSingleLine()
+					)
+				);
 
 				if (!injected)
-					tree.parseAndInjectNodes(t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
-						.fragInVars().flushList().stream());
+					tree.parseAndInjectNodes(
+						t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
+							.fragInVars().flushList().stream()
+					);
 
 				if (injectFragMod) {
-					List<Tuple<Type, String>> layouts = findOutputColors(tree);
-					Tuple<Type, String> first = layouts.get(0);
-
-					tree.appendMainFunctionBody(parseStatements(t, root, shader
-						.fragColorMod(first.getB() + ".rgb", "iris_FogColor.rgb")
-						.flushMultiline()));
+					injectFragMod(t, tree, root);
 				}
 
 				break;
@@ -218,61 +239,99 @@ public class IrisPatcher {
 				break;
 		}
 
+		sortUses(tree);
+	}
+
+	public static void injectFragMod(ASTParser t, TranslationUnit tree, Root root) {
+		List<Tuple<Type, String>> layouts = findOutputColors(tree);
+		if (layouts.isEmpty())
+			return;
+
+		FadeShader shader = new FadeShader();
+
+		Tuple<Type, String> first = layouts.get(0);
+		Type type = first.getA();
+		String name = first.getB();
+
+		if (type == Type.FLOAT32)
+			tree.appendMainFunctionBody(parseStatements(
+				t, root, shader
+					.calculateFade("float fade = ")
+					.newLine(name + " *= fade;")
+					.flushMultiline()
+			));
+
+		if (type == Type.F32VEC3)
+			tree.appendMainFunctionBody(parseStatements(
+				t, root, shader
+					.fragColorMod(name + ".rgb")
+					.flushMultiline()
+			));
+	}
+
+	public static void sortUses(TranslationUnit tree) {
 		// run two times because of some edge cases
-		sortUses(t, tree);
-		sortUses(t, tree);
+		for (int a = 0; a < 2; a++)
+			tree.getRoot().identifierIndex.index.entrySet().stream()
+			                                    .filter(e -> sorterWhitelist.contains(e.getKey()) ||
+				                                    e.getKey().startsWith("_cfi_") ||
+				                                    (!e.getKey().startsWith("_") && e.getKey().contains("cfi_")))
+			                                    .forEach(e -> {
+				                                    ChildNodeList<ExternalDeclaration> children = tree.getChildren();
+
+				                                    ExternalDeclaration declaration = null;
+				                                    int firstUseIdx = -1;
+
+				                                    for (Identifier id : e.getValue()) {
+					                                    FunctionDefinition fnDefinition = id.getBranchAncestor(
+						                                    FunctionDefinition.class,
+						                                    FunctionDefinition::getFunctionPrototype
+					                                    );
+					                                    DeclarationExternalDeclaration externalDeclaration = id.getBranchAncestor(
+						                                    DeclarationExternalDeclaration.class,
+						                                    DeclarationExternalDeclaration::getDeclaration
+					                                    );
+					                                    if (externalDeclaration != null && e.getKey()
+					                                                                        .equals("cfi_ChunkFadeData"))
+						                                    if (externalDeclaration.getDeclaration() instanceof InterfaceBlockDeclaration intDeclaration) {
+							                                    if (!intDeclaration.getBlockName()
+							                                                       .getName()
+							                                                       .equals(e.getKey())) {
+								                                    externalDeclaration = null;
+							                                    }
+						                                    }
+
+					                                    if (fnDefinition == null && externalDeclaration == null) {
+						                                    ExternalDeclaration child = id.getAncestor(
+							                                    FunctionDefinition.class);
+						                                    if (child == null)
+							                                    child = id.getAncestor(DeclarationExternalDeclaration.class);
+
+						                                    int i = children.indexOf(child);
+
+						                                    if (i != -1 && (firstUseIdx == -1 || firstUseIdx > i))
+							                                    firstUseIdx = i;
+					                                    }
+
+					                                    if (declaration == null) {
+						                                    if (fnDefinition != null)
+							                                    declaration = fnDefinition;
+						                                    else if (externalDeclaration != null)
+							                                    declaration = externalDeclaration;
+					                                    }
+				                                    }
+
+				                                    if (firstUseIdx == -1)
+					                                    return;
+
+				                                    if (declaration != null && children.indexOf(declaration) > firstUseIdx) {
+					                                    declaration.detach();
+					                                    children.add(firstUseIdx, declaration);
+				                                    }
+			                                    });
 	}
 
-	private static void sortUses(ASTParser t, TranslationUnit tree) {
-		tree.getRoot().identifierIndex.index.entrySet().stream()
-			.filter(e -> sorterWhitelist.contains(e.getKey()) ||
-				(!e.getKey().startsWith("_") && e.getKey().contains("cfi_")))
-			.forEach(e -> {
-				ChildNodeList<ExternalDeclaration> children = tree.getChildren();
-
-				ExternalDeclaration declaration = null;
-				int firstUseIdx = -1;
-
-				for (Identifier id : e.getValue()) {
-					FunctionDefinition fnDefinition = id.getBranchAncestor(FunctionDefinition.class, FunctionDefinition::getFunctionPrototype);
-					DeclarationExternalDeclaration externalDeclaration = id.getBranchAncestor(DeclarationExternalDeclaration.class, DeclarationExternalDeclaration::getDeclaration);
-					if (externalDeclaration != null && e.getKey().equals("cfi_ChunkFadeData"))
-						if (externalDeclaration.getDeclaration() instanceof InterfaceBlockDeclaration intDeclaration) {
-							if (!intDeclaration.getBlockName().getName().equals(e.getKey())) {
-								externalDeclaration = null;
-							}
-						}
-
-					if (fnDefinition == null && externalDeclaration == null) {
-						ExternalDeclaration child = id.getAncestor(FunctionDefinition.class);
-						if (child == null)
-							child = id.getAncestor(DeclarationExternalDeclaration.class);
-
-						int i = children.indexOf(child);
-
-						if (i != -1 && (firstUseIdx == -1 || firstUseIdx > i))
-							firstUseIdx = i;
-					}
-
-					if (declaration == null) {
-						if (fnDefinition != null)
-							declaration = fnDefinition;
-						else if (externalDeclaration != null)
-							declaration = externalDeclaration;
-					}
-				}
-
-				if (firstUseIdx == -1)
-					return;
-
-				if (declaration != null && children.indexOf(declaration) > firstUseIdx) {
-					declaration.detach();
-					children.add(firstUseIdx, declaration);
-				}
-			});
-	}
-
-	private static List<Tuple<Type, String>> findOutputColors(TranslationUnit tree) {
+	public static List<Tuple<Type, String>> findOutputColors(TranslationUnit tree) {
 		List<Tuple<Type, String>> colors = new ArrayList<>();
 
 		ASTListener listener = new ASTListener() {
@@ -313,13 +372,13 @@ public class IrisPatcher {
 		try {
 			for (int i = 0; i < 2; i++)
 				tree.getOneFunctionDefinitionBody(name)
-					.getParent()
-					.detachAndDelete();
+				    .getParent()
+				    .detachAndDelete();
 		} catch (Exception e) {
 		}
 	}
 
-	private static boolean hasFn(TranslationUnit tree, String name) {
+	public static boolean hasFn(TranslationUnit tree, String name) {
 		try {
 			tree.getOneFunctionDefinitionBody(name);
 			return true;
@@ -328,15 +387,15 @@ public class IrisPatcher {
 		}
 	}
 
-	private static List<ExternalDeclaration> parseDeclarations(ASTParser t, Root root, String... input) {
-		if (input.length == 0 || Arrays.stream(input).allMatch(s -> s.isBlank()))
+	public static List<ExternalDeclaration> parseDeclarations(ASTParser t, Root root, String... input) {
+		if (input.length == 0 || Arrays.stream(input).allMatch(String::isBlank))
 			return List.of();
 
 		return t.parseExternalDeclarations(root, input);
 	}
 
-	private static List<Statement> parseStatements(ASTParser t, Root root, String... input) {
-		if (input.length == 0 || Arrays.stream(input).allMatch(s -> s.isBlank()))
+	public static List<Statement> parseStatements(ASTParser t, Root root, String... input) {
+		if (input.length == 0 || Arrays.stream(input).allMatch(String::isBlank))
 			return List.of();
 
 		return t.parseStatements(root, input);

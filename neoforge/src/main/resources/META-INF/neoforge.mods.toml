@@ -17,6 +17,9 @@ Adds fade-in and motion animations for chunks!
 [[mixins]]
 config = "chunksfadein.mixins.json"
 
+[[mixins]]
+config = "chunksfadein.neoforge.mixins.json"
+
 [[dependencies.chunksfadein]]
 modId = "minecraft"
 type = "required"

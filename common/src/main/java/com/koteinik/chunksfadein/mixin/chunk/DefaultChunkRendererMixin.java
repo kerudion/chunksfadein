@@ -66,6 +66,8 @@ public class DefaultChunkRendererMixin {
 
 	private static void processChunk(RenderRegion region, int sectionIndex) {
 		RenderSection section = region.getSection(sectionIndex);
+		if (section == null) return;
+
 		RenderRegionExt regionExt = (RenderRegionExt) region;
 
 		regionExt.processChunk((RenderSectionExt) section, sectionIndex);

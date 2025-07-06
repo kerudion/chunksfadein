@@ -1,8 +1,12 @@
 package com.koteinik.chunksfadein.mixin.iris;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.AnimationType;
+import com.koteinik.chunksfadein.core.FadeType;
+import com.koteinik.chunksfadein.core.IrisPatcher;
+import com.llamalad7.mixinextras.sugar.Local;
+import net.irisshaders.iris.helpers.StringPair;
+import net.irisshaders.iris.shaderpack.preprocessor.JcppProcessor;
 import org.anarres.cpp.Preprocessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,15 +15,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.koteinik.chunksfadein.config.Config;
-import com.koteinik.chunksfadein.core.AnimationType;
-import com.koteinik.chunksfadein.core.Curve;
-import com.koteinik.chunksfadein.core.FadeType;
-import com.koteinik.chunksfadein.core.IrisPatcher;
-import com.llamalad7.mixinextras.sugar.Local;
-
-import net.irisshaders.iris.helpers.StringPair;
-import net.irisshaders.iris.shaderpack.preprocessor.JcppProcessor;
+import java.util.HashSet;
+import java.util.Set;
 
 @Mixin(value = JcppProcessor.class, remap = false)
 public class JcppProcessorMixin {
@@ -30,7 +27,12 @@ public class JcppProcessorMixin {
 			add("shadow_cutout");
 			add("shadow_water");
 			add("gbuffers_terrain");
+			add("gbuffers_terrain_solid");
+			add("gbuffers_terrain_cutout");
 			add("gbuffers_water");
+			add("dh_terrain");
+			add("dh_water");
+			add("dh_shadow");
 		}
 	};
 
@@ -41,9 +43,9 @@ public class JcppProcessorMixin {
 			target = "Lorg/anarres/cpp/Preprocessor;setListener(Lorg/anarres/cpp/PreprocessorListener;)V",
 			shift = Shift.BEFORE))
 	private static void modifyGlslPreprocessSource(String source,
-		Iterable<StringPair> environmentDefines,
-		CallbackInfoReturnable<String> cir,
-		@Local(name = "pp") Preprocessor pp) {
+	                                               Iterable<StringPair> environmentDefines,
+	                                               CallbackInfoReturnable<String> cir,
+	                                               @Local(name = "pp") Preprocessor pp) {
 		if (!Config.isModEnabled)
 			return;
 
@@ -69,8 +71,7 @@ public class JcppProcessorMixin {
 
 			if (Config.isCurvatureEnabled)
 				pp.addMacro("CFI_CURVATURE", Config.worldCurvature + "");
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ignored) {
 		}
 	}
 
@@ -89,16 +90,12 @@ public class JcppProcessorMixin {
 			return source;
 		}
 
-		if (source.contains("CHUNKS_FADE_IN_NO_MOD_INJECT"))
-			source += "\nvoid _cfi_noInjectModMarker() {}\n";
-		if (source.contains("CHUNKS_FADE_IN_NO_FRAG_MOD_INJECT"))
-			source += "\nvoid _cfi_noInjectFragModMarker() {}\n";
-		if (source.contains("CHUNKS_FADE_IN_NO_VERT_MOD_INJECT"))
-			source += "\nvoid _cfi_noInjectVertModMarker() {}\n";
-		if (source.contains("CHUNKS_FADE_IN_NO_INJECT"))
-			source += "\nvoid _cfi_noInjectMarker() {}\n";
-		if (source.contains("CHUNKS_FADE_IN_NO_CURVATURE"))
-			source += "\nvoid _cfi_noCurvatureMarker() {}\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_MOD_INJECT")) source += "\nvoid _cfi_noInjectModMarker() {}\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_FRAG_MOD_INJECT")) source += "\nvoid _cfi_noInjectFragModMarker() {}\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_VERT_MOD_INJECT")) source += "\nvoid _cfi_noInjectVertModMarker() {}\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_INJECT")) source += "\nvoid _cfi_noInjectMarker() {}\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_CURVATURE")) source += "\nvoid _cfi_noCurvatureMarker() {}\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_LOD_MASK")) source += "\nvoid _cfi_noLodMaskMarker() {}\n";
 
 		return source;
 	}
