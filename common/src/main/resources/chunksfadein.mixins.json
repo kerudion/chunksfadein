@@ -33,7 +33,8 @@
     "misc.SodiumOptionsGUIMixin",
     "misc.ReloadableResourceManagerMixin",
     "misc.ClientboundLoginPacketMixin",
-    "misc.MinecraftMixin"
+    "misc.MinecraftMixin",
+    "misc.LevelRendererMixin"
   ],
   "server": [],
   "injectors": {

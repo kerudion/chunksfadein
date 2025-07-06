@@ -35,8 +35,7 @@
   "icon": "assets/chunksfadein/icon.png",
   "environment": "client",
   "mixins": [
-    "chunksfadein.mixins.json",
-    "chunksfadein.fabric.mixins.json"
+    "chunksfadein.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.15.7",
