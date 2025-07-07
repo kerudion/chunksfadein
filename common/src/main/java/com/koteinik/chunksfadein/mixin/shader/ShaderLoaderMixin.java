@@ -52,12 +52,17 @@ public abstract class ShaderLoaderMixin {
 		if (!Config.isModEnabled || !Config.isFadeEnabled)
 			return injector;
 
+		injector.insertAfterInVars("uniform float cfi_vanillaFogStart;");
+
 		injector.replace(
 			"fragColor = _linearFog(diffuseColor, v_FragDistance, u_FogColor, u_FogStart, u_FogEnd);",
 			"#ifdef USE_FOG",
 			"if (cfi_FadeFactor < 1.0 || v_FragDistance > u_FogStart) {",
-			"vec3 fadeColor = texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb;",
-			"fragColor = _linearFog(diffuseColor, v_FragDistance, vec4(fadeColor, u_FogColor.a), u_FogStart, u_FogEnd);",
+			"vec3 fadeColor;",
+			"if (cfi_FadeFactor < 1.0 || v_FragDistance > cfi_vanillaFogStart) {",
+			"fadeColor = texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb;",
+			"}",
+			"fragColor = _linearFog(diffuseColor, v_FragDistance, v_FragDistance > cfi_vanillaFogStart ? vec4(fadeColor, u_FogColor.a) : u_FogColor, u_FogStart, u_FogEnd);",
 			shader.fragColorMod("{frag_color}.rgb", "fadeColor", false).flushMultiline(),
 			"}",
 			"#else",

@@ -6,10 +6,13 @@ import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.extensions.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import net.caffeinemc.mods.sodium.client.gl.buffer.GlMutableBuffer;
+import net.caffeinemc.mods.sodium.client.gl.shader.uniform.GlUniformFloat;
 import net.caffeinemc.mods.sodium.client.gl.shader.uniform.GlUniformInt;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.DefaultShaderInterface;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = DefaultShaderInterface.class, remap = false)
 public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
 	private GlUniformInt sky;
+	private GlUniformFloat vanillaFogStart;
 
 	private FadeShaderInterface fadeInterface;
 	private static boolean warned = false;
@@ -29,6 +33,7 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
 
 		fadeInterface = new FadeShaderInterface(context);
 		sky = context.bindUniformOptional("cfi_sky", GlUniformInt::new);
+		vanillaFogStart = context.bindUniformOptional("cfi_vanillaFogStart", GlUniformFloat::new);
 	}
 
 	@Override
@@ -46,6 +51,12 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
 		if (sky != null) {
 			SkyFBO.active(13);
 			sky.set(13);
+		}
+
+		if (vanillaFogStart != null) {
+			float renderDistance = Minecraft.getInstance().gameRenderer.getRenderDistance();
+			float len = Mth.clamp(renderDistance / 10.0F, 4.0F, 64.0F);
+			vanillaFogStart.set(renderDistance - len);
 		}
 	}
 }
