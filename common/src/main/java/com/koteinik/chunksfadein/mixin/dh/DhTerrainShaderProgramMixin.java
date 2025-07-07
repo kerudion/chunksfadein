@@ -261,7 +261,8 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 		);
 
 		// probably should do something better with these...
-		injector.replace("viewDist < uClipDistance && uClipDistance > 0.0", "false");
+		// left the usage of uClipDistance to not mess up get uniform call
+		injector.replace("viewDist < uClipDistance && uClipDistance > 0.0", "uClipDistance == -13.3");
 		injector.replace("if (uDitherDhRendering)", "if (false)");
 
 		return injector;
