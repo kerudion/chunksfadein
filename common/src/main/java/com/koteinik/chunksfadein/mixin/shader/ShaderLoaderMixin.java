@@ -53,7 +53,7 @@ public abstract class ShaderLoaderMixin {
 			return injector;
 
 		String inFogRange = switch (Config.fogOverrideMode) {
-			case BOTH -> "null";
+			case BOTH -> "v_FragDistance.x > u_RenderFog.x || v_FragDistance.y > u_EnvironmentFog.x";
 			case CYLINDRICAL -> "v_FragDistance.x > u_RenderFog.x";
 			case SPHERICAL -> "v_FragDistance.y > u_EnvironmentFog.x && v_FragDistance.x < u_RenderFog.x";
 			case NONE -> "false";
