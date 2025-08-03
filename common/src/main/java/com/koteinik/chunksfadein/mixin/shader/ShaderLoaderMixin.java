@@ -52,14 +52,21 @@ public abstract class ShaderLoaderMixin {
 		if (!Config.isModEnabled || !Config.isFadeEnabled)
 			return injector;
 
+		String inFogRange = switch (Config.fogOverrideMode) {
+			case BOTH -> "null";
+			case CYLINDRICAL -> "v_FragDistance.x > u_RenderFog.x";
+			case SPHERICAL -> "v_FragDistance.y > u_EnvironmentFog.x && v_FragDistance.x < u_RenderFog.x";
+			case NONE -> "false";
+		};
+
 		injector.replace(
 			"fragColor = _linearFog(diffuseColor, v_FragDistance, u_FogColor, u_EnvironmentFog, u_RenderFog);",
 			"#ifdef USE_FOG",
 			"vec3 fadeColor;",
 			"vec4 fogColor = u_FogColor;",
-			"if (cfi_FadeFactor < 1.0 || v_FragDistance.x > u_RenderFog.x) {",
+			"if (cfi_FadeFactor < 1.0 || %s) {".formatted(inFogRange),
 			"fadeColor = texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb;",
-			"if (v_FragDistance.x > u_RenderFog.x) {",
+			"if (%s) {".formatted(inFogRange),
 			"fogColor.rgb = fadeColor;",
 			"}",
 			"}",
@@ -84,9 +91,9 @@ public abstract class ShaderLoaderMixin {
 		FadeShader shader = new FadeShader();
 
 		injector.insertAfterOutVars(shader
-			                            .vertInVars()
-			                            .vertOutVars()
-			                            .flushMultiline());
+			.vertInVars()
+			.vertOutVars()
+			.flushMultiline());
 
 		injector.insertAfterStr(
 			"vec3 position",

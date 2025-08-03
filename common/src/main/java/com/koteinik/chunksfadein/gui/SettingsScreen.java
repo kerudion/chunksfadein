@@ -6,6 +6,7 @@ import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.AnimationType;
 import com.koteinik.chunksfadein.core.Curve;
 import com.koteinik.chunksfadein.core.FadeType;
+import com.koteinik.chunksfadein.core.FogOverrideMode;
 import com.koteinik.chunksfadein.gui.components.CFIButton;
 import com.koteinik.chunksfadein.gui.components.CFIButton.CFIButtonBuilder;
 import com.koteinik.chunksfadein.gui.components.CFISlider.CFISliderBuilder;
@@ -37,6 +38,7 @@ public class SettingsScreen extends Screen {
 		"settings.chunksfadein.mod_tab_tooltip");
 	public static final String FADE_ENABLED = "settings.chunksfadein.fade_enabled";
 	public static final String FADE_TYPE = "settings.chunksfadein.fade_type";
+	public static final String FOG_OVERRIDE = "settings.chunksfadein.fog_override";
 	public static final String FADE_TIME = "settings.chunksfadein.fade_time";
 	public static final String FADE_NEAR_PLAYER = "settings.chunksfadein.fade_near_player";
 	public static final String ANIMATION_ENABLED = "settings.chunksfadein.animation_enabled";
@@ -113,26 +115,29 @@ public class SettingsScreen extends Screen {
 		CFIListWidget list = new CFIListWidget(minecraft, this, width, height - 64, 28);
 
 		CFIButton modEnabled = CFIButtonBuilder.choice(MOD_ENABLED, Config.MOD_ENABLED_KEY)
-		                                       .onPress(markDirty)
-		                                       .build();
+			.onPress(markDirty)
+			.build();
 		CFIButton updateNotifier = CFIButtonBuilder.toggle(UPDATE_NOTIFIER_ENABLED, Config.UPDATE_NOTIFIER_ENABLED_KEY)
-		                                           .build();
+			.build();
 		list.add(modEnabled, updateNotifier);
 
 		CFIButton buttonInSettings = CFIButtonBuilder.toggle(MOD_TAB_ENABLED, Config.SHOW_MOD_TAB_IN_SETTINGS_KEY)
-		                                             .build();
+			.build();
 		list.add(buttonInSettings);
 
 		CFIButton fadeEnabled = CFIButtonBuilder.choice(FADE_ENABLED, Config.FADE_ENABLED_KEY)
-		                                        .onPress(markDirty)
-		                                        .applyIf(
-			                                        CompatibilityHook.isIrisShaderPackInUse(),
-			                                        b -> b.tooltip(IRIS_WARNING)
-		                                        )
-		                                        .build();
+			.onPress(markDirty)
+			.applyIf(
+				CompatibilityHook.isIrisShaderPackInUse(),
+				b -> b.tooltip(IRIS_WARNING)
+			)
+			.build();
 		CFIButton fadeType = CFIButtonBuilder.cycle(FADE_TYPE, Config.FADE_TYPE_KEY, FadeType.class)
-		                                     .onPress(markDirty)
-		                                     .build();
+			.onPress(markDirty)
+			.build();
+		CFIButton fogOverride = CFIButtonBuilder.cycle(FOG_OVERRIDE, Config.FOG_OVERRIDE_KEY, FogOverrideMode.class)
+			.onPress(markDirty)
+			.build();
 		CFISlider fadeTime = new CFISliderBuilder()
 			.getValue(() -> Config.secondsFromFadeChange() / Config.MAX_FADE_TIME)
 			.applyValue(v -> Config.setDouble(Config.FADE_TIME_KEY, v * Config.MAX_FADE_TIME))
@@ -143,29 +148,29 @@ public class SettingsScreen extends Screen {
 			.tooltip(GuiUtils.tooltip(FADE_TIME))
 			.build();
 		CFIButton fadeNearPlayer = CFIButtonBuilder.choice(FADE_NEAR_PLAYER, Config.FADE_NEAR_PLAYER_KEY)
-		                                           .build();
+			.build();
 		list.add(fadeEnabled);
 		list.add(fadeType, fadeTime, fadeTime.makeResetButton(Config.FADE_TIME_KEY));
-		list.add(fadeNearPlayer);
+		list.add(fogOverride, fadeNearPlayer);
 
 		CFIButton animationEnabled = CFIButtonBuilder.choice(ANIMATION_ENABLED, Config.ANIMATION_ENABLED_KEY)
-		                                             .onPress(markDirty)
-		                                             .build();
+			.onPress(markDirty)
+			.build();
 		CFIButton animationCurve = CFIButtonBuilder.cycle(ANIMATION_CURVE, Config.ANIMATION_CURVE_KEY, Curve.class)
-		                                           .onPress(markEveryDirty)
-		                                           .build();
+			.onPress(markEveryDirty)
+			.build();
 		CFIButton animationType = CFIButtonBuilder.cycle(ANIMATION_TYPE, Config.ANIMATION_TYPE_KEY, AnimationType.class)
-		                                          .onPress(markDirty)
-		                                          .build();
+			.onPress(markDirty)
+			.build();
 		CFISlider animationOffset = CFISliderBuilder.range(ANIMATION_OFFSET, Config.ANIMATION_OFFSET_KEY, UNITS_BLOCKS)
-		                                            .onChange(markEveryDirty)
-		                                            .build();
+			.onChange(markEveryDirty)
+			.build();
 		CFISlider animationAngle = CFISliderBuilder.range(ANIMATION_ANGLE, Config.ANIMATION_ANGLE_KEY, UNITS_DEGREES)
-		                                           .onChange(markEveryDirty)
-		                                           .build();
+			.onChange(markEveryDirty)
+			.build();
 		CFISlider animationFactor = CFISliderBuilder.range(ANIMATION_FACTOR, Config.ANIMATION_FACTOR_KEY, 2)
-		                                            .onChange(markEveryDirty)
-		                                            .build();
+			.onChange(markEveryDirty)
+			.build();
 		CFISlider animationTime = new CFISliderBuilder()
 			.getValue(() -> Config.secondsFromAnimationChange() / Config.MAX_ANIMATION_TIME)
 			.applyValue(v -> Config.setDouble(Config.ANIMATION_TIME_KEY, v * Config.MAX_ANIMATION_TIME))
@@ -177,10 +182,10 @@ public class SettingsScreen extends Screen {
 			.tooltip(GuiUtils.tooltip(ANIMATION_TIME))
 			.build();
 		CFIButton animateNearPlayer = CFIButtonBuilder.choice(ANIMATE_NEAR_PLAYER, Config.ANIMATE_NEAR_PLAYER_KEY)
-		                                              .onPress(markEveryDirty)
-		                                              .build();
+			.onPress(markEveryDirty)
+			.build();
 		CFIButton animateWithDH = CFIButtonBuilder.choice(ANIMATE_WITH_DH, Config.ANIMATE_WITH_DH_KEY)
-		                                          .build();
+			.build();
 		list.add(animationEnabled);
 		if (Config.animationType == AnimationType.FULL) {
 			list.add(animationType, animationOffset, animationOffset.makeResetButton(Config.ANIMATION_OFFSET_KEY));
@@ -194,12 +199,12 @@ public class SettingsScreen extends Screen {
 		}
 
 		CFIButton curvatureEnabled = CFIButtonBuilder.choice(CURVATURE_ENABLED, Config.CURVATURE_ENABLED_KEY)
-		                                             .onPress(markDirty)
-		                                             .applyIf(
-			                                             CompatibilityHook.isIrisShaderPackInUse(),
-			                                             b -> b.tooltip(IRIS_WARNING)
-		                                             )
-		                                             .build();
+			.onPress(markDirty)
+			.applyIf(
+				CompatibilityHook.isIrisShaderPackInUse(),
+				b -> b.tooltip(IRIS_WARNING)
+			)
+			.build();
 		CFISlider curvatureFactor = new CFISliderBuilder()
 			.getValue(() -> curvatureValueIdx(Config.worldCurvature) / 16D)
 			.applyValue(v -> {

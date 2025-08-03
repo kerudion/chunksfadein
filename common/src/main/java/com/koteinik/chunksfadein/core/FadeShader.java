@@ -349,7 +349,7 @@ public class FadeShader {
 
 		calculateFade("float fade = ");
 		newLine("%s = mix(%s, %s, fade);"
-			        .formatted(color, fadeColor, color));
+			.formatted(color, fadeColor, color));
 
 		if (addIf)
 			newLine("}");
@@ -372,16 +372,18 @@ public class FadeShader {
 						.replace("%s", localPos));
 				randAppend("rand2", "%s - %s".formatted(localPos, randSeed));
 				randAppend("rand3", "%s + (%s * 2)".formatted(localPos, randSeed));
-				append("%s += vec3(rand - 0.5, rand2 - 0.5, rand3 - 0.5) * vec3(chunkFadeData.y);".formatted(modifyLocal ? localPos : position));
+				append("%s += vec3(rand - 0.5, rand2 - 0.5, rand3 - 0.5) * vec3(chunkFadeData.y);".formatted(modifyLocal
+					? localPos
+					: position));
 				append("}");
 				break;
 			case SCALE:
 				if (modifyLocal)
 					newLine("%s = mix(vec3(8.0), %s, 1.0 - chunkFadeData.y);"
-						        .formatted(localPos, localPos));
+						.formatted(localPos, localPos));
 				else
 					newLine("%s += vec3(8.0) - mix(vec3(8.0), %s, chunkFadeData.y);"
-						        .formatted(position, localPos));
+						.formatted(position, localPos));
 				break;
 		}
 
@@ -508,12 +510,12 @@ public class FadeShader {
 	public FadeShader dhMaskLod(String whenOccluded, String vertexPos, String vertexWorldPos, boolean addDhFadeCheck) {
 		newLine("vec2 absWorldPosXZ = abs(%s.xz);".formatted(vertexWorldPos));
 		newLine("if (absWorldPosXZ.x < cfi_lodMaskMaxDist.x &&" +
-			        "absWorldPosXZ.y < cfi_lodMaskMaxDist.z" +
-			        (addDhFadeCheck ? " && dot(%s, %s) < cfi_dhStartFadeBlockDistanceSq".formatted(
-				        vertexWorldPos,
-				        vertexWorldPos
-			        ) : "") +
-			        ") {");
+			"absWorldPosXZ.y < cfi_lodMaskMaxDist.z" +
+			(addDhFadeCheck ? " && dot(%s, %s) < cfi_dhStartFadeBlockDistanceSq".formatted(
+				vertexWorldPos,
+				vertexWorldPos
+			) : "") +
+			") {");
 		newLine("vec3 offsetPos = %s - mod(%s.xyz + sign(%s) * 0.01, 16.0);".formatted(
 			vertexWorldPos,
 			vertexPos,
@@ -524,8 +526,8 @@ public class FadeShader {
 		newLine("float texChunkY = offsetChunkPos.y + cfi_lodMaskOrigin.y - cfi_lodMaskMinY;");
 		newLine("vec3 uvw = (vec3(texChunkXZ.x, texChunkY, texChunkXZ.y) + vec3(0.5)) / cfi_lodMaskDim;");
 		newLine("if (texture(cfi_lodMask, uvw).r == 1.0) { %s }".formatted(whenOccluded));
-//		newLine("if (uvw.x > 0.0 && uvw.x < 1.0 && uvw.y > 0.0 && uvw.y < 1.0 && uvw.z > 0.0 && uvw.z < 1.0) { fragColor.r = 1.0; }");
-//		newLine("if (texture(cfi_lodMask, uvw).r != 0.0) { fragColor.g = texture(cfi_lodMask, uvw).r; }");
+		//		newLine("if (uvw.x > 0.0 && uvw.x < 1.0 && uvw.y > 0.0 && uvw.y < 1.0 && uvw.z > 0.0 && uvw.z < 1.0) { fragColor.r = 1.0; }");
+		//		newLine("if (texture(cfi_lodMask, uvw).r != 0.0) { fragColor.g = texture(cfi_lodMask, uvw).r; }");
 		newLine("}");
 
 		return this;
@@ -562,7 +564,7 @@ public class FadeShader {
 
 	public FadeShader rand(String name, String vector) {
 		newLine("float %s = fract(sin(dot(%s, vec3(12.9898, 78.233, 132.383))) * 43758.5453);"
-			        .formatted(name, vector));
+			.formatted(name, vector));
 		newLine("if (%s == 0.0) %s = 0.001;".formatted(name, name));
 
 		return this;
@@ -570,12 +572,19 @@ public class FadeShader {
 
 	public void randAppend(String name, String vector) {
 		append("float %s = fract(sin(dot(%s, vec3(12.9898, 78.233, 132.383))) * 43758.5453);"
-			       .formatted(name, vector));
+			.formatted(name, vector));
 		append("if (%s == 0.0) %s = 0.001;".formatted(name, name));
 	}
 
 	public FadeShader newLine(String line) {
 		lines.add(line);
+
+		return this;
+	}
+
+	public FadeShader newLineIf(boolean condition, String line) {
+		if (condition)
+			lines.add(line);
 
 		return this;
 	}
