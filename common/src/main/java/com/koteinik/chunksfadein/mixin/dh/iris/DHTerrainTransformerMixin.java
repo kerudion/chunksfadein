@@ -62,6 +62,7 @@ public class DHTerrainTransformerMixin {
 				shader.newLine("cfi_initOutVars();");
 
 				shader.newLine("cfi_localPos = _vert_position;");
+				shader.newLine("cfi_worldPos = _cfi_worldPos;");
 
 				if (injectVertMod) {
 					shader.newLine("_vert_position += cfi_calculateDisplacement();");

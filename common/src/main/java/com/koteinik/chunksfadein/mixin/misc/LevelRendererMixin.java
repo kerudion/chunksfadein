@@ -37,7 +37,6 @@ public class LevelRendererMixin {
 		targets.main = framePass.readsAndWrites(targets.main);
 
 		framePass.executes(() -> {
-
 			SkyFBO fbo = SkyFBO.getInstance();
 			if (fbo != null)
 				fbo.blitFromTexture(Utils.mainColorTexture(), Utils.mainTargetWidth(), Utils.mainTargetHeight(), true);
