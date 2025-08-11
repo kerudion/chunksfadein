@@ -23,6 +23,8 @@ sourceSets.main.resources {
 }
 
 dependencies {
+    implementation project(":common")
+
     implementation "maven.modrinth:sodium:${sodium_version.replace("fabric", "neoforge")}-neoforge"
     implementation "maven.modrinth:iris:${iris_version.replace("fabric", "neoforge")}-neoforge"
     implementation "maven.modrinth:distanthorizons:${dh_version}"

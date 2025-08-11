@@ -1,17 +1,17 @@
 package com.koteinik.chunksfadein;
 
-import java.util.List;
-import java.util.Set;
-
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
+import java.util.List;
+import java.util.Set;
+
 public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		boolean isIrisMixin = mixinClassName.startsWith("com.koteinik.chunksfadein.mixin.iris");
-		boolean isDHMixin = mixinClassName.startsWith("com.koteinik.chunksfadein.mixin.dh");
+		boolean isIrisMixin = mixinClassName.contains("iris");
+		boolean isDHMixin = mixinClassName.contains("dh");
 
 		if (isIrisMixin)
 			try {

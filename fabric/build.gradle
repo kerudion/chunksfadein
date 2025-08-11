@@ -40,4 +40,6 @@ dependencies {
     implementation "com.moandjiezana.toml:toml4j:${toml4j_version}"
     implementation "io.github.douira:glsl-transformer:${glsl_transformer_version}"
     implementation "org.anarres:jcpp:1.4.14"
+
+    implementation project(":common")
 }

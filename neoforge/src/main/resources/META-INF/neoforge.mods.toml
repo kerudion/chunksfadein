@@ -15,7 +15,13 @@ Adds fade-in and motion animations for chunks!
 '''
 
 [[mixins]]
-config = "chunksfadein.mixins.json"
+config = "chunksfadein_mc.mixins.json"
+[[mixins]]
+config = "chunksfadein_sodium.mixins.json"
+[[mixins]]
+config = "chunksfadein_iris.mixins.json"
+[[mixins]]
+config = "chunksfadein_dh.mixins.json"
 
 [[dependencies.chunksfadein]]
 modId = "minecraft"

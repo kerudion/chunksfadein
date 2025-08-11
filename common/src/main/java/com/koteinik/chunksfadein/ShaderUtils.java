@@ -1,6 +1,6 @@
 package com.koteinik.chunksfadein;
 
-import com.koteinik.chunksfadein.extensions.LodRendererExt;
+import com.koteinik.chunksfadein.compat.dh.ext.LodRendererExt;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.pipeline.transform.TransformPatcher;
