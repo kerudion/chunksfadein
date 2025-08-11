@@ -1,6 +1,22 @@
 plugins {
-    id 'multiloader-loader'
-    id 'fabric-loom'
+    id "fabric-loom"
+}
+
+base {
+    archivesName = "chunksfadein-fabric"
+}
+
+loom {
+    mixin {
+        defaultRefmapName.set("chunksfadein.refmap.json")
+    }
+}
+
+sourceSets.main.java {
+    srcDir project(":common").sourceSets.main.java
+}
+sourceSets.main.resources {
+    srcDir project(":common").sourceSets.main.resources
 }
 
 dependencies {
@@ -10,28 +26,18 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
     }
 
-    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
- 
-    implementation "org.anarres:jcpp:1.4.14"
-
-    modImplementation "maven.modrinth:sodium:${sodium_version}"
-    modImplementation "com.terraformersmc:modmenu:${modmenu_version}"
-    modImplementation "maven.modrinth:iris:${iris_version}"
-    modImplementation "maven.modrinth:distanthorizons:${project.dh_version}"
-
+    include "com.moandjiezana.toml:toml4j:${toml4j_version}"
     include "net.fabricmc.fabric-api:fabric-key-binding-api-v1:${fabric_key_binding_api_version}"
+
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-key-binding-api-v1:${fabric_key_binding_api_version}"
 
-    include "com.moandjiezana.toml:toml4j:${toml4j_version}"
+    modImplementation "maven.modrinth:sodium:${sodium_version}-fabric"
+    modImplementation "maven.modrinth:iris:${iris_version}-fabric"
+    modImplementation "maven.modrinth:distanthorizons:${dh_version}"
+    modImplementation "com.terraformersmc:modmenu:${modmenu_version}"
+
     implementation "com.moandjiezana.toml:toml4j:${toml4j_version}"
-
     implementation "io.github.douira:glsl-transformer:${glsl_transformer_version}"
-
-    implementation files(new File(rootDir, "DHApi.jar"))
-}
-
-loom {
-    mixin {
-        defaultRefmapName.set("chunksfadein.refmap.json")
-    }
+    implementation "org.anarres:jcpp:1.4.14"
 }

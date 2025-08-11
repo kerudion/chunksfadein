@@ -39,12 +39,12 @@
   ],
   "depends": {
     "fabricloader": ">=0.15.7",
-    "minecraft": ">=1.21.6",
     "java": ">=21",
-    "sodium": ">=0.6.0-beta.4"
+    "minecraft": "${minecraft_version_range}",
+    "sodium": "${sodium_version_range}",
+    "iris": "${iris_version_range}"
   },
   "breaks": {
-    "iris": "<=1.7.5",
     "optifabric": "*"
   },
   "entrypoints": {
