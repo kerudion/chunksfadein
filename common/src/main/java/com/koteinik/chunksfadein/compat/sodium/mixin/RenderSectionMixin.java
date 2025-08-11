@@ -1,12 +1,12 @@
 package com.koteinik.chunksfadein.compat.sodium.mixin;
 
 import com.koteinik.chunksfadein.MathUtils;
+import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
+import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.DataBuffer;
 import com.koteinik.chunksfadein.core.Fader;
 import com.koteinik.chunksfadein.core.Utils;
-import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
-import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
 import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
@@ -14,6 +14,9 @@ import net.minecraft.core.SectionPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = RenderSection.class, remap = false)
 public class RenderSectionMixin implements RenderSectionExt {
@@ -33,9 +36,14 @@ public class RenderSectionMixin implements RenderSectionExt {
 	@Final
 	private int chunkZ;
 
-	private final Fader fader = new Fader(chunkX, chunkZ);
+	private Fader fader;
 	private boolean completedFade = false;
 	private boolean completedAnimation = false;
+
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void modifyInit(RenderRegion region, int chunkX, int chunkY, int chunkZ, CallbackInfo ci) {
+		fader = new Fader(chunkX, chunkZ);
+	}
 
 	@Override
 	public boolean hasRenderedBefore() {
