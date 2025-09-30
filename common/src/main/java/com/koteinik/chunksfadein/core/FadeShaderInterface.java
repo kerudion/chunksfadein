@@ -10,12 +10,13 @@ public class FadeShaderInterface {
 	private GlUniformFloat2v screenSize;
 
 	public FadeShaderInterface(ShaderBindingContext context) {
-		this.uniformFadeDatas = context.bindUniformBlock("cfi_ubo_ChunkFadeDatas", 1);
+		this.uniformFadeDatas = context.bindUniformBlockOptional("cfi_ubo_ChunkFadeDatas", 1);
 		this.screenSize = context.bindUniformOptional("cfi_screenSize", GlUniformFloat2v::new);
 	}
 
 	public void bindUniforms(GlMutableBuffer fadeDataBuffer) {
-		uniformFadeDatas.bindBuffer(fadeDataBuffer);
+		if (uniformFadeDatas != null)
+			uniformFadeDatas.bindBuffer(fadeDataBuffer);
 
 		if (screenSize != null)
 			screenSize.set(Utils.mainTargetWidth(), Utils.mainTargetHeight());

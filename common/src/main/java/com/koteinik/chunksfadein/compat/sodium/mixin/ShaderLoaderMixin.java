@@ -1,17 +1,15 @@
 package com.koteinik.chunksfadein.compat.sodium.mixin;
 
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.FadeShader;
+import com.koteinik.chunksfadein.core.ShaderInjector;
+import com.koteinik.chunksfadein.hooks.CompatibilityHook;
+import net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import com.koteinik.chunksfadein.core.FadeShader;
-import com.koteinik.chunksfadein.core.ShaderInjector;
-import com.koteinik.chunksfadein.hooks.CompatibilityHook;
-
-import net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader;
-import net.minecraft.resources.ResourceLocation;
 
 @Mixin(value = ShaderLoader.class, remap = false)
 public abstract class ShaderLoaderMixin {
@@ -47,7 +45,7 @@ public abstract class ShaderLoaderMixin {
 		ShaderInjector injector = new ShaderInjector();
 		FadeShader shader = new FadeShader();
 
-		injector.insertAfterInVars(shader.fragInVars().flushMultiline());
+		injector.insertAfterUniforms(shader.fragInVars().flushMultiline());
 
 		if (!Config.isModEnabled || !Config.isFadeEnabled)
 			return injector;
@@ -90,7 +88,7 @@ public abstract class ShaderLoaderMixin {
 		ShaderInjector injector = new ShaderInjector();
 		FadeShader shader = new FadeShader();
 
-		injector.insertAfterOutVars(shader
+		injector.insertAfterUniforms(shader
 			.vertInVars()
 			.vertOutVars()
 			.flushMultiline());
