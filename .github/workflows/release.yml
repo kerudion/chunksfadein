@@ -58,6 +58,12 @@ jobs:
 
           game-version-filter: releases
 
+      - name: Get NeoForge version range
+        id: neoforge_version
+        uses: madhead/read-java-properties@latest
+        with:
+          file: gradle.properties
+          property: minecraft_version_range_neoforge
       - name: Publish NeoForge
         uses: Kir-Antipov/mc-publish@v3.3
         with:
@@ -76,8 +82,7 @@ jobs:
           loaders: |
             neoforge
 
-          game-versions: |
-            [1.21.6, 1.22)
+          game-versions: ${{ steps.neoforge_version.outputs.value }}
 
           files: |
             neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
