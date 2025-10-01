@@ -163,7 +163,7 @@ public class TranslationsDownloader extends Thread {
 	public void run() {
 		Map<String, byte[]> translations;
 		try {
-			translations = getCrowdinTranslations(CROWDIN_ID);
+			translations = getCrowdinTranslations();
 		} catch (IOException e) {
 			Logger.warn("Failed to get crowdin translations:", e);
 			return;
@@ -186,18 +186,18 @@ public class TranslationsDownloader extends Thread {
 		}
 	}
 
-	private Map<String, byte[]> getCrowdinTranslations(String projectName) throws IOException {
+	private Map<String, byte[]> getCrowdinTranslations() throws IOException {
 		ZipInputStream zis = null;
 		Pattern pattern = Pattern.compile("^([a-z]{2}(-[A-Z]{2})?)/(.+\\.json)$");
 		Map<String, byte[]> zipContents = new HashMap<>();
 
 		try {
 			String lastBuildId = get(LIST_BUILDS).getAsJsonArray("data").asList().stream()
-			                                     .map(e -> e.getAsJsonObject().getAsJsonObject("data"))
-			                                     .filter(e -> e.get("status").getAsString().equals("finished"))
-			                                     .map(e -> e.get("id").getAsString())
-			                                     .findFirst()
-			                                     .get();
+				.map(e -> e.getAsJsonObject().getAsJsonObject("data"))
+				.filter(e -> e.get("status").getAsString().equals("finished"))
+				.map(e -> e.get("id").getAsString())
+				.findFirst()
+				.get();
 
 			String buildUrl = get(GET_BUILD.formatted(lastBuildId))
 				.getAsJsonObject("data")
@@ -244,7 +244,7 @@ public class TranslationsDownloader extends Thread {
 
 	private JsonObject get(String url) {
 		return NetworkUtils.executeGet(url, Map.of("Authorization", "Bearer " + CROWDIN_TOKEN), Map.of())
-		                   .getAsJsonObject();
+			.getAsJsonObject();
 	}
 
 	private byte[] getZipStreamContent(InputStream is, int size) throws IOException {

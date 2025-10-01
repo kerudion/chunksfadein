@@ -1,6 +1,6 @@
 package com.koteinik.chunksfadein.core;
 
-import com.google.gson.JsonElement;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.NetworkUtils;
@@ -21,7 +21,7 @@ public class ModrinthApi {
 
 	public static ModrinthVersion getLatestModVersion() {
 		try {
-			JsonElement body = NetworkUtils.executeGet(
+			JsonArray body = NetworkUtils.executeGet(
 				VERSIONS_ENDPOINT,
 				Map.of(),
 				Map.of(
@@ -29,24 +29,26 @@ public class ModrinthApi {
 					"game_versions", "[\"" + minecraftVersion + "\"]",
 					"loaders", "[\"" + (Services.PLATFORM.isForge() ? "neoforge" : "fabric") + "\"]"
 				)
-			);
+			).getAsJsonArray();
+			if (body.isEmpty())
+				return null;
 
-			JsonObject first = body.getAsJsonArray().get(0).getAsJsonObject();
+			JsonObject first = body.get(0).getAsJsonObject();
 
 			String changelog = first.get("changelog").getAsString();
 			String cleanVersion = first.get("version_number").getAsString().replace("v", "")
-			                           .replace("-fabric", "")
-			                           .replace("-neoforge", "");
+				.replace("-fabric", "")
+				.replace("-neoforge", "");
 
 			String projectId = first.get("project_id").getAsString();
 			String versionId = first.get("id").getAsString();
 			String file = first.get("files").getAsJsonArray().asList().stream()
-			                   .filter(e -> e.getAsJsonObject().get("primary").getAsBoolean())
-			                   .findAny()
-			                   .get()
-			                   .getAsJsonObject()
-			                   .get("filename")
-			                   .getAsString();
+				.filter(e -> e.getAsJsonObject().get("primary").getAsBoolean())
+				.findAny()
+				.get()
+				.getAsJsonObject()
+				.get("filename")
+				.getAsString();
 
 			String downloadUrl = MOD_CDN.formatted(projectId, versionId, file);
 
