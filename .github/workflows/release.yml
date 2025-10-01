@@ -60,10 +60,9 @@ jobs:
 
       - name: Get NeoForge version range
         id: neoforge_version
-        uses: madhead/read-java-properties@latest
-        with:
-          file: gradle.properties
-          property: minecraft_version_range_neoforge
+        run: |
+          range=$(grep -w "minecraft_version_range_neoforge" gradle.properties | cut -d'=' -f2- | cut -d' ' -f2-)
+          echo "value=$range" >> "$GITHUB_OUTPUT"
       - name: Publish NeoForge
         uses: Kir-Antipov/mc-publish@v3.3
         with:
