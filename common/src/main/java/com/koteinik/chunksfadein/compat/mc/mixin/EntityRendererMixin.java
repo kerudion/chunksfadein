@@ -1,24 +1,23 @@
 package com.koteinik.chunksfadein.compat.mc.mixin;
 
+import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
+import com.koteinik.chunksfadein.config.Config;
+import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.koteinik.chunksfadein.config.Config;
-import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
-
-import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.world.phys.Vec3;
-
 @Mixin(value = EntityRenderer.class)
 public class EntityRendererMixin {
 	@Inject(method = "getRenderOffset", at = @At(value = "RETURN"), cancellable = true)
 	public void modifyGetPositionOffsetNew(EntityRenderState state, CallbackInfoReturnable<Vec3> cir) {
-		if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled) || state.isDiscrete || (
-			state.x == 0 && state.y == 0 && state.z == 0))
+		if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled)
+			|| state.isDiscrete
+			|| (state.x == 0 && state.y == 0 && state.z == 0))
 			return;
 
 		SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();

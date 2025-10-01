@@ -24,7 +24,7 @@ public class Keybinds {
 			TOGGLE_MOD,
 			InputConstants.Type.KEYSYM,
 			InputConstants.UNKNOWN.getValue(),
-			KEYBINDS
+			KeyMapping.Category.MISC
 		));
 	}
 

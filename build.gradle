@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "fabric-loom" version "1.10.1" apply false
+    id "fabric-loom" version "1.11.4" apply false
     id "net.neoforged.moddev" version "2.0.42-beta" apply false
 }
 
