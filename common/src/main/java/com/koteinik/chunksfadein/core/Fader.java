@@ -27,10 +27,7 @@ public class Fader {
 	private final float animationChangePerMs;
 
 	public Fader(int chunkX, int chunkZ) {
-		this.chunkX = chunkX;
-		this.chunkZ = chunkZ;
-		this.fadeChangePerMs = Config.fadeChangePerMs;
-		this.animationChangePerMs = Config.animationChangePerMs;
+		this(chunkX, chunkZ, Config.fadeChangePerMs, Config.animationChangePerMs);
 	}
 
 	public Fader(int chunkX, int chunkZ, float fadeChangePerMs, float animationChangePerMs) {
@@ -92,8 +89,8 @@ public class Fader {
 				Vector3f axis = new Vector3f(direction).cross(UP);
 
 				direction.rotateAxis((float) Math.toRadians(90 - Config.animationAngle), axis.x, axis.y, axis.z)
-				         .mul(Config.animationOffset)
-				         .lerp(new Vector3f(), progress);
+					.mul(Config.animationOffset)
+					.lerp(new Vector3f(), progress);
 
 				if (Config.animationOffset > 0)
 					direction.rotateY((float) Math.PI);
@@ -126,7 +123,7 @@ public class Fader {
 
 	private static Vec3 getCameraPosition() {
 		Minecraft client = Minecraft.getInstance();
-		Entity camera = client.cameraEntity;
+		Entity camera = client.getCameraEntity();
 
 		if (camera == null)
 			return new Vec3(0, 0, 0);

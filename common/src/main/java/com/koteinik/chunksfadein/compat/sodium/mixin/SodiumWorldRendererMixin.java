@@ -1,8 +1,8 @@
 package com.koteinik.chunksfadein.compat.sodium.mixin;
 
-import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionManagerExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
+import com.koteinik.chunksfadein.config.Config;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -22,10 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.SortedSet;
 
@@ -39,7 +37,8 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
 		SectionPos chunkPos = SectionPos.of(pos);
 		float[] offset = ((RenderSectionManagerExt) renderSectionManager).getAnimationOffset(
 			chunkPos.getX(),
-			chunkPos.getY(), chunkPos.getZ()
+			chunkPos.getY(),
+			chunkPos.getZ()
 		);
 
 		if (Config.isCurvatureEnabled) {
@@ -66,32 +65,27 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
 		return renderSectionManager;
 	}
 
-	@Inject(method = "renderBlockEntity", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(DDD)V", shift = Shift.AFTER, remap = true),
-		locals = LocalCapture.CAPTURE_FAILHARD)
-	private static void modifyRenderTileEntities(PoseStack matrices,
-	                                             RenderBuffers bufferBuilders,
-	                                             Long2ObjectMap<SortedSet<BlockDestructionProgress>> blockBreakingProgressions,
-	                                             float tickDelta,
-	                                             MultiBufferSource.BufferSource immediate,
-	                                             double x, double y, double z,
-	                                             BlockEntityRenderDispatcher dispatcher,
-	                                             BlockEntity entity,
-	                                             LocalPlayer player,
-	                                             LocalBooleanRef ref,
-	                                             CallbackInfo ci) {
-		if (!Config.isModEnabled || !entity.hasLevel() || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled))
+	@Inject(
+		method = "renderBlockEntity",
+		at = @At(
+			value = "INVOKE",
+			target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(DDD)V",
+			shift = At.Shift.AFTER,
+			remap = true
+		)
+	)
+	private static void modifySubmitBlockEntities(
+		PoseStack matrices, RenderBuffers bufferBuilders, Long2ObjectMap<SortedSet<BlockDestructionProgress>> blockBreakingProgressions, float tickDelta, MultiBufferSource.BufferSource immediate, double x, double y, double z, BlockEntityRenderDispatcher dispatcher, BlockEntity entity, LocalPlayer player, LocalBooleanRef isGlowing, CallbackInfo ci
+	) {
+		if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled))
 			return;
 
-		if (((SodiumWorldRendererExt) instance()).getRenderSectionManager() == null)
+		SodiumWorldRendererExt ext = ((SodiumWorldRendererExt) SodiumWorldRenderer.instance());
+		if (ext.getRenderSectionManager() == null)
 			return;
 
-		float[] offset = ((SodiumWorldRendererExt) instance()).getAnimationOffset(entity.getBlockPos().getCenter());
+		float[] offset = ext.getAnimationOffset(entity.getBlockPos().getCenter());
 
 		matrices.translate(offset[0], offset[1], offset[2]);
-	}
-
-	@Shadow
-	public static SodiumWorldRenderer instance() {
-		return null;
 	}
 }
