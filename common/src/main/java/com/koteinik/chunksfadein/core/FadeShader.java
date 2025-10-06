@@ -340,6 +340,10 @@ public class FadeShader {
 		return fragColorMod(color, "texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb", addIf);
 	}
 
+	public FadeShader fragColorMod(String color, String fadeColor) {
+		return fragColorMod(color, fadeColor, true);
+	}
+
 	public FadeShader fragColorMod(String color, String fadeColor, boolean addIf) {
 		if (!isModEnabled || !isFadeEnabled)
 			return this;

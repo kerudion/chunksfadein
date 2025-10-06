@@ -7,7 +7,12 @@ import io.github.douira.glsl_transformer.ast.node.TranslationUnit;
 import io.github.douira.glsl_transformer.ast.node.Version;
 import io.github.douira.glsl_transformer.ast.node.declaration.InterfaceBlockDeclaration;
 import io.github.douira.glsl_transformer.ast.node.declaration.TypeAndInitDeclaration;
+import io.github.douira.glsl_transformer.ast.node.expression.Expression;
 import io.github.douira.glsl_transformer.ast.node.expression.LiteralExpression;
+import io.github.douira.glsl_transformer.ast.node.expression.ReferenceExpression;
+import io.github.douira.glsl_transformer.ast.node.expression.binary.AssignmentExpression;
+import io.github.douira.glsl_transformer.ast.node.expression.unary.FunctionCallExpression;
+import io.github.douira.glsl_transformer.ast.node.expression.unary.MemberAccessExpression;
 import io.github.douira.glsl_transformer.ast.node.external_declaration.DeclarationExternalDeclaration;
 import io.github.douira.glsl_transformer.ast.node.external_declaration.ExternalDeclaration;
 import io.github.douira.glsl_transformer.ast.node.external_declaration.FunctionDefinition;
@@ -27,7 +32,6 @@ import io.github.douira.glsl_transformer.ast.traversal.ASTWalker;
 import io.github.douira.glsl_transformer.util.Type;
 import net.irisshaders.iris.pipeline.transform.PatchShaderType;
 import net.irisshaders.iris.pipeline.transform.parameter.SodiumParameters;
-import net.minecraft.util.Tuple;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -70,7 +74,6 @@ public class IrisPatcher {
 				root.indexBuildSession(() -> internalInjectVarsAndDummyAPI(
 					transformer,
 					tree,
-					root,
 					getJobParameters()
 				));
 
@@ -79,7 +82,7 @@ public class IrisPatcher {
 		};
 	}
 
-	private static void internalInjectVarsAndDummyAPI(ASTParser t, TranslationUnit tree, Root root, Parameters parameters) {
+	private static void internalInjectVarsAndDummyAPI(ASTParser t, TranslationUnit tree, Parameters parameters) {
 		if (hasFn(tree, "_cfi_injected"))
 			return;
 
@@ -244,30 +247,112 @@ public class IrisPatcher {
 	}
 
 	public static void injectFragMod(ASTParser t, TranslationUnit tree, Root root) {
-		List<Tuple<Type, String>> layouts = findOutputColors(tree);
+		List<Layout> layouts = findOutputColors(tree);
 		if (layouts.isEmpty())
 			return;
 
 		FadeShader shader = new FadeShader();
 
-		Tuple<Type, String> first = layouts.get(0);
-		Type type = first.getA();
-		String name = first.getB();
+		Layout first = layouts.getFirst();
+		Type type = first.type;
+		String name = first.name;
 
-		if (type == Type.FLOAT32)
-			tree.appendMainFunctionBody(parseStatements(
-				t, root, shader
-					.calculateFade("float fade = ")
-					.newLine(name + " *= fade;")
-					.flushMultiline()
-			));
+		List<String> packers = root.identifierIndex.index.keySet()
+			.stream()
+			.filter(s -> s.contains("pack"))
+			.toList();
+		if (packers.isEmpty()) {
+			if (type == Type.FLOAT32)
+				tree.appendMainFunctionBody(parseStatements(
+					t, root, shader
+						.calculateFade("float fade = ")
+						.newLine(name + " *= fade;")
+						.flushMultiline()
+				));
 
-		if (type == Type.F32VEC3)
-			tree.appendMainFunctionBody(parseStatements(
-				t, root, shader
-					.fragColorMod(name + ".rgb")
-					.flushMultiline()
-			));
+			if (type == Type.F32VEC3 || type == Type.F32VEC4)
+				tree.appendMainFunctionBody(parseStatements(
+					t, root, shader
+						.fragColorMod(name + ".rgb")
+						.flushMultiline()
+				));
+
+			return;
+		}
+
+		Map<FunctionDefinition, Map<String, MixVar>> vars = new HashMap<>();
+
+		packers.forEach(packer -> root.identifierIndex.get(packer)
+			.forEach(i -> {
+				AssignmentExpression assignment = i.getAncestor(AssignmentExpression.class);
+
+				if (assignment == null)
+					return;
+
+				if (!(assignment.getLeft() instanceof MemberAccessExpression memberAccess))
+					return;
+
+				if (!(memberAccess.getOperand() instanceof ReferenceExpression ref))
+					return;
+
+				if (!(name.equals(ref.getIdentifier().getName())))
+					return;
+
+				String member = memberAccess.getMember().getName();
+				if (!"xyzwrgba".contains(member))
+					return;
+
+				FunctionCallExpression call = i.getAncestor(FunctionCallExpression.class);
+				if (call == null)
+					return;
+
+				for (Expression param : call.getParameters()) {
+					if (!(param instanceof MemberAccessExpression paramAccess))
+						continue;
+
+					if (!(paramAccess.getOperand() instanceof ReferenceExpression paramRef))
+						continue;
+
+					String varName = paramRef.getIdentifier().getName();
+					if (!varName.contains("color")) // possibly more robust color detection?
+						continue;
+
+					String paramMember = paramAccess.getMember().getName();
+					if (!"xyzwrgba".contains(paramMember))
+						continue;
+
+					FunctionDefinition fn = assignment.getAncestor(FunctionDefinition.class);
+					ChildNodeList<Statement> body = fn.getBody().getStatements();
+
+					int idx = body.indexOf(assignment.getAncestor(Statement.class));
+
+					Map<String, MixVar> fnVars = vars.computeIfAbsent(fn, k -> new HashMap<>());
+
+					MixVar var = fnVars.get(varName);
+					if (var == null) {
+						fnVars.put(varName, new MixVar(varName, paramMember, idx));
+					} else {
+						var.components += paramMember;
+						var.firstUse = Math.min(var.firstUse, idx);
+					}
+				}
+			}));
+
+		vars.forEach(
+			(fn, vs) -> {
+				ChildNodeList<Statement> body = fn.getBody().getStatements();
+
+				vs.values().forEach(v -> body.addAll(
+					v.firstUse, parseStatements(
+						t,
+						root,
+						shader
+							.fragColorMod(v.name + "." + v.components, "iris_FogColor." + v.components)
+							.flushMultiline()
+					)
+				));
+			}
+		);
 	}
 
 	public static void sortUses(TranslationUnit tree) {
@@ -332,8 +417,8 @@ public class IrisPatcher {
 				});
 	}
 
-	public static List<Tuple<Type, String>> findOutputColors(TranslationUnit tree) {
-		List<Tuple<Type, String>> colors = new ArrayList<>();
+	private static List<Layout> findOutputColors(TranslationUnit tree) {
+		List<Layout> colors = new ArrayList<>();
 
 		ASTListener listener = new ASTListener() {
 			@Override
@@ -355,10 +440,19 @@ public class IrisPatcher {
 						if (!(layoutPart instanceof NamedLayoutQualifierPart namedPart))
 							continue;
 
-						if (!(namedPart.getExpression() instanceof LiteralExpression))
+						if (!(namedPart.getExpression() instanceof LiteralExpression idxExpr))
 							continue;
 
-						colors.add(new Tuple<>(numSpecifier.type, declaration.getMembers().get(0).getName().getName()));
+						int idx = (int) idxExpr.getInteger();
+						if (idx >= colors.size())
+							colors.addAll(Collections.nCopies(idx - colors.size() + 1, null));
+
+						colors.add(
+							idx, new Layout(
+								numSpecifier.type,
+								declaration.getMembers().getFirst().getName().getName()
+							)
+						);
 					}
 				}
 			}
@@ -402,13 +496,7 @@ public class IrisPatcher {
 		return t.parseStatements(root, input);
 	}
 
-	private static class Parameters implements JobParameters {
-		public final PatchShaderType type;
-
-		public Parameters(PatchShaderType type) {
-			this.type = type;
-		}
-
+	private record Parameters(PatchShaderType type) implements JobParameters {
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof Parameters other)
@@ -416,10 +504,28 @@ public class IrisPatcher {
 
 			return false;
 		}
+	}
+
+	private record Layout(Type type, String name) {}
+
+	private static class MixVar {
+		private String name;
+		private String components;
+		private int firstUse;
+
+		private MixVar(String name, String components, int firstUse) {
+			this.name = name;
+			this.components = components;
+			this.firstUse = firstUse;
+		}
 
 		@Override
-		public int hashCode() {
-			return this.type.hashCode();
+		public String toString() {
+			return "MixVar{" +
+				"name='" + name + '\'' +
+				", components='" + components + '\'' +
+				", firstUse=" + firstUse +
+				'}';
 		}
 	}
 }
