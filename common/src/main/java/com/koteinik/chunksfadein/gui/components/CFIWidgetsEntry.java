@@ -15,11 +15,13 @@ public class CFIWidgetsEntry extends Entry<CFIWidgetsEntry> {
 
 	private final List<AbstractWidget> widgets;
 	private final Screen parent;
+	private final CFIListWidget listWidget;
 	private final int y;
 
-	public CFIWidgetsEntry(List<AbstractWidget> widgets, Screen parent, int y) {
+	public CFIWidgetsEntry(List<AbstractWidget> widgets, Screen parent, CFIListWidget listWidget, int y) {
 		this.widgets = widgets;
 		this.parent = parent;
+		this.listWidget = listWidget;
 		this.y = y;
 	}
 
@@ -42,7 +44,7 @@ public class CFIWidgetsEntry extends Entry<CFIWidgetsEntry> {
 			if (widgets.size() > 1 && i == 0)
 				gridX = -1;
 
-			widget.setPosition(calculateX(gridX), y);
+			widget.setPosition(calculateX(gridX), y - (int) listWidget.scrollAmount());
 			widget.render(context, mouseX, mouseY, tickDelta);
 		}
 	}
