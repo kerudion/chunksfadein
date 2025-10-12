@@ -58,7 +58,7 @@ public abstract class ShaderLoaderMixin {
 		};
 
 		injector.replace(
-			"fragColor = _linearFog(diffuseColor, v_FragDistance, u_FogColor, u_EnvironmentFog, u_RenderFog);",
+			"fragColor = _linearFog({color}, v_FragDistance, u_FogColor, u_EnvironmentFog, u_RenderFog);",
 			"#ifdef USE_FOG",
 			"vec3 fadeColor;",
 			"vec4 fogColor = u_FogColor;",
@@ -68,7 +68,7 @@ public abstract class ShaderLoaderMixin {
 			"fogColor.rgb = fadeColor;",
 			"}",
 			"}",
-			"fragColor = _linearFog(diffuseColor, v_FragDistance, fogColor, u_EnvironmentFog, u_RenderFog);",
+			"fragColor = _linearFog({color}, v_FragDistance, fogColor, u_EnvironmentFog, u_RenderFog);",
 			shader.fragColorMod("{frag_color}.rgb", "fadeColor", true).flushMultiline(),
 			"#else",
 			"if (cfi_FadeFactor < 1.0) {",
@@ -76,7 +76,7 @@ public abstract class ShaderLoaderMixin {
 			shader.fragColorMod("{frag_color}.rgb", "fadeColor", false).flushMultiline(),
 			"}",
 			"else {",
-			"{frag_color} = diffuseColor;",
+			"{frag_color} = {color};",
 			"}",
 			"#endif"
 		);
