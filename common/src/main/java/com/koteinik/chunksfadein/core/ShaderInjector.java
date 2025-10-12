@@ -165,6 +165,11 @@ public class ShaderInjector {
 			: "out_FragColor";
 		toInject = toInject.replace("{frag_color}", fragColor);
 
+		String color = shaderCode.contains("diffuseColor")
+			? "diffuseColor"
+			: "color";
+		toInject = toInject.replace("{color}", color);
+
 		return toInject;
 	}
 }
