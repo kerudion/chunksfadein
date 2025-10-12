@@ -10,7 +10,7 @@ public class ShaderInjector {
 	private final List<Function<String, String>> transformations = new ArrayList<>();
 
 	public void replace(String what, String... code) {
-		transformations.add((src) -> replaceParts(src, src.replace(what, String.join("\n", code))));
+		transformations.add((src) -> replaceParts(src, src.replace(replaceParts(src, what), String.join("\n", code))));
 	}
 
 	public void insertAfterDefines(String... code) {
