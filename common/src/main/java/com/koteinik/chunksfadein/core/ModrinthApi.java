@@ -2,15 +2,14 @@ package com.koteinik.chunksfadein.core;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.NetworkUtils;
 import com.koteinik.chunksfadein.platform.Services;
 
+import java.util.List;
 import java.util.Map;
 
 public class ModrinthApi {
 	private static final String API_LINK = "https://api.modrinth.com/v2/";
-	private static final String MOD_VERSIONS = "https://modrinth.com/mod/chunks-fade-in/version/";
 	private static final String MOD_CDN = "https://cdn.modrinth.com/data/%s/versions/%s/%s";
 	private static final String VERSIONS_ENDPOINT = API_LINK + "project/chunks-fade-in/version";
 	private static SemanticVersion minecraftVersion;
@@ -19,30 +18,30 @@ public class ModrinthApi {
 		minecraftVersion = Services.PLATFORM.getMinecraftVersion();
 	}
 
-	public static ModrinthVersion getLatestModVersion() {
-		try {
-			JsonArray body = NetworkUtils.executeGet(
-				VERSIONS_ENDPOINT,
-				Map.of(),
-				Map.of(
-					"featured", "true",
-					"game_versions", "[\"" + minecraftVersion + "\"]",
-					"loaders", "[\"" + (Services.PLATFORM.isForge() ? "neoforge" : "fabric") + "\"]"
-				)
-			).getAsJsonArray();
-			if (body.isEmpty())
-				return null;
+	public static List<ModrinthVersion> getLatestVersions() {
+		JsonArray body = NetworkUtils.executeGet(
+			VERSIONS_ENDPOINT,
+			Map.of(),
+			Map.of(
+				"featured", "true",
+				"game_versions", "[\"" + minecraftVersion + "\"]",
+				"loaders", "[\"" + (Services.PLATFORM.isForge() ? "neoforge" : "fabric") + "\"]"
+			)
+		).getAsJsonArray();
+		if (body.isEmpty())
+			return null;
 
-			JsonObject first = body.get(0).getAsJsonObject();
+		return body.asList().stream().map(element -> {
+			JsonObject version = element.getAsJsonObject();
 
-			String changelog = first.get("changelog").getAsString();
-			String cleanVersion = first.get("version_number").getAsString().replace("v", "")
+			String changelog = version.get("changelog").getAsString();
+			String cleanVersion = version.get("version_number").getAsString().replace("v", "")
 				.replace("-fabric", "")
 				.replace("-neoforge", "");
 
-			String projectId = first.get("project_id").getAsString();
-			String versionId = first.get("id").getAsString();
-			String file = first.get("files").getAsJsonArray().asList().stream()
+			String projectId = version.get("project_id").getAsString();
+			String versionId = version.get("id").getAsString();
+			String file = version.get("files").getAsJsonArray().asList().stream()
 				.filter(e -> e.getAsJsonObject().get("primary").getAsBoolean())
 				.findAny()
 				.get()
@@ -52,12 +51,12 @@ public class ModrinthApi {
 
 			String downloadUrl = MOD_CDN.formatted(projectId, versionId, file);
 
-			return new ModrinthVersion(new SemanticVersion(cleanVersion, false), changelog, downloadUrl);
-		} catch (Exception e) {
-			Logger.warn("Failed to get latest mod version!");
-			e.printStackTrace();
-			return null;
-		}
+			try {
+				return new ModrinthVersion(new SemanticVersion(cleanVersion, false), changelog, downloadUrl);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}).toList();
 	}
 
 	public static class ModrinthVersion {

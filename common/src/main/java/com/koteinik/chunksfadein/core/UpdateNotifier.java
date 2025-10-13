@@ -1,41 +1,60 @@
 package com.koteinik.chunksfadein.core;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.core.ModrinthApi.ModrinthVersion;
 import com.koteinik.chunksfadein.platform.Services;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
 public class UpdateNotifier {
 	public static void checkAndNotify() {
 		new Thread(() -> {
-			ModrinthVersion latestVersion = ModrinthApi.getLatestModVersion();
+			try {
+				List<ModrinthVersion> newVersions = ModrinthApi.getLatestVersions().stream()
+					.takeWhile(UpdateNotifier::isNewerVersion)
+					.toList();
 
-			if (isNewerVersion(latestVersion)) {
-				List<Component> textList = new ArrayList<>();
-				textList.add(Component.literal("§7New version of §2Chunks fade in §7is available!"));
+				if (!newVersions.isEmpty()) {
+					ModrinthVersion latestVersion = newVersions.getFirst();
 
-				Style linkStyle = Style.EMPTY.withClickEvent(new ClickEvent.OpenUrl(URI.create(latestVersion.downloadUrl)));
+					List<Component> textList = new ArrayList<>();
+					textList.add(Component.literal("§7New version of §2Chunks Fade In §7is available!"));
 
-				textList.add(Component.literal("§7v" + latestVersion.version + "§r§7 changelog:"));
-				textList.add(Component.literal("§7" + latestVersion.changelog));
-				textList.addAll(Component.literal("§7§nClick to download").toFlatList(linkStyle));
+					Style linkStyle = Style.EMPTY.withClickEvent(new ClickEvent.OpenUrl(URI.create(latestVersion.downloadUrl)));
 
-				Minecraft minecraft = Minecraft.getInstance();
-				LocalPlayer player = minecraft.player;
+					String versions = newVersions.size() == 1
+						? "§6v" + latestVersion.version
+						: "§6v%s§7-§6v%s".formatted(newVersions.getLast().version, latestVersion.version);
+					textList.add(Component.literal(versions + "§r§7 changelog:"));
 
-				if (player == null)
-					return;
+					String changelogs = String.join(
+						"\n", newVersions.stream()
+							.map(v -> v.changelog)
+							.toList()
+					).replace("\r", "");
+					textList.add(Component.literal("§7" + changelogs));
 
-				for (Component text : textList)
-					player.displayClientMessage(text, false);
+					textList.addAll(Component.literal("§7§nClick to download").toFlatList(linkStyle));
+
+					Minecraft minecraft = Minecraft.getInstance();
+					LocalPlayer player = minecraft.player;
+
+					if (player == null)
+						return;
+
+					for (Component text : textList)
+						Minecraft.getInstance().execute(() -> player.displayClientMessage(text, false));
+				}
+			} catch (Exception e) {
+				Logger.warn("Failed to get latest mod version!");
+				e.printStackTrace();
 			}
 		}).start();
 	}
