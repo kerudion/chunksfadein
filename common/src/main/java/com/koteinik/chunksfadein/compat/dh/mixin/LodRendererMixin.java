@@ -66,12 +66,12 @@ public abstract class LodRendererMixin implements LodRendererExt {
 
 	@Inject(method = "setupGLStateAndRenderObjects", at = @At(value = "INVOKE", target = "Lcom/seibel/distanthorizons/api/interfaces/override/rendering/IDhApiFramebuffer;bind()V", shift = At.Shift.AFTER))
 	private void modifySetupGLStateAndRenderObjects(IProfilerWrapper profiler, DhApiRenderParam renderEventParam, boolean firstPass, CallbackInfo ci) {
-		if (!Config.isModEnabled || !CompatibilityHook.isDHSSAOEnabled())
+		if (!Config.isModEnabled)
 			return;
 
 		LodMaskTexture.createAndUpdate();
 
-		if (!Config.isFadeEnabled || CompatibilityHook.isIrisShaderPackInUse())
+		if (!Config.isFadeEnabled || !CompatibilityHook.isDHSSAOEnabled())
 			return;
 
 		SkyFBO.bindAttachment(GL30.GL_COLOR_ATTACHMENT1);
