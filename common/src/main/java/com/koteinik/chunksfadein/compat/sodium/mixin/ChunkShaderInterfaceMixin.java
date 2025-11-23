@@ -1,15 +1,16 @@
 package com.koteinik.chunksfadein.compat.sodium.mixin;
 
 import com.koteinik.chunksfadein.Logger;
+import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.core.FadeShaderInterface;
 import com.koteinik.chunksfadein.core.SkyFBO;
-import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import net.caffeinemc.mods.sodium.client.gl.buffer.GlMutableBuffer;
 import net.caffeinemc.mods.sodium.client.gl.shader.uniform.GlUniformInt;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.DefaultShaderInterface;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
+import org.lwjgl.opengl.GL13;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -44,8 +45,12 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
 		fadeInterface.bindUniforms(fadeDataBuffer);
 
 		if (sky != null) {
+			int prevActive = GL13.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
+
 			SkyFBO.active(13);
 			sky.set(13);
+
+			GL13.glActiveTexture(prevActive);
 		}
 	}
 }
