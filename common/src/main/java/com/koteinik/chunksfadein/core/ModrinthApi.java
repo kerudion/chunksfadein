@@ -29,7 +29,7 @@ public class ModrinthApi {
 			)
 		).getAsJsonArray();
 		if (body.isEmpty())
-			return null;
+			return List.of();
 
 		return body.asList().stream().map(element -> {
 			JsonObject version = element.getAsJsonObject();
