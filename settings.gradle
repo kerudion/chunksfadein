@@ -13,4 +13,4 @@ plugins {
 
 rootProject.name = "chunksfadein"
 
-include("common", "fabric")
+include("common", "fabric", "neoforge")

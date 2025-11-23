@@ -32,8 +32,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-key-binding-api-v1:${fabric_key_binding_api_version}"
 
-    modImplementation "maven.modrinth:sodium:${sodium_version}-fabric"
-    modImplementation "maven.modrinth:iris:${iris_version}-fabric"
+    modImplementation "maven.modrinth:sodium:${sodium_version}"
+    modImplementation "maven.modrinth:iris:${iris_version}"
     modImplementation "maven.modrinth:distanthorizons:${dh_version}"
     modImplementation "com.terraformersmc:modmenu:${modmenu_version}"
 
