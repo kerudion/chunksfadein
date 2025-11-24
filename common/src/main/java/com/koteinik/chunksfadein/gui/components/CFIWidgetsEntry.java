@@ -1,7 +1,5 @@
 package com.koteinik.chunksfadein.gui.components;
 
-import java.util.List;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList.Entry;
@@ -9,16 +7,20 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 
+import java.util.List;
+
 public class CFIWidgetsEntry extends Entry<CFIWidgetsEntry> {
 	private static final int SPACING_X = 4;
 	private static final int BUTTON_W = 180;
 
 	private final List<AbstractWidget> widgets;
 	private final Screen parent;
+	private final int y;
 
-	public CFIWidgetsEntry(List<AbstractWidget> widgets, Screen parent) {
+	public CFIWidgetsEntry(List<AbstractWidget> widgets, Screen parent, int y) {
 		this.widgets = widgets;
 		this.parent = parent;
+		this.y = y;
 	}
 
 	@Override

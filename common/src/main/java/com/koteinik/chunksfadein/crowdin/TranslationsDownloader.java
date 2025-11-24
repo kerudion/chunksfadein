@@ -1,5 +1,9 @@
 package com.koteinik.chunksfadein.crowdin;
 
+import com.google.gson.JsonObject;
+import com.koteinik.chunksfadein.Logger;
+import com.koteinik.chunksfadein.NetworkUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,9 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import com.google.gson.JsonObject;
-import com.koteinik.chunksfadein.NetworkUtils;
 
 /**
  * Code taken and modified from https://github.com/gbl/CrowdinTranslate
@@ -162,9 +163,9 @@ public class TranslationsDownloader extends Thread {
 	public void run() {
 		Map<String, byte[]> translations;
 		try {
-			translations = getCrowdinTranslations(CROWDIN_ID);
+			translations = getCrowdinTranslations();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logger.warn("Failed to get crowdin translations:", e);
 			return;
 		}
 
@@ -185,7 +186,7 @@ public class TranslationsDownloader extends Thread {
 		}
 	}
 
-	private Map<String, byte[]> getCrowdinTranslations(String projectName) throws IOException {
+	private Map<String, byte[]> getCrowdinTranslations() throws IOException {
 		ZipInputStream zis = null;
 		Pattern pattern = Pattern.compile("^([a-z]{2}(-[A-Z]{2})?)/(.+\\.json)$");
 		Map<String, byte[]> zipContents = new HashMap<>();
@@ -242,7 +243,8 @@ public class TranslationsDownloader extends Thread {
 	}
 
 	private JsonObject get(String url) {
-		return NetworkUtils.executeGet(url, Map.of("Authorization", "Bearer " + CROWDIN_TOKEN), Map.of()).getAsJsonObject();
+		return NetworkUtils.executeGet(url, Map.of("Authorization", "Bearer " + CROWDIN_TOKEN), Map.of())
+			.getAsJsonObject();
 	}
 
 	private byte[] getZipStreamContent(InputStream is, int size) throws IOException {

@@ -1,14 +1,5 @@
 package com.koteinik.chunksfadein.crowdin;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackLocationInfo;
@@ -17,6 +8,16 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Code taken and modified from https://github.com/gbl/CrowdinTranslate
@@ -57,16 +58,18 @@ public class TranslationsPack implements PackResources {
 	}
 
 	@Override
-	public <T> T getMetadataSection(MetadataSectionSerializer<T> pDeserializer) throws IOException {
+	public @Nullable <T> T getMetadataSection(MetadataSectionSerializer<T> deserializer) throws IOException {
 		return null;
 	}
 
 	@Override
 	public PackLocationInfo location() {
-		return new PackLocationInfo("chunksfadein-translations",
+		return new PackLocationInfo(
+			"chunksfadein-translations",
 			Component.literal("Chunks Fade In internal pack with translations"),
 			PackSource.DEFAULT,
-			Optional.empty());
+			Optional.empty()
+		);
 	}
 
 	@Override

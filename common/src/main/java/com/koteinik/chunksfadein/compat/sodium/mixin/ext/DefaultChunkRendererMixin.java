@@ -1,0 +1,90 @@
+package com.koteinik.chunksfadein.compat.sodium.mixin.ext;
+
+import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.CommandListExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
+import com.koteinik.chunksfadein.config.Config;
+import com.llamalad7.mixinextras.sugar.Local;
+import net.caffeinemc.mods.sodium.client.gl.device.CommandList;
+import net.caffeinemc.mods.sodium.client.gl.device.MultiDrawBatch;
+import net.caffeinemc.mods.sodium.client.render.chunk.ChunkRenderMatrices;
+import net.caffeinemc.mods.sodium.client.render.chunk.DefaultChunkRenderer;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
+import net.caffeinemc.mods.sodium.client.render.chunk.data.SectionRenderDataStorage;
+import net.caffeinemc.mods.sodium.client.render.chunk.lists.ChunkRenderList;
+import net.caffeinemc.mods.sodium.client.render.chunk.lists.ChunkRenderListIterable;
+import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
+import net.caffeinemc.mods.sodium.client.render.chunk.terrain.TerrainRenderPass;
+import net.caffeinemc.mods.sodium.client.render.viewport.CameraTransform;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(value = DefaultChunkRenderer.class, remap = false)
+public class DefaultChunkRendererMixin {
+	@Inject(
+		method = "render",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/caffeinemc/mods/sodium/client/render/chunk/DefaultChunkRenderer;executeDrawBatch(Lnet/caffeinemc/mods/sodium/client/gl/device/CommandList;Lnet/caffeinemc/mods/sodium/client/gl/tessellation/GlTessellation;Lnet/caffeinemc/mods/sodium/client/gl/device/MultiDrawBatch;)V"
+		)
+	)
+	private void modifyChunkRender(
+		ChunkRenderMatrices matrices,
+		CommandList commandList,
+		ChunkRenderListIterable renderLists,
+		TerrainRenderPass renderPass,
+		CameraTransform camera,
+		CallbackInfo ci,
+		@Local(ordinal = 0) ChunkShaderInterface shader,
+		@Local(ordinal = 0) RenderRegion region
+	) {
+		if (shader == null)
+			return;
+		if (!Config.isModEnabled)
+			return;
+
+		// Made to not interrupt Axiom mixin
+		uploadToBuffer(commandList, shader, region);
+	}
+
+	@Inject(
+		method = "fillCommandBuffer",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/caffeinemc/mods/sodium/client/render/chunk/data/SectionRenderDataUnsafe;getSliceMask(J)I"
+		)
+	)
+	private static void modifyFillCommandBuffer(MultiDrawBatch batch,
+	                                            RenderRegion region,
+	                                            SectionRenderDataStorage renderDataStorage,
+	                                            ChunkRenderList renderList,
+	                                            CameraTransform camera,
+	                                            TerrainRenderPass pass,
+	                                            boolean useBlockFaceCulling,
+	                                            CallbackInfo ci,
+	                                            @Local(name = "sectionIndex") int sectionIndex) {
+		// Made to not interrupt Axiom mixin
+		if (Config.isModEnabled)
+			processChunk(region, sectionIndex);
+	}
+
+	private void uploadToBuffer(CommandList commandList, ChunkShaderInterface shader, RenderRegion region) {
+		ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) shader;
+		RenderRegionExt regionExt = (RenderRegionExt) region;
+
+		regionExt.uploadToBuffer(ext, (CommandListExt) commandList);
+	}
+
+	private static void processChunk(RenderRegion region, int sectionIndex) {
+		RenderSection section = region.getSection(sectionIndex);
+		if (section == null) return;
+
+		RenderRegionExt regionExt = (RenderRegionExt) region;
+
+		regionExt.processChunk((RenderSectionExt) section, sectionIndex);
+	}
+}

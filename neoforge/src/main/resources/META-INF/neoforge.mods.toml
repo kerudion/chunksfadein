@@ -7,7 +7,7 @@ modId = "chunksfadein"
 version = "${version}"
 displayName = "Chunks Fade In"
 
-logoFile = "assets/chunksfadein/icon.png"
+logoFile = "icon.png"
 authors = "kerudion (koteinik)"
 credits = "IMS212, IMB11, cadenkriese, felix14_v2, embeddedt, M4ximumPizza, hexadecimal233, fefe_du_973, yejianfeng, moorey5107, theRookieCoder, qznfbnj"
 description = '''
@@ -15,26 +15,51 @@ Adds fade-in and motion animations for chunks!
 '''
 
 [[mixins]]
-config = "chunksfadein.mixins.json"
+config = "chunksfadein_mc.mixins.json"
+[[mixins]]
+config = "chunksfadein_sodium.mixins.json"
+[[mixins]]
+config = "chunksfadein_embeddium.mixins.json"
+[[mixins]]
+config = "chunksfadein_iris.mixins.json"
+[[mixins]]
+config = "chunksfadein_monocle.mixins.json"
+[[mixins]]
+config = "chunksfadein_dh.mixins.json"
 
 [[dependencies.chunksfadein]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21, 1.21.1]"
+versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.chunksfadein]]
 modId = "sodium"
-type = "required"
-reason = "Sodium is required for Chunks Fade In."
-versionRange = "[0.6.0-beta.2,)"
+type = "optional"
+reason = "Sodium or Embeddium is required for Chunks Fade In."
+versionRange = "${sodium_version_range}"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.chunksfadein]]
+modId = "embeddium"
+type = "optional"
+reason = "Sodium or Embeddium is required for Chunks Fade In."
+versionRange = "${embeddium_version_range}"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.chunksfadein]]
 modId = "iris"
 type = "optional"
-versionRange = "[1.8.0-beta.5,)"
+versionRange = "${iris_version_range}"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.chunksfadein]]
+modId = "monocle"
+type = "optional"
+versionRange = "${monocle_version_range}"
 ordering = "NONE"
 side = "CLIENT"

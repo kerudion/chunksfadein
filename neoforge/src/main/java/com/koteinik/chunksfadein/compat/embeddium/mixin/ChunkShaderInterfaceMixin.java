@@ -1,0 +1,57 @@
+package com.koteinik.chunksfadein.compat.embeddium.mixin;
+
+import com.koteinik.chunksfadein.Logger;
+import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.GlMutableBufferExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.GlUniformIntExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.ShaderBindingContextExt;
+import com.koteinik.chunksfadein.core.FadeShaderInterface;
+import com.koteinik.chunksfadein.core.SkyFBO;
+import com.koteinik.chunksfadein.hooks.CompatibilityHook;
+import org.embeddedt.embeddium.impl.render.chunk.shader.ChunkShaderInterface;
+import org.embeddedt.embeddium.impl.render.chunk.shader.ChunkShaderOptions;
+import org.embeddedt.embeddium.impl.render.chunk.shader.ShaderBindingContext;
+import org.lwjgl.opengl.GL13;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(value = ChunkShaderInterface.class, remap = false)
+public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
+	private GlUniformIntExt sky;
+
+	private FadeShaderInterface fadeInterface;
+	private static boolean warned = false;
+
+	@Inject(method = "<init>", at = @At("RETURN"))
+	private void modifyConstructor(ShaderBindingContext context, ChunkShaderOptions options, CallbackInfo ci) {
+		if (CompatibilityHook.isIrisShaderPackInUse())
+			return;
+
+		fadeInterface = new FadeShaderInterface((ShaderBindingContextExt) context);
+		sky = ((ShaderBindingContextExt) context).bindUniformInt("cfi_sky");
+	}
+
+	@Override
+	public void bindUniforms(GlMutableBufferExt fadeDataBuffer) {
+		if (fadeInterface == null) {
+			if (CompatibilityHook.isIrisShaderPackInUse() && !warned) {
+				Logger.warn("Shader pack is in use, but Sodium's shader interface is used. Something went really wrong!");
+				warned = true;
+			}
+			return;
+		}
+
+		fadeInterface.bindUniforms(fadeDataBuffer);
+
+		if (sky != null) {
+			int prevActive = GL13.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
+
+			SkyFBO.active(13);
+			sky.set(13);
+
+			GL13.glActiveTexture(prevActive);
+		}
+	}
+}
