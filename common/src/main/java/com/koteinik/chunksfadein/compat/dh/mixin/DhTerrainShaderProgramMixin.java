@@ -1,12 +1,12 @@
 package com.koteinik.chunksfadein.compat.dh.mixin;
 
+import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
+import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeShader;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.core.Utils;
-import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
-import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.seibel.distanthorizons.api.enums.config.EDhApiMcRenderingFadeMode;
 import com.seibel.distanthorizons.api.methods.events.sharedParameterObjects.DhApiRenderParam;
@@ -181,6 +181,9 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 
 		injector.insertAfterInVars("in vec4 irisExtra;");
 
+		if (Config.isFadeEnabled)
+			injector.insertAfterOutVars("out float cfi_material;");
+
 		injector.insertAfterOutVars(shader
 			.newLine("uniform vec4 cfi_chunkFadeData;")
 			.newLine("uniform vec3 cfi_lodMaskOrigin;")
@@ -197,6 +200,7 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 				.vertInitMod("localPos", "vertexWorldPos", false, "offsetPos", true)
 				// push water and lava slightly down
 				.newLine("if (irisExtra.x == 12.0 || irisExtra.x == 6.0) { vertexWorldPos.y -= 0.115; }")
+				.newLineIf(Config.isFadeEnabled, "cfi_material = irisExtra.x;")
 				.flushMultiline()
 		);
 
@@ -244,7 +248,11 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 			"uniform float cfi_dhStartFadeBlockDistanceSq;"
 		);
 
-		shader.dhMaskLod("discard;", "vPos", "vertexWorldPos", true);
+		if (Config.isFadeEnabled)
+			injector.insertAfterInVars("in float cfi_material;");
+
+		String whenOccluded = Config.isFadeEnabled ? "if (cfi_material != 12.0) { discard; }" : "discard;";
+		shader.dhMaskLod(whenOccluded, "vPos", "vertexWorldPos", true);
 
 		if (Config.isFadeEnabled) {
 			shader.newLine("if (fragColor.a < 1.0) {");
