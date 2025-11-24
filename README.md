@@ -2,11 +2,13 @@
 [Smooth Chunks]: https://modrinth.com/mod/smooth-chunks
 [ChunkAnimator]: https://www.curseforge.com/minecraft/mc-mods/chunk-animator
 [Fabric]: https://fabricmc.net
+[NeoForge]: https://neoforged.net
 [Optifine]: https://www.optifine.net
 [Fade In Chunks]: https://modrinth.com/mod/fade-in-chunks
 [Iris]: https://modrinth.com/mod/iris
 [Sinytra Connector]: https://modrinth.com/mod/connector
 [Embeddium]: https://modrinth.com/mod/embeddium
+[Distant Horizons]: https://modrinth.com/mod/distanthorizons
 [Crowdin]: https://crowdin.com/project/chunks-fade-in
 <a href="https://modrinth.com/mod/sodium">
 <img width="150" src="https://raw.githubusercontent.com/kerudion/chunksfadein/main/readme-assets/req_sodium.png" alt="Requires Sodium">
@@ -28,7 +30,7 @@
 # Chunk fade in mod
 <img height="200" align="right" src="readme-assets/icon.png" alt="Chunks fade in icon"> 
 
-This mod adds smooth fade-in and motion animations for chunk loading, like in Minecraft Bedrock Edition and [ChunkAnimator], plus other unique features. It works seamlessly with [Sodium] and (mostly) [Iris]. No more chunks appearing right in front of you out of nowhere!
+This mod adds smooth fade-in and motion animations for chunk loading, like in Minecraft Bedrock Edition and [ChunkAnimator], plus other unique features. It works seamlessly with [Sodium], (mostly) [Iris] and [Distant Horizons]. Also works on [Fabric] and [NeoForge]. No more chunks appearing right in front of you out of nowhere!
 
 \
 \
@@ -90,7 +92,5 @@ Translations are downloaded automatically by the mod. To contribute them, please
 ## FAQ
 ### Where is source code?
 Source code is in version-specific branches, labeled with their corresponding Minecraft versions (e.g. "1.18", "1.19", "1.21.2").
-### Why fade color is wrong? / Why fade does not work with Distant Horizons?
-Currently, chunks gradually fade using Minecraft's **fog color** and are not actually transparent. Implementing transparency is technically complex and would require significant changes that might break compatibility with other mods. However, proper transparency support is planned for future updates.
 ### Is Vanilla/OptiFine supported or planned?
-No, please use [Sodium].
+No, please use [Sodium] (or NeoForge forks of it, for example [Embeddium]).
