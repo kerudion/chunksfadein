@@ -1,11 +1,10 @@
 package com.koteinik.chunksfadein.gui;
 
+import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.components.CFIButton;
 import com.koteinik.chunksfadein.gui.components.CFIButton.CFIButtonBuilder;
-
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 public class GuiUtils {
@@ -13,15 +12,15 @@ public class GuiUtils {
 	public static final int BUTTON_H = 20;
 
 	public static MutableComponent text(String key, String value) {
-		return Component.translatable(key).append(": ").append(value);
+		return Translations.translatable(key).append(": ").append(value);
 	}
 
 	public static MutableComponent tooltip(String key) {
-		return Component.translatable(key + ".tooltip");
+		return Translations.translatable(key + ".tooltip");
 	}
 
 	public static MutableComponent tooltip(String key, String custom) {
-		return Component.translatable(key + "." + custom);
+		return Translations.translatable(key + "." + custom);
 	}
 
 	public static CFIButton doneButton(Screen screen) {

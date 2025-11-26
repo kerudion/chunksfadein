@@ -2,6 +2,7 @@ package com.koteinik.chunksfadein.gui.components;
 
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.GuiUtils;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
 import com.koteinik.chunksfadein.gui.components.CFIButton.CFIButtonBuilder;
@@ -130,7 +131,7 @@ public class CFISlider extends AbstractSliderButton {
 		}
 
 		public CFISliderBuilder tooltip(String key) {
-			return tooltip(Component.translatable(key));
+			return tooltip(Translations.translatable(key));
 		}
 
 		public CFISliderBuilder tooltip(Component tooltip) {

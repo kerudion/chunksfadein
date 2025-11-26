@@ -20,17 +20,17 @@ import java.util.List;
 
 import static com.koteinik.chunksfadein.MathUtils.roundToInt;
 import static com.koteinik.chunksfadein.config.Config.*;
+import static com.koteinik.chunksfadein.crowdin.Translations.translatable;
 import static com.koteinik.chunksfadein.gui.GuiUtils.tooltip;
 import static com.koteinik.chunksfadein.gui.SettingsScreen.*;
 import static net.minecraft.network.chat.Component.empty;
-import static net.minecraft.network.chat.Component.translatable;
 
 public class CFISodiumPage extends OptionPage {
 	private static final String SODIUM_PAGE_NAME = "settings.chunksfadein.sodium_page_name";
 	private static final CFIOptionsStorage cfiStorage = new CFIOptionsStorage();
 
 	public CFISodiumPage() {
-		super(Component.translatable(SODIUM_PAGE_NAME), ImmutableList.copyOf(makeOptions()));
+		super(translatable(SODIUM_PAGE_NAME), ImmutableList.copyOf(makeOptions()));
 	}
 
 	private static List<OptionGroup> makeOptions() {
