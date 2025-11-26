@@ -1,5 +1,6 @@
 package com.koteinik.chunksfadein.core;
 
+import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
 import net.minecraft.network.chat.Component;
 
@@ -11,8 +12,8 @@ public enum FogOverrideMode implements TranslatableEnum {
 
 	public final Component translation;
 
-	private FogOverrideMode() {
-		this.translation = Component.translatable(SettingsScreen.FOG_OVERRIDE + "." + name().toLowerCase());
+	FogOverrideMode() {
+		this.translation = Translations.translatable(SettingsScreen.FOG_OVERRIDE + "." + name().toLowerCase());
 	}
 
 	@Override

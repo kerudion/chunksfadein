@@ -7,34 +7,33 @@ import com.koteinik.chunksfadein.core.AnimationType;
 import com.koteinik.chunksfadein.core.Curve;
 import com.koteinik.chunksfadein.core.FadeType;
 import com.koteinik.chunksfadein.core.FogOverrideMode;
+import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.components.CFIButton;
 import com.koteinik.chunksfadein.gui.components.CFIButton.CFIButtonBuilder;
-import com.koteinik.chunksfadein.gui.components.CFISlider.CFISliderBuilder;
 import com.koteinik.chunksfadein.gui.components.CFIListWidget;
 import com.koteinik.chunksfadein.gui.components.CFISlider;
+import com.koteinik.chunksfadein.gui.components.CFISlider.CFISliderBuilder;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 public class SettingsScreen extends Screen {
-	public static final MutableComponent YES = Component.translatable("settings.chunksfadein.yes");
-	public static final MutableComponent NO = Component.translatable("settings.chunksfadein.no");
-	public static final MutableComponent ON = Component.translatable("settings.chunksfadein.on");
-	public static final MutableComponent OFF = Component.translatable("settings.chunksfadein.off");
-	public static final MutableComponent RESET = Component.translatable("settings.chunksfadein.reset");
-	public static final MutableComponent TITLE = Component.translatable("settings.chunksfadein.title");
-	public static final MutableComponent UNITS_SECONDS = Component.translatable("settings.chunksfadein.units.seconds");
-	public static final MutableComponent UNITS_BLOCKS = Component.translatable("settings.chunksfadein.units.blocks");
-	public static final MutableComponent UNITS_DEGREES = Component.translatable("settings.chunksfadein.units.degrees");
+	public static final MutableComponent YES = Translations.translatable("settings.chunksfadein.yes");
+	public static final MutableComponent NO = Translations.translatable("settings.chunksfadein.no");
+	public static final MutableComponent ON = Translations.translatable("settings.chunksfadein.on");
+	public static final MutableComponent OFF = Translations.translatable("settings.chunksfadein.off");
+	public static final MutableComponent RESET = Translations.translatable("settings.chunksfadein.reset");
+	public static final MutableComponent TITLE = Translations.translatable("settings.chunksfadein.title");
+	public static final MutableComponent UNITS_SECONDS = Translations.translatable("settings.chunksfadein.units.seconds");
+	public static final MutableComponent UNITS_BLOCKS = Translations.translatable("settings.chunksfadein.units.blocks");
+	public static final MutableComponent UNITS_DEGREES = Translations.translatable("settings.chunksfadein.units.degrees");
 	public static final String MOD_ENABLED = "settings.chunksfadein.mod_enabled";
-	public static final MutableComponent MOD_ENABLED_TOOLTIP = Component.translatable(
+	public static final MutableComponent MOD_ENABLED_TOOLTIP = Translations.translatable(
 		"settings.chunksfadein.mod_enabled_tooltip");
 	public static final String UPDATE_NOTIFIER_ENABLED = "settings.chunksfadein.update_notifier_enabled";
 	public static final String MOD_TAB_ENABLED = "settings.chunksfadein.mod_tab_enabled";
-	public static final MutableComponent MOD_TAB_TOOLTIP = Component.translatable(
+	public static final MutableComponent MOD_TAB_TOOLTIP = Translations.translatable(
 		"settings.chunksfadein.mod_tab_tooltip");
 	public static final String FADE_ENABLED = "settings.chunksfadein.fade_enabled";
 	public static final String FADE_TYPE = "settings.chunksfadein.fade_type";
@@ -52,7 +51,7 @@ public class SettingsScreen extends Screen {
 	public static final String ANIMATION_TIME = "settings.chunksfadein.animation_time";
 	public static final String CURVATURE_ENABLED = "settings.chunksfadein.world_curvature_enabled";
 	public static final String CURVATURE = "settings.chunksfadein.world_curvature";
-	public static final MutableComponent IRIS_WARNING = Component.translatable("settings.chunksfadein.iris_warning");
+	public static final MutableComponent IRIS_WARNING = Translations.translatable("settings.chunksfadein.iris_warning");
 
 	public static final int[] CURVATURE_VALUES;
 

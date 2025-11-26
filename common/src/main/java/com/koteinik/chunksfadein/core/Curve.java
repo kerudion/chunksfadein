@@ -1,11 +1,11 @@
 package com.koteinik.chunksfadein.core;
 
-import java.util.function.Function;
-
 import com.koteinik.chunksfadein.MathUtils;
+import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
-
 import net.minecraft.network.chat.Component;
+
+import java.util.function.Function;
 
 public enum Curve implements TranslatableEnum {
 	LINEAR((f) -> f),
@@ -32,9 +32,9 @@ public enum Curve implements TranslatableEnum {
 	public final Component translation;
 	private final Function<Float, Float> calculate;
 
-	private Curve(Function<Float, Float> calculate) {
+	Curve(Function<Float, Float> calculate) {
 		this.calculate = calculate;
-		this.translation = Component.translatable(SettingsScreen.ANIMATION_CURVE + "." + name().toLowerCase());
+		this.translation = Translations.translatable(SettingsScreen.ANIMATION_CURVE + "." + name().toLowerCase());
 	}
 
 	public Float calculate(Float in) {

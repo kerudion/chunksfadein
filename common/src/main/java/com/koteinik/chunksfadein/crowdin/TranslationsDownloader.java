@@ -3,15 +3,20 @@ package com.koteinik.chunksfadein.crowdin;
 import com.google.gson.JsonObject;
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.NetworkUtils;
+import com.koteinik.chunksfadein.platform.Services;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -159,19 +164,51 @@ public class TranslationsDownloader extends Thread {
 		mcCodetoCrowdinCode.put(mc, ci);
 	}
 
+	private static File cacheDir() {
+		return new File(Services.PLATFORM.getConfigDirectory().getParentFile(), "cache/chunksfadein/translations");
+	}
+
+	private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
 	@Override
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public void run() {
-		Map<String, byte[]> translations;
+		Map<String, byte[]> translations = new HashMap<>();
 		try {
-			translations = getCrowdinTranslations();
-		} catch (IOException e) {
-			Logger.warn("Failed to get crowdin translations:", e);
-			return;
+			File dir = cacheDir();
+			if (dir.exists()) {
+				for (File file : Objects.requireNonNull(dir.listFiles()))
+					if (file.isFile())
+						translations.put(file.getName(), FileUtils.readFileToByteArray(file));
+			}
+		} catch (Exception e) {
+			Logger.warn("Failed to read cached translations:", e);
 		}
 
-		File langDir = Translations.getLangRootDir();
-		langDir.mkdirs();
+		try {
+			translations = executor.submit(this::getCrowdinTranslations)
+				.get(30, TimeUnit.SECONDS);
 
+			try {
+				File dir = cacheDir();
+				dir.mkdirs();
+
+				translations.forEach((key, bytes) -> {
+					try {
+						FileUtils.writeByteArrayToFile(new File(dir, key), bytes);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				});
+			} catch (Exception e) {
+				Logger.warn("Failed to cache translations:", e);
+			}
+		} catch (Exception e) {
+			Logger.warn("Failed to get crowdin translations:", e);
+			Logger.warn("Using cached translations.");
+		}
+
+		Map<String, Map<String, String>> translationsMap = new HashMap<>();
 		for (Map.Entry<String, String> entry : mcCodetoCrowdinCode.entrySet()) {
 			String[] sourcesByPreference = entry.getValue().split(",");
 
@@ -180,10 +217,12 @@ public class TranslationsDownloader extends Thread {
 				if (buffer == null)
 					continue;
 
-				saveBufferToFile(buffer, new File(langDir, entry.getKey() + ".json"));
+				translationsMap.put(entry.getKey(), Translations.parseJsonTranslations(new String(buffer)));
 				break;
 			}
 		}
+
+		Translations.addTranslations(translationsMap);
 	}
 
 	private Map<String, byte[]> getCrowdinTranslations() throws IOException {
@@ -261,13 +300,5 @@ public class TranslationsDownloader extends Thread {
 			toRead -= readNow;
 		}
 		return buf;
-	}
-
-	private void saveBufferToFile(byte[] buffer, File file) {
-		try (FileOutputStream stream = new FileOutputStream(file)) {
-			stream.write(buffer);
-		} catch (IOException e) {
-			e.printStackTrace(System.err);
-		}
 	}
 }

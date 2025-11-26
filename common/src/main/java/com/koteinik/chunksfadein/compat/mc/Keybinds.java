@@ -2,6 +2,7 @@ package com.koteinik.chunksfadein.compat.mc;
 
 import com.koteinik.chunksfadein.ShaderUtils;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.platform.Services;
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -14,8 +15,8 @@ public class Keybinds {
 	private static final String KEYBINDS = "chunksfadein.keybinds";
 	private static final String TOGGLE_MOD = "chunksfadein.keybinds.toggleMod";
 
-	private static final Component FADING_ENABLED = Component.translatable("chunksfadein.alerts.fading.enabled");
-	private static final Component FADING_DISABLED = Component.translatable("chunksfadein.alerts.fading.disabled");
+	private static final Component FADING_ENABLED = Translations.translatable("chunksfadein.alerts.fading.enabled");
+	private static final Component FADING_DISABLED = Translations.translatable("chunksfadein.alerts.fading.disabled");
 
 	public static KeyMapping toggleModKeybind = null;
 
