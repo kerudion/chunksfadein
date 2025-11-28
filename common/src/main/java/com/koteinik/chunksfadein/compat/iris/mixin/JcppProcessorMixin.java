@@ -1,16 +1,15 @@
 package com.koteinik.chunksfadein.compat.iris.mixin;
 
+import com.koteinik.chunksfadein.compat.iris.IrisPatcher;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.AnimationType;
 import com.koteinik.chunksfadein.core.FadeType;
-import com.koteinik.chunksfadein.compat.iris.IrisPatcher;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.irisshaders.iris.helpers.StringPair;
 import net.irisshaders.iris.shaderpack.preprocessor.JcppProcessor;
 import org.anarres.cpp.Preprocessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -40,8 +39,9 @@ public class JcppProcessorMixin {
 		method = "glslPreprocessSource",
 		at = @At(
 			value = "INVOKE",
-			target = "Lorg/anarres/cpp/Preprocessor;setListener(Lorg/anarres/cpp/PreprocessorListener;)V",
-			shift = Shift.BEFORE))
+			target = "Lorg/anarres/cpp/Preprocessor;setListener(Lorg/anarres/cpp/PreprocessorListener;)V"
+		)
+	)
 	private static void modifyGlslPreprocessSource(String source,
 	                                               Iterable<StringPair> environmentDefines,
 	                                               CallbackInfoReturnable<String> cir,
@@ -80,8 +80,9 @@ public class JcppProcessorMixin {
 		method = "glslPreprocessSource",
 		at = @At(
 			value = "INVOKE",
-			target = "Lorg/anarres/cpp/Preprocessor;setListener(Lorg/anarres/cpp/PreprocessorListener;)V",
-			shift = Shift.BEFORE))
+			target = "Lorg/anarres/cpp/Preprocessor;setListener(Lorg/anarres/cpp/PreprocessorListener;)V"
+		)
+	)
 	private static String modifyGlslPreprocessSource2(String source) {
 		if (!Config.isModEnabled)
 			return source;
