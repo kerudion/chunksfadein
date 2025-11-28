@@ -16,6 +16,7 @@ import io.github.douira.glsl_transformer.ast.node.expression.unary.MemberAccessE
 import io.github.douira.glsl_transformer.ast.node.external_declaration.DeclarationExternalDeclaration;
 import io.github.douira.glsl_transformer.ast.node.external_declaration.ExternalDeclaration;
 import io.github.douira.glsl_transformer.ast.node.external_declaration.FunctionDefinition;
+import io.github.douira.glsl_transformer.ast.node.statement.CompoundStatement;
 import io.github.douira.glsl_transformer.ast.node.statement.Statement;
 import io.github.douira.glsl_transformer.ast.node.type.FullySpecifiedType;
 import io.github.douira.glsl_transformer.ast.node.type.qualifier.*;
@@ -40,6 +41,8 @@ import java.util.regex.Pattern;
 // this class is just a mess, don't look here please
 public class IrisPatcher {
 	public static ThreadLocal<String> currentShaderName = ThreadLocal.withInitial(() -> null);
+	public static ThreadLocal<List<PatchShaderType>> currentPipelineShaders = ThreadLocal.withInitial(() -> null);
+
 	private static final Set<String> sorterWhitelist = new HashSet<>() {
 		{
 			add("getVertexPosition");
@@ -48,6 +51,7 @@ public class IrisPatcher {
 			add("_get_relative_chunk_coord");
 		}
 	};
+
 	private static final Pattern versionPattern = Pattern.compile("#version\\s+(\\d+)", Pattern.DOTALL);
 	private static final ASTTransformer<Parameters, String> transformer;
 
@@ -162,11 +166,24 @@ public class IrisPatcher {
 		boolean injectVertMod = injectMod && !hasFn(tree, "_cfi_noInjectVertModMarker");
 		boolean injectCurvature = injectMod && !hasFn(tree, "_cfi_noCurvatureMarker");
 
+		boolean hasTessControl = currentPipelineShaders.get().contains(PatchShaderType.TESS_CONTROL);
+		boolean hasTessEval = currentPipelineShaders.get().contains(PatchShaderType.TESS_EVAL);
+		boolean hasGeometry = currentPipelineShaders.get().contains(PatchShaderType.GEOMETRY);
+
 		switch (parameters.type.glShaderType) {
 			case VERTEX:
 				removeFn(tree, "cfi_getFadeData");
 				removeFn(tree, "cfi_calculateDisplacement");
 				removeFn(tree, "cfi_calculateCurvature");
+
+				if (hasTessEval) {
+					if (hasTessControl)
+						shader.outPrefix("tc_");
+					else
+						shader.outPrefix("te_");
+				} else if (hasGeometry) {
+					shader.outPrefix("g_");
+				}
 
 				if (!injected)
 					tree.parseAndInjectNodes(
@@ -205,6 +222,76 @@ public class IrisPatcher {
 
 				break;
 
+			case TESSELATION_CONTROL:
+				shader.inPrefix("tc_");
+				shader.outPrefix("te_");
+
+				tree.parseAndInjectNodes(
+					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+					shader.tessControlVars().flushList().stream()
+				);
+
+				tree.prependMainFunctionBody(
+					t,
+					shader.tessControlProxyVars().flushArray()
+				);
+
+				break;
+
+			case TESSELATION_EVAL:
+				shader.inPrefix("te_");
+
+				if (hasGeometry)
+					shader.outPrefix("g_");
+				else
+					shader.outPrefix("f_");
+
+				tree.parseAndInjectNodes(
+					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+					shader.tessEvalVars(hasTessControl).flushList().stream()
+				);
+
+				tree.prependMainFunctionBody(
+					t,
+					shader.tessEvalProxyVars(hasTessControl).flushArray()
+				);
+
+				break;
+
+			case GEOMETRY:
+				shader.inPrefix("g_");
+				shader.outPrefix("f_");
+
+				tree.parseAndInjectNodes(
+					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+					shader.geomVars().flushList().stream()
+				);
+
+				tree.prependMainFunctionBody(
+					t,
+					shader.geomMainHead().flushArray()
+				);
+
+				root.identifierIndex.get("EmitVertex")
+					.forEach(call -> {
+						ChildNodeList<Statement> block;
+						if (call.getAncestor(Statement.class).getParent() instanceof CompoundStatement cs)
+							block = cs.getStatements();
+						else
+							block = call.getAncestor(FunctionDefinition.class).getBody().getStatements();
+
+						int idx = block.indexOf(call.getAncestor(Statement.class));
+						if (idx != -1)
+							block.addAll(
+								idx, parseStatements(
+									t, root,
+									shader.geomProxyVars().flushArray()
+								)
+							);
+					});
+
+				break;
+
 			case FRAGMENT:
 				if (!inject)
 					return;
@@ -214,6 +301,9 @@ public class IrisPatcher {
 				removeFn(tree, "cfi_applyFogFade");
 				removeFn(tree, "cfi_applyFade");
 				removeFn(tree, "cfi_calculateFade");
+
+				if (hasTessEval || hasGeometry)
+					shader.inPrefix("f_");
 
 				tree.injectNodes(
 					ASTInjectionPoint.BEFORE_FUNCTIONS,
@@ -322,9 +412,8 @@ public class IrisPatcher {
 						continue;
 
 					FunctionDefinition fn = assignment.getAncestor(FunctionDefinition.class);
-					ChildNodeList<Statement> body = fn.getBody().getStatements();
 
-					int idx = body.indexOf(assignment.getAncestor(Statement.class));
+					int idx = topIdxInFunction(assignment);
 
 					Map<String, MixVar> fnVars = vars.computeIfAbsent(fn, k -> new HashMap<>());
 
@@ -353,6 +442,20 @@ public class IrisPatcher {
 				));
 			}
 		);
+	}
+
+	private static int topIdxInFunction(Expression expression) {
+		Statement prev = expression.getAncestor(Statement.class);
+		CompoundStatement current = prev.getAncestor(CompoundStatement.class);
+		while (true) {
+			CompoundStatement next = current.getParent().getAncestor(CompoundStatement.class);
+			if (next == null) break;
+
+			prev = current;
+			current = next;
+		}
+
+		return current.getStatements().indexOf(prev);
 	}
 
 	public static void sortUses(TranslationUnit tree) {

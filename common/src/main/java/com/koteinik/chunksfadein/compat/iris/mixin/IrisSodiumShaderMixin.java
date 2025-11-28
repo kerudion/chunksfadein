@@ -1,20 +1,11 @@
 package com.koteinik.chunksfadein.compat.iris.mixin;
 
-import java.util.List;
-import java.util.function.Supplier;
-
-import com.koteinik.chunksfadein.core.SkyFBO;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import com.google.common.collect.ImmutableSet;
-import com.koteinik.chunksfadein.core.FadeShaderInterface;
 import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
+import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.FadeShaderInterface;
+import com.koteinik.chunksfadein.core.SkyFBO;
 import com.llamalad7.mixinextras.sugar.Local;
-
 import net.caffeinemc.mods.sodium.client.gl.buffer.GlMutableBuffer;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
 import net.irisshaders.iris.gl.blending.BlendModeOverride;
@@ -24,6 +15,14 @@ import net.irisshaders.iris.pipeline.IrisRenderingPipeline;
 import net.irisshaders.iris.pipeline.programs.SodiumPrograms.Pass;
 import net.irisshaders.iris.pipeline.programs.SodiumShader;
 import net.irisshaders.iris.uniforms.custom.CustomUniforms;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
+import java.util.function.Supplier;
 
 @Mixin(value = SodiumShader.class, remap = false)
 public class IrisSodiumShaderMixin implements ChunkShaderInterfaceExt {
@@ -39,6 +38,8 @@ public class IrisSodiumShaderMixin implements ChunkShaderInterfaceExt {
 	private void modifyBuildSamplers(IrisRenderingPipeline pipeline, Pass pass, int handle, boolean isShadowPass, Supplier<ImmutableSet<Integer>> flipState,
 	                                 CallbackInfoReturnable<ProgramSamplers> cir,
 	                                 @Local ProgramSamplers.Builder builder) {
+		if (!Config.isModEnabled) return;
+
 		builder.addDynamicSampler(SkyFBO::getTextureId, "cfi_sky");
 	}
 

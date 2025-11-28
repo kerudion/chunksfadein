@@ -1,5 +1,6 @@
 package com.koteinik.chunksfadein.compat.iris.mixin;
 
+import com.koteinik.chunksfadein.config.Config;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,6 +18,8 @@ import net.irisshaders.iris.pipeline.transform.transformer.SodiumTransformer;
 public class IrisSodiumTransformerMixin {
 	@Inject(method = "transform", at = @At("TAIL"))
 	private static void modifyTransform(ASTParser t, TranslationUnit tree, Root root, SodiumParameters parameters, CallbackInfo ci) {
+		if (!Config.isModEnabled) return;
+
 		IrisPatcher.injectModAndAPI(t, tree, root, parameters);
 	}
 }

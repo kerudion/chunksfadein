@@ -10,7 +10,8 @@
     "IrisSodiumShaderMixin",
     "IrisSodiumTransformerMixin",
     "JcppProcessorMixin",
-    "ShaderPackMixin"
+    "ShaderPackMixin",
+    "TransformPatcherMixin"
   ],
   "server": [],
   "injectors": {
