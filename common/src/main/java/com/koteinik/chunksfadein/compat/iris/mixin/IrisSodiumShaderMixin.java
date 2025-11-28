@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.GlMutableBufferExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.ShaderBindingContextExt;
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeShaderInterface;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -38,6 +39,8 @@ public class IrisSodiumShaderMixin implements ChunkShaderInterfaceExt {
 	private void modifyBuildSamplers(IrisRenderingPipeline pipeline, Pass pass, int handle, boolean isShadowPass, Supplier<ImmutableSet<Integer>> flipState,
 	                                 CallbackInfoReturnable<ProgramSamplers> cir,
 	                                 @Local ProgramSamplers.Builder builder) {
+		if (!Config.isModEnabled) return;
+
 		builder.addDynamicSampler(SkyFBO::getTextureId, "cfi_sky");
 	}
 

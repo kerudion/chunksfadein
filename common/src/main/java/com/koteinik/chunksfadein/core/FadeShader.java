@@ -11,6 +11,21 @@ import static com.koteinik.chunksfadein.core.FadeType.*;
 public class FadeShader {
 	private List<String> lines = new ArrayList<>();
 
+	private String inPrefix = "";
+	private String outPrefix = "";
+
+	public FadeShader inPrefix(String value) {
+		inPrefix = value;
+
+		return this;
+	}
+
+	public FadeShader outPrefix(String value) {
+		outPrefix = value;
+
+		return this;
+	}
+
 	public FadeShader dummyApiFragSampleSkyLodTexture() {
 		if (!isModEnabled)
 			return this;
@@ -252,14 +267,160 @@ public class FadeShader {
 		if (!isModEnabled || !isFadeEnabled)
 			return this;
 
-		newLine("flat out float cfi_FadeFactor;");
+		insertVars(
+			"out",
+			"flat out",
+			"{out}",
+			""
+		);
+
+		return this;
+	}
+
+	public FadeShader geomVars() {
+		if (!isModEnabled || !isFadeEnabled)
+			return this;
+
+		insertVars(
+			"in",
+			"flat in",
+			"{in}",
+			"[]"
+		);
+
+		insertVars(
+			"out",
+			"flat out",
+			"{out}",
+			""
+		);
+
+		if (fadeType != FULL)
+			newLine("int cfi_counter;");
+
+		return this;
+	}
+
+	public FadeShader geomMainHead() {
+		if (!isModEnabled || !isFadeEnabled)
+			return this;
+
+		if (fadeType != FULL)
+			newLine("cfi_counter = 0;");
+
+		newLine("{out}cfi_FadeFactor = {in}cfi_FadeFactor[0];");
+
+		return this;
+	}
+
+	public FadeShader geomProxyVars() {
+		if (!isModEnabled || !isFadeEnabled)
+			return this;
+
+		if (fadeType != FULL) {
+			newLine("cfi_counter++;");
+			newLine("cfi_counter = int(mod(cfi_counter, gl_in.length()));");
+		}
 
 		if (fadeType == BLOCK)
-			newLine("out vec3 cfi_BlockSeed;");
+			newLine("{out}cfi_BlockSeed = {in}cfi_BlockSeed[cfi_counter];");
 		if (fadeType == LINED)
-			newLine("out float cfi_RefFactor;");
+			newLine("{out}cfi_RefFactor = {in}cfi_RefFactor[cfi_counter];");
 		if (fadeType == VERTEX)
-			newLine("flat out float cfi_RefFactor;");
+			newLine("{out}cfi_RefFactor = {in}cfi_RefFactor[cfi_counter];");
+
+		return this;
+	}
+
+	public FadeShader tessControlVars() {
+		if (!isModEnabled || !isFadeEnabled)
+			return this;
+
+		insertVars(
+			"in",
+			"flat in",
+			"{in}",
+			"[]"
+		);
+
+		insertVars(
+			"patch out",
+			"patch out",
+			"{out}",
+			""
+		);
+
+		return this;
+	}
+
+	public FadeShader tessControlProxyVars() {
+		if (!isModEnabled || !isFadeEnabled)
+			return this;
+
+		newLine("{out}cfi_FadeFactor = {in}cfi_FadeFactor[0];");
+
+		if (fadeType == BLOCK)
+			newLine("{out}cfi_BlockSeed = {in}cfi_BlockSeed[0];");
+		if (fadeType == LINED)
+			newLine("{out}cfi_RefFactor = {in}cfi_RefFactor[0];");
+		if (fadeType == VERTEX)
+			newLine("{out}cfi_RefFactor = {in}cfi_RefFactor[0];");
+
+		return this;
+	}
+
+	public FadeShader tessEvalVars(boolean hasTessControl) {
+		if (!isModEnabled || !isFadeEnabled)
+			return this;
+
+		if (hasTessControl)
+			insertVars(
+				"patch in",
+				"patch in",
+				"{in}",
+				""
+			);
+		else
+			insertVars(
+				"in",
+				"flat in",
+				"{in}",
+				"[]"
+			);
+
+		insertVars(
+			"out",
+			"flat out",
+			"{out}",
+			""
+		);
+
+		return this;
+	}
+
+	public FadeShader tessEvalProxyVars(boolean hasTessControl) {
+		if (!isModEnabled || !isFadeEnabled)
+			return this;
+
+		if (hasTessControl) {
+			newLine("{out}cfi_FadeFactor = {in}cfi_FadeFactor;");
+
+			if (fadeType == BLOCK)
+				newLine("{out}cfi_BlockSeed = {in}cfi_BlockSeed;");
+			if (fadeType == LINED)
+				newLine("{out}cfi_RefFactor = {in}cfi_RefFactor;");
+			if (fadeType == VERTEX)
+				newLine("{out}cfi_RefFactor = {in}cfi_RefFactor;");
+		} else {
+			newLine("{out}cfi_FadeFactor = {in}cfi_FadeFactor[0];");
+
+			if (fadeType == BLOCK)
+				newLine("{out}cfi_BlockSeed = {in}cfi_BlockSeed[0];");
+			if (fadeType == LINED)
+				newLine("{out}cfi_RefFactor = {in}cfi_RefFactor[0];");
+			if (fadeType == VERTEX)
+				newLine("{out}cfi_RefFactor = {in}cfi_RefFactor[0];");
+		}
 
 		return this;
 	}
@@ -271,14 +432,25 @@ public class FadeShader {
 		newLine("uniform sampler2D cfi_sky;");
 		newLine("uniform vec2 cfi_screenSize;");
 
-		newLine("flat in float cfi_FadeFactor;");
+		insertVars(
+			"in",
+			"flat in",
+			"{in}",
+			""
+		);
+
+		return this;
+	}
+
+	private FadeShader insertVars(String mods, String flatMods, String prefix, String suffix) {
+		newLine("%s float %scfi_FadeFactor%s;".formatted(flatMods, prefix, suffix));
 
 		if (fadeType == BLOCK)
-			newLine("in vec3 cfi_BlockSeed;");
+			newLine("%s vec3 %scfi_BlockSeed%s;".formatted(mods, prefix, suffix));
 		if (fadeType == LINED)
-			newLine("in float cfi_RefFactor;");
+			newLine("%s float %scfi_RefFactor%s;".formatted(mods, prefix, suffix));
 		if (fadeType == VERTEX)
-			newLine("flat in float cfi_RefFactor;");
+			newLine("%s float %scfi_RefFactor%s;".formatted(flatMods, prefix, suffix));
 
 		return this;
 	}
@@ -302,15 +474,15 @@ public class FadeShader {
 				rand("rand", "%s + %s".formatted(localPos, randSeed));
 
 		if (isFadeEnabled) {
-			newLine("cfi_FadeFactor = chunkFadeData.w;");
+			newLine("{out}cfi_FadeFactor = chunkFadeData.w;");
 
 			if (fadeType == BLOCK)
-				newLine("cfi_BlockSeed = %s + %s;".formatted(localPos, randSeed));
+				newLine("{out}cfi_BlockSeed = %s + %s;".formatted(localPos, randSeed));
 			if (fadeType == VERTEX)
-				newLine("cfi_RefFactor = cfi_FadeFactor > rand ? 1.0 : cfi_FadeFactor / rand;");
+				newLine("{out}cfi_RefFactor = {out}cfi_FadeFactor > rand ? 1.0 : {out}cfi_FadeFactor / rand;");
 			if (fadeType == LINED) {
 				newLine("float refFactor = %s.y / 16.0;".formatted(localPos));
-				newLine("cfi_RefFactor = refFactor - floor(refFactor);");
+				newLine("{out}cfi_RefFactor = refFactor - floor(refFactor);");
 			}
 		}
 
@@ -352,7 +524,7 @@ public class FadeShader {
 			return this;
 
 		if (addIf)
-			newLine("if (cfi_FadeFactor < 1.0) {");
+			newLine("if ({in}cfi_FadeFactor < 1.0) {");
 
 		calculateFade("float fade = ");
 		newLine("%s = mix(%s, %s, fade);"
@@ -399,15 +571,15 @@ public class FadeShader {
 
 	public FadeShader calculateFade(String prefix) {
 		if (fadeType == FadeType.FULL)
-			newLine(prefix + "cfi_FadeFactor;");
+			newLine(prefix + "{in}cfi_FadeFactor;");
 		if (fadeType == LINED)
-			newLine(prefix + "cfi_RefFactor <= cfi_FadeFactor ? 1.0 : 0.0;");
+			newLine(prefix + "{in}cfi_RefFactor <= {in}cfi_FadeFactor ? 1.0 : 0.0;");
 		if (fadeType == BLOCK) {
-			rand("rand", "floor(cfi_BlockSeed)");
-			newLine(prefix + "cfi_FadeFactor > rand ? 1.0 : cfi_FadeFactor / rand;");
+			rand("rand", "floor({in}cfi_BlockSeed)");
+			newLine(prefix + "{in}cfi_FadeFactor > rand ? 1.0 : {in}cfi_FadeFactor / rand;");
 		}
 		if (fadeType == VERTEX)
-			newLine(prefix + "cfi_RefFactor;");
+			newLine(prefix + "{in}cfi_RefFactor;");
 
 		return this;
 	}
@@ -584,23 +756,28 @@ public class FadeShader {
 	}
 
 	public FadeShader newLine(String line) {
-		lines.add(line);
+		lines.add(parseLine(line));
 
 		return this;
 	}
 
 	public FadeShader newLineIf(boolean condition, String line) {
 		if (condition)
-			lines.add(line);
+			lines.add(parseLine(line));
 
 		return this;
 	}
 
 	public FadeShader append(String value) {
 		int last = lines.size() - 1;
-		lines.set(last, lines.get(last) + value);
+		lines.set(last, parseLine(lines.get(last) + value));
 
 		return this;
+	}
+
+	private String parseLine(String line) {
+		return line.replace("{in}", inPrefix)
+			.replace("{out}", outPrefix);
 	}
 
 	public String flushMultiline() {
