@@ -63,9 +63,12 @@ public class Translations {
 			if (value != null) return value;
 		}
 
+		return getDefault(key);
+	}
+
+	public static String getDefault(String key) {
 		String value = enUs.get(key);
 		if (value == null) return "null";
-
 		return value;
 	}
 
