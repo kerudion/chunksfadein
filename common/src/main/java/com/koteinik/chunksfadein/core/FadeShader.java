@@ -211,7 +211,7 @@ public class FadeShader {
 			if (animationType == JAGGED || animationType == DISPLACEMENT)
 				rand("rand", "localPos + vec3(_draw_id)");
 
-			calculateVertexDisplacement("localPos", null, true, "_draw_id");
+			calculateVertexDisplacement("localPos", null, true, "int(_draw_id)");
 
 			newLine("return localPos - originalPos;");
 		} else {
