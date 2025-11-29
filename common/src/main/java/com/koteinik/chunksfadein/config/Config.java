@@ -1,12 +1,9 @@
 package com.koteinik.chunksfadein.config;
 
 import com.koteinik.chunksfadein.Logger;
-import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.ConfigEntry.Type;
-import com.koteinik.chunksfadein.core.AnimationType;
-import com.koteinik.chunksfadein.core.Curve;
-import com.koteinik.chunksfadein.core.FadeType;
-import com.koteinik.chunksfadein.core.FogOverrideMode;
+import com.koteinik.chunksfadein.core.*;
+import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.platform.Services;
 import com.moandjiezana.toml.Toml;
 
@@ -14,10 +11,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static com.koteinik.chunksfadein.gui.SettingsScreen.*;
+
 public class Config {
-	private static final int CONFIG_VERSION = 4;
+	private static final int CONFIG_VERSION = 5;
 
 	public static final double MIN_FADE_TIME = 0.01;
 	public static final double MAX_FADE_TIME = 10;
@@ -81,60 +81,111 @@ public class Config {
 	public static AnimationType animationType;
 
 	static {
-		addEntry(new ConfigEntry<>(CONFIG_VERSION, CONFIG_VERSION_KEY, Type.INTEGER))
+		addEntry(new ConfigEntry<>(CONFIG_VERSION, CONFIG_VERSION_KEY, "!!!DO NOT CHANGE THIS!!!", Type.INTEGER))
 			.addListener((o) -> configVersion = o);
-		addEntry(new ConfigEntry<>(Curve.EASE_OUT.ordinal(), ANIMATION_CURVE_KEY, Type.INTEGER))
-			.addListener((o) -> animationCurve = Curve.values()[MathUtils.clamp(
-				o, 0,
-				Curve.values().length - 1
-			)]);
-		addEntry(new ConfigEntry<>(FadeType.FULL.ordinal(), FADE_TYPE_KEY, Type.INTEGER))
-			.addListener((o) -> fadeType = FadeType.values()[MathUtils.clamp(
-				o, 0,
-				FadeType.values().length - 1
-			)]);
-		addEntry(new ConfigEntry<>(FogOverrideMode.CYLINDRICAL.ordinal(), FOG_OVERRIDE_KEY, Type.INTEGER))
-			.addListener((o) -> fogOverrideMode = FogOverrideMode.values()[MathUtils.clamp(
-				o, 0,
-				FogOverrideMode.values().length - 1
-			)]);
-		addEntry(new ConfigEntry<>(AnimationType.FULL.ordinal(), ANIMATION_TYPE_KEY, Type.INTEGER))
-			.addListener((o) -> animationType = AnimationType.values()[MathUtils.clamp(
-				o, 0,
-				AnimationType.values().length - 1
-			)]);
-		addEntry(new ConfigEntry<>(16384, CURVATURE_KEY, Type.INTEGER))
+		addEntry(new ConfigEntryEnum<>(
+			Curve.class,
+			Curve.EASE_OUT,
+			tooltip(ANIMATION_CURVE),
+			ANIMATION_CURVE_KEY
+		))
+			.addListener((o) -> animationCurve = o);
+		addEntry(new ConfigEntryEnum<>(
+			FadeType.class,
+			FadeType.FULL,
+			tooltip(FADE_TYPE),
+			FADE_TYPE_KEY
+		))
+			.addListener((o) -> fadeType = o);
+		addEntry(new ConfigEntryEnum<>(
+			FogOverrideMode.class,
+			FogOverrideMode.CYLINDRICAL,
+			tooltip(FOG_OVERRIDE, "tooltip_pre_1_21_6"),
+			FOG_OVERRIDE_KEY
+		))
+			.addListener((o) -> fogOverrideMode = o);
+		addEntry(new ConfigEntryEnum<>(
+			AnimationType.class,
+			AnimationType.FULL,
+			tooltip(ANIMATION_TYPE),
+			ANIMATION_TYPE_KEY
+		))
+			.addListener((o) -> animationType = o);
+		addEntry(new ConfigEntry<>(
+			16384,
+			CURVATURE_KEY,
+			tooltip(CURVATURE),
+			Type.INTEGER
+		))
 			.addListener((o) -> worldCurvature = o);
 
-		addEntry(new ConfigEntryDoubleLimitable(MIN_FADE_TIME, MAX_FADE_TIME, 0.75, FADE_TIME_KEY))
+		addEntry(new ConfigEntryDoubleLimitable(
+			MIN_FADE_TIME,
+			MAX_FADE_TIME,
+			0.75,
+			tooltip(FADE_TIME),
+			FADE_TIME_KEY
+		))
 			.addListener((o) -> fadeChangePerMs = fadeChangeFromSeconds(o));
-		addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_TIME, MAX_ANIMATION_TIME, 2.56, ANIMATION_TIME_KEY))
+		addEntry(new ConfigEntryDoubleLimitable(
+			MIN_ANIMATION_TIME,
+			MAX_ANIMATION_TIME,
+			2.56,
+			tooltip(ANIMATION_TIME),
+			ANIMATION_TIME_KEY
+		))
 			.addListener((o) -> animationChangePerMs = animationChangeFromSeconds(o));
-		addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_OFFSET, MAX_ANIMATION_OFFSET, -64, ANIMATION_OFFSET_KEY))
+		addEntry(new ConfigEntryDoubleLimitable(
+			MIN_ANIMATION_OFFSET,
+			MAX_ANIMATION_OFFSET,
+			-64,
+			tooltip(ANIMATION_OFFSET),
+			ANIMATION_OFFSET_KEY
+		))
 			.addListener((o) -> animationOffset = o.floatValue());
-		addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_ANGLE, MAX_ANIMATION_ANGLE, 0, ANIMATION_ANGLE_KEY))
+		addEntry(new ConfigEntryDoubleLimitable(
+			MIN_ANIMATION_ANGLE,
+			MAX_ANIMATION_ANGLE,
+			0,
+			tooltip(ANIMATION_ANGLE),
+			ANIMATION_ANGLE_KEY
+		))
 			.addListener((o) -> animationAngle = o.floatValue());
-		addEntry(new ConfigEntryDoubleLimitable(MIN_ANIMATION_FACTOR, MAX_ANIMATION_FACTOR, 1, ANIMATION_FACTOR_KEY))
+		addEntry(new ConfigEntryDoubleLimitable(
+			MIN_ANIMATION_FACTOR,
+			MAX_ANIMATION_FACTOR,
+			1,
+			tooltip(ANIMATION_FACTOR),
+			ANIMATION_FACTOR_KEY
+		))
 			.addListener((o) -> animationFactor = o.floatValue());
 
-		addEntry(new ConfigEntry<>(true, MOD_ENABLED_KEY, Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(true, MOD_ENABLED_KEY, tooltip(MOD_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> isModEnabled = o);
-		addEntry(new ConfigEntry<>(true, FADE_ENABLED_KEY, Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(true, FADE_ENABLED_KEY, tooltip(FADE_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> isFadeEnabled = o);
-		addEntry(new ConfigEntry<>(false, ANIMATION_ENABLED_KEY, Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(false, ANIMATION_ENABLED_KEY, tooltip(ANIMATION_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> isAnimationEnabled = o);
-		addEntry(new ConfigEntry<>(false, CURVATURE_ENABLED_KEY, Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(false, CURVATURE_ENABLED_KEY, tooltip(CURVATURE_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> isCurvatureEnabled = o);
-		addEntry(new ConfigEntry<>(true, UPDATE_NOTIFIER_ENABLED_KEY, Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(true, UPDATE_NOTIFIER_ENABLED_KEY, tooltip(UPDATE_NOTIFIER_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> isUpdateNotifierEnabled = o);
-		addEntry(new ConfigEntry<>(true, SHOW_MOD_TAB_IN_SETTINGS_KEY, Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(true, SHOW_MOD_TAB_IN_SETTINGS_KEY, tooltip(MOD_TAB_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> showModTabInSettings = o);
-		addEntry(new ConfigEntry<>(true, ANIMATE_NEAR_PLAYER_KEY, Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(true, ANIMATE_NEAR_PLAYER_KEY, tooltip(ANIMATE_NEAR_PLAYER), Type.BOOLEAN))
 			.addListener((o) -> animateNearPlayer = o);
-		addEntry(new ConfigEntry<>(false, ANIMATE_WITH_DH_KEY, Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(false, ANIMATE_WITH_DH_KEY, tooltip(ANIMATE_WITH_DH), Type.BOOLEAN))
 			.addListener((o) -> animateWithDH = o);
-		addEntry(new ConfigEntry<>(true, FADE_NEAR_PLAYER_KEY, Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(true, FADE_NEAR_PLAYER_KEY, tooltip(FADE_NEAR_PLAYER), Type.BOOLEAN))
 			.addListener((o) -> fadeNearPlayer = o);
+	}
+
+	private static String tooltip(String key) {
+		return tooltip(key, "tooltip");
+	}
+
+	private static String tooltip(String key, String custom) {
+		return Translations.getDefault(key + "." + custom);
 	}
 
 	public static float fadeChangeFromSeconds(double seconds) {
@@ -167,6 +218,7 @@ public class Config {
 
 			toml.read(configFile);
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		for (ConfigEntry<?> entry : entries.values())
@@ -180,22 +232,38 @@ public class Config {
 	}
 
 	public static void save() {
-		StringBuilder string = new StringBuilder();
+		List<String> sortedEntries = entries.values()
+			.stream()
+			.sorted((a, b) -> {
+				if (a.configKey.equals(CONFIG_VERSION_KEY))
+					return -1;
+				if (b.configKey.equals(CONFIG_VERSION_KEY))
+					return 1;
 
-		for (ConfigEntry<?> entry : entries.values())
-			string.append(entry.toString());
+				return a.configKey.compareTo(b.configKey);
+			})
+			.map(ConfigEntry::toString)
+			.toList();
+
+		String string = String.join("\n", sortedEntries);
 
 		try {
 			if (!configFile.exists())
 				configFile.createNewFile();
 
 			BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
-			writer.write(string.toString());
+			writer.write(string);
 			writer.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			Logger.error("Failed to save config! If this is an error, please create an issue on github!");
 		}
+	}
+
+	public static boolean setBoolean(String key, Boolean value) {
+		ConfigEntry<Boolean> entry = get(key);
+
+		return entry.set(value);
 	}
 
 	public static int setInteger(String key, Integer value) {
@@ -204,8 +272,8 @@ public class Config {
 		return entry.set(value);
 	}
 
-	public static boolean setBoolean(String key, Boolean value) {
-		ConfigEntry<Boolean> entry = get(key);
+	public static <T extends Enum<T> & TranslatableEnum> T setEnum(String key, T value) {
+		ConfigEntry<T> entry = get(key);
 
 		return entry.set(value);
 	}
@@ -224,6 +292,12 @@ public class Config {
 
 	public static int getInteger(String key) {
 		ConfigEntry<Integer> entry = get(key);
+
+		return entry.get();
+	}
+
+	public static <T extends Enum<T> & TranslatableEnum> T getEnum(String key) {
+		ConfigEntry<T> entry = get(key);
 
 		return entry.get();
 	}
