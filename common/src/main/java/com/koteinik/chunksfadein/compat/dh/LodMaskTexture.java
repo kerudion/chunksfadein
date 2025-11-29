@@ -185,8 +185,12 @@ public class LodMaskTexture {
 	}
 
 	public void bindTexture(int slot) {
+		int prevActive = GL13.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
+
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + slot);
 		GL11.glBindTexture(GL12.GL_TEXTURE_3D, id);
+
+		GL13.glActiveTexture(prevActive);
 	}
 
 	public void cleanup() {

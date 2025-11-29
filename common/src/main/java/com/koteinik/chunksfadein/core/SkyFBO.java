@@ -53,11 +53,11 @@ public class SkyFBO {
 		return instance.textureId;
 	}
 
-	public static void active(int texture) {
+	public static void bind(int texture) {
 		SkyFBO instance = getInstance();
 		if (instance == null) return;
 
-		instance.activeTexture(texture);
+		instance.bindTexture(texture);
 	}
 
 	public static void bindAttachment(int attachment) {
@@ -169,9 +169,13 @@ public class SkyFBO {
 		}
 	}
 
-	public void activeTexture(int slot) {
+	public void bindTexture(int slot) {
+		int prevActive = GL13.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
+
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + slot);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+
+		GL13.glActiveTexture(prevActive);
 	}
 
 	public void cleanup() {
