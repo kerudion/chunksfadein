@@ -39,6 +39,8 @@ public class Config {
 	public static final String FADE_ENABLED_KEY = "fade-enabled";
 	public static final String FADE_TIME_KEY = "fade-time";
 	public static final String FADE_TYPE_KEY = "fade-type";
+	public static final String FADE_CURVE_KEY = "fade-curve";
+	public static final String FADE_MIX_TYPE_KEY = "fade-mix-type";
 	public static final String FOG_OVERRIDE_KEY = "fog-override";
 	public static final String FADE_NEAR_PLAYER_KEY = "fade-near-player";
 	public static final String ANIMATION_ENABLED_KEY = "animation-enabled";
@@ -75,17 +77,19 @@ public class Config {
 	public static int worldCurvature;
 	public static int configVersion;
 
-	public static Curve animationCurve;
 	public static FadeType fadeType;
+	public static FadeCurve fadeCurve;
+	public static FadeMixType fadeMixType;
 	public static FogOverrideMode fogOverrideMode;
 	public static AnimationType animationType;
+	public static AnimationCurve animationCurve;
 
 	static {
 		addEntry(new ConfigEntry<>(CONFIG_VERSION, CONFIG_VERSION_KEY, "!!!DO NOT CHANGE THIS!!!", Type.INTEGER))
 			.addListener((o) -> configVersion = o);
 		addEntry(new ConfigEntryEnum<>(
-			Curve.class,
-			Curve.EASE_OUT,
+			AnimationCurve.class,
+			AnimationCurve.EASE_OUT,
 			tooltip(ANIMATION_CURVE),
 			ANIMATION_CURVE_KEY
 		))
@@ -97,6 +101,20 @@ public class Config {
 			FADE_TYPE_KEY
 		))
 			.addListener((o) -> fadeType = o);
+		addEntry(new ConfigEntryEnum<>(
+			FadeCurve.class,
+			FadeCurve.QUINTIC,
+			tooltip(FADE_CURVE),
+			FADE_CURVE_KEY
+		))
+			.addListener((o) -> fadeCurve = o);
+		addEntry(new ConfigEntryEnum<>(
+			FadeMixType.class,
+			FadeMixType.LINEAR,
+			tooltip(FADE_MIX_TYPE),
+			FADE_MIX_TYPE_KEY
+		))
+			.addListener((o) -> fadeMixType = o);
 		addEntry(new ConfigEntryEnum<>(
 			FogOverrideMode.class,
 			FogOverrideMode.CYLINDRICAL,
@@ -226,6 +244,10 @@ public class Config {
 
 		if (configVersion < 3)
 			setDouble(ANIMATION_OFFSET_KEY, -getDouble(ANIMATION_OFFSET_KEY));
+
+		if (configVersion < 5)
+			if (getEnum(FADE_TYPE_KEY) != FadeType.FULL)
+				setEnum(FADE_CURVE_KEY, FadeCurve.LINEAR);
 
 		setInteger(CONFIG_VERSION_KEY, CONFIG_VERSION);
 		save();

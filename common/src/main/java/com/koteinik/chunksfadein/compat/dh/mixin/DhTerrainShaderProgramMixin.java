@@ -188,6 +188,7 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 			.newLine("uniform vec4 cfi_chunkFadeData;")
 			.newLine("uniform vec3 cfi_lodMaskOrigin;")
 			.vertOutVars()
+			.utilFunctions()
 			.flushMultiline());
 
 		injector.insertAfterStr(
@@ -222,8 +223,11 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 			);
 		}
 
-		injector.insertAfterInVars(shader.fragInVars()
-			.flushMultiline());
+		injector.insertAfterInVars(
+			shader.fragInVars()
+				.utilFunctions()
+				.flushMultiline()
+		);
 
 		shader.fragColorMod("fragColor.rgb", false);
 
