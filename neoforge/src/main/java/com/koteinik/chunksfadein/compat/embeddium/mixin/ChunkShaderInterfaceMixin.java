@@ -48,7 +48,7 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
 		if (sky != null) {
 			int prevActive = GL13.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
 
-			SkyFBO.active(13);
+			SkyFBO.bind(13);
 			sky.set(13);
 
 			GL13.glActiveTexture(prevActive);
