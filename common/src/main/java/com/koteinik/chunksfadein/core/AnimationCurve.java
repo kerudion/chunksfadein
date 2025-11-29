@@ -7,7 +7,8 @@ import net.minecraft.network.chat.Component;
 
 import java.util.function.Function;
 
-public enum Curve implements TranslatableEnum {
+@SuppressWarnings("unused")
+public enum AnimationCurve implements TranslatableEnum {
 	LINEAR((f) -> f),
 	EASE_OUT((f) -> 1f - MathUtils.pow(1 - f, 3)),
 	EASE_CIRCULAR((f) -> {
@@ -32,7 +33,7 @@ public enum Curve implements TranslatableEnum {
 	public final Component translation;
 	private final Function<Float, Float> calculate;
 
-	Curve(Function<Float, Float> calculate) {
+	AnimationCurve(Function<Float, Float> calculate) {
 		this.calculate = calculate;
 		this.translation = Translations.translatable(SettingsScreen.ANIMATION_CURVE + "." + name().toLowerCase());
 	}

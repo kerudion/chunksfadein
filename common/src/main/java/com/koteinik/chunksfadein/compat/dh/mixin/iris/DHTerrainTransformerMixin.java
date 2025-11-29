@@ -43,6 +43,14 @@ public class DHTerrainTransformerMixin {
 
 				tree.parseAndInjectNodes(
 					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+					shader.utilRand().flushSingleLine(),
+					shader.utilSrgbToOklab().flushSingleLine(),
+					shader.utilOklabToSrgb().flushSingleLine(),
+					shader.utilMixSrgbInOklab().flushSingleLine()
+				);
+
+				tree.parseAndInjectNodes(
+					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
 					shader.dhApiGetFadeData().flushSingleLine(),
 
 					shader.dhApiVertCalculateDisplacement().flushSingleLine(),
@@ -90,6 +98,14 @@ public class DHTerrainTransformerMixin {
 				tree.parseAndInjectNodes(
 					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
 					shader.dhFragInVars().flushArray()
+				);
+
+				tree.parseAndInjectNodes(
+					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+					shader.utilRand().flushSingleLine(),
+					shader.utilSrgbToOklab().flushSingleLine(),
+					shader.utilOklabToSrgb().flushSingleLine(),
+					shader.utilMixSrgbInOklab().flushSingleLine()
 				);
 
 				tree.parseAndInjectNodes(

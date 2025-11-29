@@ -50,6 +50,8 @@ public abstract class ShaderLoaderMixin {
 		if (!Config.isModEnabled || !Config.isFadeEnabled)
 			return injector;
 
+		injector.insertAfterUniforms(shader.utilFunctions().flushMultiline());
+
 		String inFogRange = switch (Config.fogOverrideMode) {
 			case BOTH -> "v_FragDistance.x > u_RenderFog.x || v_FragDistance.y > u_EnvironmentFog.x";
 			case CYLINDRICAL -> "v_FragDistance.x > u_RenderFog.x";
@@ -92,6 +94,8 @@ public abstract class ShaderLoaderMixin {
 			.vertInVars()
 			.vertOutVars()
 			.flushMultiline());
+
+		injector.insertAfterUniforms(shader.utilFunctions().flushMultiline());
 
 		injector.insertAfterStr(
 			"_vert_init();",

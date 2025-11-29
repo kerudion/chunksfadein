@@ -2,20 +2,17 @@ package com.koteinik.chunksfadein.core;
 
 import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
-
 import net.minecraft.network.chat.Component;
 
-public enum FadeType implements TranslatableEnum {
-	FULL,
-	LINED,
-	BLOCK,
-	VERTEX,
-	FRAGMENTED;
+@SuppressWarnings("unused")
+public enum FadeMixType implements TranslatableEnum {
+	LINEAR,
+	OKLAB;
 
 	public final Component translation;
 
-	FadeType() {
-		this.translation = Translations.translatable(SettingsScreen.FADE_TYPE + "." + name().toLowerCase());
+	FadeMixType() {
+		this.translation = Translations.translatable(SettingsScreen.FADE_MIX_TYPE + "." + name().toLowerCase());
 	}
 
 	@Override
