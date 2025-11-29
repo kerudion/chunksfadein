@@ -129,14 +129,14 @@ public class CFIButton extends Button {
 			T[] constants = clazz.getEnumConstants();
 
 			return new CFIButtonBuilder()
-				.text(() -> coloredFormatted(textKey, "§e", constants[Config.getInteger(configKey)].getTranslation()))
+				.text(() -> coloredFormatted(textKey, "§e", Config.getEnum(configKey).getTranslation()))
 				.onPress(() -> {
-					int next = Config.getInteger(configKey) + 1;
+					int next = Config.getEnum(configKey).ordinal() + 1;
 
 					if (next >= constants.length)
 						next = 0;
 
-					Config.setInteger(configKey, next);
+					Config.setEnum(configKey, constants[next]);
 				})
 				.tooltip(GuiUtils.tooltip(textKey));
 		}
