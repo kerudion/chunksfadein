@@ -84,7 +84,7 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 			return;
 
 		if (terrainFadeTexture != -1)
-			SkyFBO.active(15);
+			SkyFBO.bind(15);
 	}
 
 	@Inject(method = "fillUniformData", at = @At(value = "TAIL"))
