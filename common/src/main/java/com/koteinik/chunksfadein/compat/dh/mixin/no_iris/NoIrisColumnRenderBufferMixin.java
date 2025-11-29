@@ -1,20 +1,16 @@
-package com.koteinik.chunksfadein.compat.dh.mixin;
+package com.koteinik.chunksfadein.compat.dh.mixin.no_iris;
 
-import com.koteinik.chunksfadein.config.Config;
-import com.koteinik.chunksfadein.core.Fader;
-import com.koteinik.chunksfadein.core.Utils;
 import com.koteinik.chunksfadein.compat.dh.DHState;
 import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;
 import com.koteinik.chunksfadein.compat.dh.ext.LodRendererExt;
+import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.Fader;
+import com.koteinik.chunksfadein.core.Utils;
 import com.seibel.distanthorizons.api.methods.events.sharedParameterObjects.DhApiRenderParam;
 import com.seibel.distanthorizons.core.dataObjects.render.bufferBuilding.ColumnRenderBuffer;
 import com.seibel.distanthorizons.core.pos.DhSectionPos;
 import com.seibel.distanthorizons.core.pos.blockPos.DhBlockPos;
 import com.seibel.distanthorizons.core.render.renderer.LodRenderer;
-import net.irisshaders.iris.Iris;
-import net.irisshaders.iris.compat.dh.DHCompat;
-import net.irisshaders.iris.compat.dh.DHCompatInternal;
-import net.irisshaders.iris.pipeline.WorldRenderingPipeline;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = ColumnRenderBuffer.class, remap = false)
-public abstract class ColumnRenderBufferMixin {
+public abstract class NoIrisColumnRenderBufferMixin {
 	@Shadow
 	@Final
 	public DhBlockPos blockPos;
@@ -63,22 +59,6 @@ public abstract class ColumnRenderBufferMixin {
 		float z = xyz[2];
 		float w = fader.incrementFadeCoeff(delta, inRenderDistance);
 		fader.setRenderedBefore();
-
-		DHCompatInternal irisDh = (DHCompatInternal) Iris.getPipelineManager()
-			.getPipeline()
-			.map(WorldRenderingPipeline::getDHCompat)
-			.map(DHCompat::getInstance)
-			.orElse(null);
-		if (irisDh != null) {
-			if (irisDh.getSolidShader() instanceof DhRenderProgramExt ext)
-				ext.bindUniforms(x, y, z, w);
-			if (irisDh.getShadowShader() instanceof DhRenderProgramExt ext)
-				ext.bindUniforms(x, y, z, w);
-			if (irisDh.getTranslucentShader() instanceof DhRenderProgramExt ext)
-				ext.bindUniforms(x, y, z, w);
-
-			return;
-		}
 
 		DhRenderProgramExt shader = rendererExt.getShader();
 		if (shader == null) return;

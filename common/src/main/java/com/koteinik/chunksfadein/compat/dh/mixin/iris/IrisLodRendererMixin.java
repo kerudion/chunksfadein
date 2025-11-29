@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.compat.dh.mixin;
+package com.koteinik.chunksfadein.compat.dh.mixin.iris;
 
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.ShaderUtils;
@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = LodRenderer.class, remap = false)
-public abstract class LodRendererMixin implements LodRendererExt {
+public abstract class IrisLodRendererMixin implements LodRendererExt {
 	@Shadow
 	private IDhApiShaderProgram lodRenderProgram;
 
