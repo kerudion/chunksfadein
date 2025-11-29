@@ -3,10 +3,7 @@ package com.koteinik.chunksfadein.gui;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.ShaderUtils;
 import com.koteinik.chunksfadein.config.Config;
-import com.koteinik.chunksfadein.core.AnimationType;
-import com.koteinik.chunksfadein.core.Curve;
-import com.koteinik.chunksfadein.core.FadeType;
-import com.koteinik.chunksfadein.core.FogOverrideMode;
+import com.koteinik.chunksfadein.core.*;
 import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.components.CFIButton;
 import com.koteinik.chunksfadein.gui.components.CFIButton.CFIButtonBuilder;
@@ -37,6 +34,8 @@ public class SettingsScreen extends Screen {
 		"settings.chunksfadein.mod_tab_tooltip");
 	public static final String FADE_ENABLED = "settings.chunksfadein.fade_enabled";
 	public static final String FADE_TYPE = "settings.chunksfadein.fade_type";
+	public static final String FADE_CURVE = "settings.chunksfadein.fade_curve";
+	public static final String FADE_MIX_TYPE = "settings.chunksfadein.fade_mix_type";
 	public static final String FOG_OVERRIDE = "settings.chunksfadein.fog_override";
 	public static final String FADE_TIME = "settings.chunksfadein.fade_time";
 	public static final String FADE_NEAR_PLAYER = "settings.chunksfadein.fade_near_player";
@@ -134,6 +133,11 @@ public class SettingsScreen extends Screen {
 		CFIButton fadeType = CFIButtonBuilder.cycle(FADE_TYPE, Config.FADE_TYPE_KEY, FadeType.class)
 			.onPress(markDirty)
 			.build();
+		CFIButton fadeCurve = CFIButtonBuilder.cycle(FADE_CURVE, Config.FADE_CURVE_KEY, FadeCurve.class)
+			.build();
+		CFIButton fadeMixType = CFIButtonBuilder.cycle(FADE_MIX_TYPE, Config.FADE_MIX_TYPE_KEY, FadeMixType.class)
+			.onPress(markDirty)
+			.build();
 		CFIButton fogOverride = CFIButtonBuilder.cycle(FOG_OVERRIDE, Config.FOG_OVERRIDE_KEY, FogOverrideMode.class)
 			.onPress(markDirty)
 			.tooltipOverride(GuiUtils.tooltip(FOG_OVERRIDE, "tooltip_pre_1_21_6"))
@@ -151,12 +155,17 @@ public class SettingsScreen extends Screen {
 			.build();
 		list.add(fadeEnabled);
 		list.add(fadeType, fadeTime, fadeTime.makeResetButton(Config.FADE_TIME_KEY));
+		list.add(fadeCurve, fadeMixType);
 		list.add(fogOverride, fadeNearPlayer);
 
 		CFIButton animationEnabled = CFIButtonBuilder.choice(ANIMATION_ENABLED, Config.ANIMATION_ENABLED_KEY)
 			.onPress(markDirty)
 			.build();
-		CFIButton animationCurve = CFIButtonBuilder.cycle(ANIMATION_CURVE, Config.ANIMATION_CURVE_KEY, Curve.class)
+		CFIButton animationCurve = CFIButtonBuilder.cycle(
+				ANIMATION_CURVE,
+				Config.ANIMATION_CURVE_KEY,
+				AnimationCurve.class
+			)
 			.onPress(markEveryDirty)
 			.build();
 		CFIButton animationType = CFIButtonBuilder.cycle(ANIMATION_TYPE, Config.ANIMATION_TYPE_KEY, AnimationType.class)

@@ -57,7 +57,7 @@ public class Fader {
 		if (!hasRenderedBefore() && !Config.fadeNearPlayer && nearPlayer)
 			fadeCoeff = 1f;
 
-		return fadeCoeff;
+		return Config.fadeCurve.calculate(fadeCoeff);
 	}
 
 	public float[] incrementAnimationOffset(long delta, boolean nearPlayer) {

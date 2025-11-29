@@ -2,6 +2,7 @@ package com.koteinik.chunksfadein.compat.embeddium;
 
 import com.google.common.collect.ImmutableList;
 import com.koteinik.chunksfadein.core.*;
+import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.koteinik.chunksfadein.platform.Services;
 import net.minecraft.network.chat.Component;
@@ -99,6 +100,20 @@ public class CFIEmbeddiumPage extends OptionPage {
 				.setControl(o -> new CyclingControl<>(o, FadeType.class, translations(FadeType.class)))
 				.setBinding((c, v) -> cfiStorage.setEnumDirty(FADE_TYPE_KEY, v), c -> fadeType)
 				.build())
+			.add(OptionImpl.createBuilder(FadeCurve.class, cfiStorage)
+				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "fade_curve"))
+				.setName(Translations.translatable(FADE_CURVE))
+				.setTooltip(tooltip(FADE_CURVE))
+				.setControl(o -> new CyclingControl<>(o, FadeCurve.class, translations(FadeCurve.class)))
+				.setBinding((c, v) -> cfiStorage.setEnumDirty(FADE_CURVE_KEY, v), c -> fadeCurve)
+				.build())
+			.add(OptionImpl.createBuilder(FadeMixType.class, cfiStorage)
+				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "fade_mix_type"))
+				.setName(Translations.translatable(FADE_MIX_TYPE))
+				.setTooltip(tooltip(FADE_MIX_TYPE))
+				.setControl(o -> new CyclingControl<>(o, FadeMixType.class, translations(FadeMixType.class)))
+				.setBinding((c, v) -> cfiStorage.setEnumDirty(FADE_MIX_TYPE_KEY, v), c -> fadeMixType)
+				.build())
 			.add(OptionImpl.createBuilder(FogOverrideMode.class, cfiStorage)
 				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "fog_override"))
 				.setName(translatable(FOG_OVERRIDE))
@@ -148,11 +163,11 @@ public class CFIEmbeddiumPage extends OptionPage {
 				.setControl(TickBoxControl::new)
 				.setBinding((c, v) -> setBoolean(ANIMATE_WITH_DH_KEY, v), c -> animateWithDH)
 				.build())
-			.add(OptionImpl.createBuilder(Curve.class, cfiStorage)
-				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "curve"))
+			.add(OptionImpl.createBuilder(AnimationCurve.class, cfiStorage)
+				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "animation_curve"))
 				.setName(translatable(ANIMATION_CURVE))
 				.setTooltip(tooltip(ANIMATION_CURVE))
-				.setControl(o -> new CyclingControl<>(o, Curve.class, translations(Curve.class)))
+				.setControl(o -> new CyclingControl<>(o, AnimationCurve.class, translations(AnimationCurve.class)))
 				.setBinding((c, v) -> cfiStorage.setEnumDirty(ANIMATION_CURVE_KEY, v), c -> animationCurve)
 				.build())
 			.add(OptionImpl.createBuilder(AnimationType.class, cfiStorage)

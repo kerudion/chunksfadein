@@ -224,7 +224,7 @@ public class FadeShader {
 			newLine("vec4 chunkFadeData = cfi_getFadeData();");
 
 			if (animationType == JAGGED || animationType == DISPLACEMENT)
-				rand("rand", "localPos + vec3(_draw_id)");
+				newLine("float rand = _cfi_rand(localPos + vec3(_draw_id));");
 
 			calculateVertexDisplacement("localPos", null, true, "int(_draw_id)");
 
@@ -322,7 +322,7 @@ public class FadeShader {
 			newLine("cfi_counter = int(mod(cfi_counter, gl_in.length()));");
 		}
 
-		if (fadeType == BLOCK)
+		if (fadeType == BLOCK || fadeType == FRAGMENTED)
 			newLine("{out}cfi_BlockSeed = {in}cfi_BlockSeed[cfi_counter];");
 		if (fadeType == LINED)
 			newLine("{out}cfi_RefFactor = {in}cfi_RefFactor[cfi_counter];");
@@ -359,7 +359,7 @@ public class FadeShader {
 
 		newLine("{out}cfi_FadeFactor = {in}cfi_FadeFactor[0];");
 
-		if (fadeType == BLOCK)
+		if (fadeType == BLOCK || fadeType == FRAGMENTED)
 			newLine("{out}cfi_BlockSeed = {in}cfi_BlockSeed[0];");
 		if (fadeType == LINED)
 			newLine("{out}cfi_RefFactor = {in}cfi_RefFactor[0];");
@@ -405,7 +405,7 @@ public class FadeShader {
 		if (hasTessControl) {
 			newLine("{out}cfi_FadeFactor = {in}cfi_FadeFactor;");
 
-			if (fadeType == BLOCK)
+			if (fadeType == BLOCK || fadeType == FRAGMENTED)
 				newLine("{out}cfi_BlockSeed = {in}cfi_BlockSeed;");
 			if (fadeType == LINED)
 				newLine("{out}cfi_RefFactor = {in}cfi_RefFactor;");
@@ -414,7 +414,7 @@ public class FadeShader {
 		} else {
 			newLine("{out}cfi_FadeFactor = {in}cfi_FadeFactor[0];");
 
-			if (fadeType == BLOCK)
+			if (fadeType == BLOCK || fadeType == FRAGMENTED)
 				newLine("{out}cfi_BlockSeed = {in}cfi_BlockSeed[0];");
 			if (fadeType == LINED)
 				newLine("{out}cfi_RefFactor = {in}cfi_RefFactor[0];");
@@ -445,7 +445,7 @@ public class FadeShader {
 	private FadeShader insertVars(String mods, String flatMods, String prefix, String suffix) {
 		newLine("%s float %scfi_FadeFactor%s;".formatted(flatMods, prefix, suffix));
 
-		if (fadeType == BLOCK)
+		if (fadeType == BLOCK || fadeType == FRAGMENTED)
 			newLine("%s vec3 %scfi_BlockSeed%s;".formatted(mods, prefix, suffix));
 		if (fadeType == LINED)
 			newLine("%s float %scfi_RefFactor%s;".formatted(mods, prefix, suffix));
@@ -471,17 +471,17 @@ public class FadeShader {
 
 		if (isAnimationEnabled || isFadeEnabled)
 			if (animationType == JAGGED || animationType == DISPLACEMENT || fadeType == VERTEX)
-				rand("rand", "%s + %s".formatted(localPos, randSeed));
+				newLine("float rand = _cfi_rand(%s + %s);".formatted(localPos, randSeed));
 
 		if (isFadeEnabled) {
 			newLine("{out}cfi_FadeFactor = chunkFadeData.w;");
 
-			if (fadeType == BLOCK)
+			if (fadeType == BLOCK || fadeType == FRAGMENTED)
 				newLine("{out}cfi_BlockSeed = %s + %s;".formatted(localPos, randSeed));
 			if (fadeType == VERTEX)
 				newLine("{out}cfi_RefFactor = {out}cfi_FadeFactor > rand ? 1.0 : {out}cfi_FadeFactor / rand;");
 			if (fadeType == LINED) {
-				newLine("float refFactor = %s.y / 16.0;".formatted(localPos));
+				newLine("float refFactor = %s.y / 17.0;".formatted(localPos));
 				newLine("{out}cfi_RefFactor = refFactor - floor(refFactor);");
 			}
 		}
@@ -527,8 +527,12 @@ public class FadeShader {
 			newLine("if ({in}cfi_FadeFactor < 1.0) {");
 
 		calculateFade("float fade = ");
-		newLine("%s = mix(%s, %s, fade);"
-			.formatted(color, fadeColor, color));
+		if (fadeMixType == FadeMixType.OKLAB)
+			newLine("%s = _cfi_mix_srgb_in_oklab(%s, %s, fade);"
+				.formatted(color, fadeColor, color));
+		else
+			newLine("%s = mix(%s, %s, fade);"
+				.formatted(color, fadeColor, color));
 
 		if (addIf)
 			newLine("}");
@@ -549,8 +553,8 @@ public class FadeShader {
 				newLine(
 					"if (%s.x != 0.0 && %s.y != 0.0 && %s.z != 0.0 && %s.x != 16.0 && %s.y != 16.0 && %s.z != 16.0) {"
 						.replace("%s", localPos));
-				randAppend("rand2", "%s - %s".formatted(localPos, randSeed));
-				randAppend("rand3", "%s + (%s * 2)".formatted(localPos, randSeed));
+				newLine("float rand2 = _cfi_rand(%s - %s);".formatted(localPos, randSeed));
+				newLine("float rand3 = _cfi_rand(%s + (%s * 2));".formatted(localPos, randSeed));
 				append("%s += vec3(rand - 0.5, rand2 - 0.5, rand3 - 0.5) * vec3(chunkFadeData.y);".formatted(modifyLocal
 					? localPos
 					: position));
@@ -575,11 +579,17 @@ public class FadeShader {
 		if (fadeType == LINED)
 			newLine(prefix + "{in}cfi_RefFactor <= {in}cfi_FadeFactor ? 1.0 : 0.0;");
 		if (fadeType == BLOCK) {
-			rand("rand", "floor({in}cfi_BlockSeed)");
+			newLine("float rand = _cfi_rand(floor({in}cfi_BlockSeed));");
 			newLine(prefix + "{in}cfi_FadeFactor > rand ? 1.0 : {in}cfi_FadeFactor / rand;");
 		}
 		if (fadeType == VERTEX)
 			newLine(prefix + "{in}cfi_RefFactor;");
+		if (fadeType == FRAGMENTED) {
+			newLine("float rand = _cfi_rand(floor({in}cfi_BlockSeed));");
+
+			newLine("float start = rand * (1.0 - 0.2);");
+			newLine(prefix + "smoothstep(start, start + 0.2, {in}cfi_FadeFactor);");
+		}
 
 		return this;
 	}
@@ -645,7 +655,7 @@ public class FadeShader {
 			newLine("vec4 chunkFadeData = cfi_getFadeData();");
 
 			if (animationType == JAGGED || animationType == DISPLACEMENT)
-				rand("rand", "worldPos");
+				newLine("float rand = _cfi_rand(worldPos);");
 
 			newLine("vec3 offsetPos = floor((worldPos - mod(localPos, 16.0)) / 16.0) + cfi_lodMaskOrigin;");
 
@@ -741,18 +751,71 @@ public class FadeShader {
 		return this;
 	}
 
-	public FadeShader rand(String name, String vector) {
-		newLine("float %s = fract(sin(dot(%s, vec3(12.9898, 78.233, 132.383))) * 43758.5453);"
-			.formatted(name, vector));
-		newLine("if (%s == 0.0) %s = 0.001;".formatted(name, name));
+	public FadeShader utilFunctions() {
+		utilRand();
+		utilSrgbToOklab();
+		utilOklabToSrgb();
+		utilMixSrgbInOklab();
 
 		return this;
 	}
 
-	public void randAppend(String name, String vector) {
-		append("float %s = fract(sin(dot(%s, vec3(12.9898, 78.233, 132.383))) * 43758.5453);"
-			.formatted(name, vector));
-		append("if (%s == 0.0) %s = 0.001;".formatted(name, name));
+	public FadeShader utilRand() {
+		newLine("float _cfi_rand(vec3 vec) {");
+		newLine("    float value = fract(sin(dot(vec, vec3(12.9898, 78.233, 132.383))) * 43758.5453);");
+		newLine("    if (value == 0.0) value = 0.001;");
+		newLine("    return value;");
+		newLine("}");
+
+		return this;
+	}
+
+	public FadeShader utilSrgbToOklab() {
+		newLine("vec3 _cfi_srgb_to_oklab(vec3 c) {");
+		newLine("    vec3 lin = c * c;");
+		newLine("    float l = 0.4122214708 * lin.r + 0.5363325363 * lin.g + 0.0514459929 * lin.b;");
+		newLine("    float m = 0.2119034982 * lin.r + 0.6806995451 * lin.g + 0.1073969566 * lin.b;");
+		newLine("    float s = 0.0883024619 * lin.r + 0.2817188376 * lin.g + 0.6299787005 * lin.b;");
+		newLine("    float l_ = pow(l, 0.3333333333);");
+		newLine("    float m_ = pow(m, 0.3333333333);");
+		newLine("    float s_ = pow(s, 0.3333333333);");
+		newLine("    return vec3(");
+		newLine("        0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,");
+		newLine("        1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,");
+		newLine("        0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_");
+		newLine("    );");
+		newLine("}");
+
+		return this;
+	}
+
+	public FadeShader utilOklabToSrgb() {
+		newLine("vec3 _cfi_oklab_to_srgb(vec3 c) {");
+		newLine("    float l_ = c.x + 0.3963377774 * c.y + 0.2158037573 * c.z;");
+		newLine("    float m_ = c.x - 0.1055613458 * c.y - 0.0638541728 * c.z;");
+		newLine("    float s_ = c.x - 0.0894841775 * c.y - 1.2914855480 * c.z;");
+		newLine("    float l = l_ * l_ * l_;");
+		newLine("    float m = m_ * m_ * m_;");
+		newLine("    float s = s_ * s_ * s_;");
+		newLine("    return sqrt(vec3(");
+		newLine("        4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,");
+		newLine("        -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,");
+		newLine("        -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s");
+		newLine("    ));");
+		newLine("}");
+
+		return this;
+	}
+
+	public FadeShader utilMixSrgbInOklab() {
+		newLine("vec3 _cfi_mix_srgb_in_oklab(vec3 a, vec3 b, float t) {");
+		newLine("    vec3 labA = _cfi_srgb_to_oklab(a);");
+		newLine("    vec3 labB = _cfi_srgb_to_oklab(b);");
+		newLine("    vec3 mixedLab = mix(labA, labB, t);");
+		newLine("    return _cfi_oklab_to_srgb(mixedLab);");
+		newLine("}");
+
+		return this;
 	}
 
 	public FadeShader newLine(String line) {

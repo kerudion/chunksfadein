@@ -185,10 +185,20 @@ public class IrisPatcher {
 					shader.outPrefix("g_");
 				}
 
-				if (!injected)
+				if (!injected) {
 					tree.parseAndInjectNodes(
-						t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader.vertInVars().flushList().stream()
+						t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+						shader.vertInVars().flushList().stream()
 					);
+
+					tree.parseAndInjectNodes(
+						t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+						shader.utilRand().flushSingleLine(),
+						shader.utilSrgbToOklab().flushSingleLine(),
+						shader.utilOklabToSrgb().flushSingleLine(),
+						shader.utilMixSrgbInOklab().flushSingleLine()
+					);
+				}
 
 				tree.injectNodes(
 					ASTInjectionPoint.BEFORE_FUNCTIONS,
@@ -317,11 +327,20 @@ public class IrisPatcher {
 					)
 				);
 
-				if (!injected)
+				if (!injected) {
 					tree.parseAndInjectNodes(
-						t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
-							.fragInVars().flushList().stream()
+						t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+						shader.fragInVars().flushList().stream()
 					);
+
+					tree.parseAndInjectNodes(
+						t, ASTInjectionPoint.BEFORE_FUNCTIONS,
+						shader.utilRand().flushSingleLine(),
+						shader.utilSrgbToOklab().flushSingleLine(),
+						shader.utilOklabToSrgb().flushSingleLine(),
+						shader.utilMixSrgbInOklab().flushSingleLine()
+					);
+				}
 
 				if (injectFragMod) {
 					injectFragMod(t, tree, root);
