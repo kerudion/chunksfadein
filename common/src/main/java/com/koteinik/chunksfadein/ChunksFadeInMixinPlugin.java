@@ -14,11 +14,15 @@ public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+		boolean isNoIrisMixin = mixinClassName.contains("no_iris");
 		boolean isIrisMixin = mixinClassName.contains("iris");
 		boolean isDHMixin = mixinClassName.contains("dh");
 
 		boolean hasIris = hasClass("net.irisshaders.iris.api.v0.IrisApi");
 		boolean hasDH = hasClass("com.seibel.distanthorizons.api.DhApi");
+
+		if (isNoIrisMixin)
+			return !hasIris;
 
 		if (isIrisMixin)
 			return hasIris;

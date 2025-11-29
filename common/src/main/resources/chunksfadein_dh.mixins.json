@@ -7,15 +7,17 @@
   "mixins": [],
   "client": [
     "DhTerrainShaderProgramMixin",
-    "LodRendererMixin",
-    "ColumnRenderBufferMixin",
     "SSAOShaderMixin",
     "ShaderProgramMixin",
     "LodRenderSectionMixin",
     "RenderUtilMixin",
     "SSAOApplyShaderMixin",
+    "iris.DHTerrainTransformerMixin",
+    "iris.IrisColumnRenderBufferMixin",
+    "iris.IrisLodRendererMixin",
     "iris.IrisLodRenderProgramMixin",
-    "iris.DHTerrainTransformerMixin"
+    "no_iris.NoIrisColumnRenderBufferMixin",
+    "no_iris.NoIrisLodRendererMixin"
   ],
   "server": [],
   "injectors": {

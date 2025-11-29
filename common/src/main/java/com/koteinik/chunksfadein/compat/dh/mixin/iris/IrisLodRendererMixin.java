@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.compat.dh.mixin;
+package com.koteinik.chunksfadein.compat.dh.mixin.iris;
 
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.ShaderUtils;
@@ -12,7 +12,6 @@ import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.seibel.distanthorizons.api.interfaces.override.rendering.IDhApiShaderProgram;
 import com.seibel.distanthorizons.api.methods.events.sharedParameterObjects.DhApiRenderParam;
 import com.seibel.distanthorizons.core.render.RenderBufferHandler;
-import com.seibel.distanthorizons.core.render.glObject.texture.DhColorTexture;
 import com.seibel.distanthorizons.core.render.renderer.DhTerrainShaderProgram;
 import com.seibel.distanthorizons.core.render.renderer.LodRenderer;
 import com.seibel.distanthorizons.core.render.renderer.generic.GenericObjectRenderer;
@@ -32,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = LodRenderer.class, remap = false)
-public abstract class LodRendererMixin implements LodRendererExt {
+public abstract class IrisLodRendererMixin implements LodRendererExt {
 	@Shadow
 	private IDhApiShaderProgram lodRenderProgram;
 
@@ -40,12 +39,6 @@ public abstract class LodRendererMixin implements LodRendererExt {
 	public static int getActiveColorTextureId() {
 		return 0;
 	}
-
-	@Shadow
-	private boolean usingMcFrameBuffer;
-
-	@Shadow
-	private DhColorTexture nullableColorTexture;
 
 	@Override
 	public DhRenderProgramExt getShader() {
