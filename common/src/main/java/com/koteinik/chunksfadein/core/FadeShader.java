@@ -14,6 +14,28 @@ public class FadeShader {
 	private String inPrefix = "";
 	private String outPrefix = "";
 
+	private boolean animation = isAnimationEnabled;
+	private boolean fade = isFadeEnabled;
+	private boolean curvature = isCurvatureEnabled;
+
+	public FadeShader overrideAnimation(boolean value) {
+		animation = value;
+
+		return this;
+	}
+
+	public FadeShader overrideFade(boolean value) {
+		fade = value;
+
+		return this;
+	}
+
+	public FadeShader overrideCurvature(boolean value) {
+		curvature = value;
+
+		return this;
+	}
+
 	public FadeShader inPrefix(String value) {
 		inPrefix = value;
 
@@ -38,7 +60,7 @@ public class FadeShader {
 			return this;
 
 		newLine("vec3 cfi_sampleSkyLodTexture() {");
-		if (isFadeEnabled)
+		if (fade)
 			newLine("return texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb;");
 		else
 			newLine("return iris_FogColor.rgb;");
@@ -60,7 +82,7 @@ public class FadeShader {
 
 		newLine("vec3 cfi_applySkyLodFade(vec3 fullyFaded) {");
 
-		if (isFadeEnabled)
+		if (fade)
 			newLine("return cfi_applyFade(cfi_sampleSkyLodTexture(), fullyFaded);");
 		else
 			newLine("return fullyFaded;");
@@ -83,7 +105,7 @@ public class FadeShader {
 
 		newLine("vec3 cfi_applyFogFade(vec3 fullyFaded) {");
 
-		if (isFadeEnabled)
+		if (fade)
 			newLine("return cfi_applyFade(iris_FogColor.rgb, fullyFaded);");
 		else
 			newLine("return fullyFaded;");
@@ -106,7 +128,7 @@ public class FadeShader {
 
 		newLine("vec3 cfi_applyFade(vec3 fullyUnfaded, vec3 fullyFaded) {");
 
-		if (isFadeEnabled)
+		if (fade)
 			newLine("return mix(fullyUnfaded, fullyFaded, cfi_calculateFade());");
 		else
 			newLine("return fullyFaded;");
@@ -129,7 +151,7 @@ public class FadeShader {
 
 		newLine("float cfi_calculateFade() {");
 
-		if (isFadeEnabled) {
+		if (fade) {
 			newLine("float fade = 0.0;");
 			calculateFade("fade = ");
 			newLine("return fade;");
@@ -175,7 +197,7 @@ public class FadeShader {
 
 		newLine("vec3 cfi_calculateCurvature(vec3 globalPos) {");
 
-		if (isCurvatureEnabled)
+		if (curvature)
 			newLine("return vec3(0.0, -dot(globalPos, globalPos) / " + worldCurvature + ", 0.0);");
 		else
 			newLine("return vec3(0.0);");
@@ -217,7 +239,7 @@ public class FadeShader {
 
 		newLine("vec3 cfi_calculateDisplacement(vec3 localPos) {");
 
-		if (isAnimationEnabled) {
+		if (animation) {
 			newLine("vec3 originalPos = localPos;");
 			newLine("localPos = vec3(localPos);");
 
@@ -264,7 +286,7 @@ public class FadeShader {
 	}
 
 	public FadeShader vertOutVars() {
-		if (!isModEnabled || !isFadeEnabled)
+		if (!isModEnabled || !fade)
 			return this;
 
 		insertVars(
@@ -278,7 +300,7 @@ public class FadeShader {
 	}
 
 	public FadeShader geomVars() {
-		if (!isModEnabled || !isFadeEnabled)
+		if (!isModEnabled || !fade)
 			return this;
 
 		insertVars(
@@ -302,7 +324,7 @@ public class FadeShader {
 	}
 
 	public FadeShader geomMainHead() {
-		if (!isModEnabled || !isFadeEnabled)
+		if (!isModEnabled || !fade)
 			return this;
 
 		if (fadeType != FULL)
@@ -314,7 +336,7 @@ public class FadeShader {
 	}
 
 	public FadeShader geomProxyVars() {
-		if (!isModEnabled || !isFadeEnabled)
+		if (!isModEnabled || !fade)
 			return this;
 
 		if (fadeType != FULL) {
@@ -333,7 +355,7 @@ public class FadeShader {
 	}
 
 	public FadeShader tessControlVars() {
-		if (!isModEnabled || !isFadeEnabled)
+		if (!isModEnabled || !fade)
 			return this;
 
 		insertVars(
@@ -354,7 +376,7 @@ public class FadeShader {
 	}
 
 	public FadeShader tessControlProxyVars() {
-		if (!isModEnabled || !isFadeEnabled)
+		if (!isModEnabled || !fade)
 			return this;
 
 		newLine("{out}cfi_FadeFactor = {in}cfi_FadeFactor[0];");
@@ -370,7 +392,7 @@ public class FadeShader {
 	}
 
 	public FadeShader tessEvalVars(boolean hasTessControl) {
-		if (!isModEnabled || !isFadeEnabled)
+		if (!isModEnabled || !fade)
 			return this;
 
 		if (hasTessControl)
@@ -399,7 +421,7 @@ public class FadeShader {
 	}
 
 	public FadeShader tessEvalProxyVars(boolean hasTessControl) {
-		if (!isModEnabled || !isFadeEnabled)
+		if (!isModEnabled || !fade)
 			return this;
 
 		if (hasTessControl) {
@@ -426,7 +448,7 @@ public class FadeShader {
 	}
 
 	public FadeShader fragInVars() {
-		if (!isModEnabled || !isFadeEnabled)
+		if (!isModEnabled || !fade)
 			return this;
 
 		newLine("uniform sampler2D cfi_sky;");
@@ -459,7 +481,7 @@ public class FadeShader {
 		if (!isModEnabled)
 			return this;
 
-		if (isAnimationEnabled || isFadeEnabled)
+		if (animation || fade)
 			newLine("vec4 chunkFadeData = cfi_ChunkFadeDatas[%s].fadeData;".formatted(drawId));
 
 		return vertInitOutVars(localPos, "vec3(%s)".formatted(drawId));
@@ -469,11 +491,11 @@ public class FadeShader {
 		if (!isModEnabled)
 			return this;
 
-		if (isAnimationEnabled || isFadeEnabled)
+		if (animation || fade)
 			if (animationType == JAGGED || animationType == DISPLACEMENT || fadeType == VERTEX)
 				newLine("float rand = _cfi_rand(%s + %s);".formatted(localPos, randSeed));
 
-		if (isFadeEnabled) {
+		if (fade) {
 			newLine("{out}cfi_FadeFactor = chunkFadeData.w;");
 
 			if (fadeType == BLOCK || fadeType == FRAGMENTED)
@@ -493,10 +515,10 @@ public class FadeShader {
 		if (!isModEnabled)
 			return this;
 
-		if (isAnimationEnabled)
+		if (animation)
 			calculateVertexDisplacement(localPos, position, modifyLocal, randSeed);
 
-		if (addCurvature && isCurvatureEnabled)
+		if (addCurvature && curvature)
 			newLine("%s.y -= dot(%s, %s) / %s;".formatted(
 				modifyLocal ? localPos : position,
 				position,
@@ -520,7 +542,7 @@ public class FadeShader {
 	}
 
 	public FadeShader fragColorMod(String color, String fadeColor, boolean addIf) {
-		if (!isModEnabled || !isFadeEnabled)
+		if (!isModEnabled || !fade)
 			return this;
 
 		if (addIf)
@@ -647,7 +669,7 @@ public class FadeShader {
 
 		newLine("vec3 cfi_calculateDisplacement(vec3 localPos, vec3 worldPos) {");
 
-		if (isAnimationEnabled) {
+		if (animation) {
 			newLine("vec3 originalPos = localPos;");
 
 			newLine("localPos = vec3(localPos);");
@@ -687,7 +709,7 @@ public class FadeShader {
 			return this;
 
 		newLine("void cfi_initOutVars(vec3 localPos, vec3 worldPos) {");
-		if (isAnimationEnabled || isFadeEnabled)
+		if (animation || fade)
 			newLine("vec4 chunkFadeData = cfi_getFadeData();");
 		newLine("vec3 offsetPos = floor((worldPos - mod(localPos, 16.0)) / 16.0) + cfi_lodMaskOrigin;");
 		vertInitOutVars("localPos", "offsetPos");

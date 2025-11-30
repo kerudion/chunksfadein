@@ -34,11 +34,17 @@ public class ShaderTransformerMixin {
 		if (map == null) return;
 
 		String frag = map.get(PatchShaderType.FRAGMENT);
-		if (frag != null && !frag.contains("cfi_sky"))
-			map.put(PatchShaderType.FRAGMENT, MonoclePatcher.patch(PatchShaderType.FRAGMENT, frag));
+		if (frag != null && !frag.contains("_cfi_monocle_injected"))
+			map.put(
+				PatchShaderType.FRAGMENT,
+				MonoclePatcher.patch(PatchShaderType.FRAGMENT, frag + "\nvoid _cfi_monocle_injected() {}\n")
+			);
 
 		String vert = map.get(PatchShaderType.VERTEX);
-		if (vert != null && !vert.contains("cfi_ChunkFadeData"))
-			map.put(PatchShaderType.VERTEX, MonoclePatcher.patch(PatchShaderType.VERTEX, vert));
+		if (vert != null && !vert.contains("_cfi_monocle_injected"))
+			map.put(
+				PatchShaderType.VERTEX,
+				MonoclePatcher.patch(PatchShaderType.VERTEX, vert + "\nvoid _cfi_monocle_injected() {}\n")
+			);
 	}
 }

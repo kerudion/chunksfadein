@@ -74,6 +74,12 @@ public class CFISodiumPage extends OptionPage {
 				.setImpact(OptionImpact.LOW)
 				.build())
 			.add(OptionImpl.createBuilder(boolean.class, cfiStorage)
+				.setName(translatable(FADE_PATCH_SHADERS))
+				.setTooltip(tooltip(FADE_PATCH_SHADERS))
+				.setControl(TickBoxControl::new)
+				.setBinding((c, v) -> cfiStorage.setBooleanDirty(FADE_PATCH_SHADERS_KEY, v), c -> patchShaderFade)
+				.build())
+			.add(OptionImpl.createBuilder(boolean.class, cfiStorage)
 				.setName(translatable(FADE_NEAR_PLAYER))
 				.setTooltip(tooltip(FADE_NEAR_PLAYER))
 				.setControl(TickBoxControl::new)
@@ -127,6 +133,15 @@ public class CFISodiumPage extends OptionPage {
 				.setControl(TickBoxControl::new)
 				.setBinding((c, v) -> cfiStorage.setBooleanDirty(ANIMATION_ENABLED_KEY, v), c -> isAnimationEnabled)
 				.setImpact(OptionImpact.LOW)
+				.build())
+			.add(OptionImpl.createBuilder(boolean.class, cfiStorage)
+				.setName(translatable(ANIMATION_PATCH_SHADERS))
+				.setTooltip(tooltip(ANIMATION_PATCH_SHADERS))
+				.setControl(TickBoxControl::new)
+				.setBinding(
+					(c, v) -> cfiStorage.setBooleanDirty(ANIMATION_PATCH_SHADERS_KEY, v),
+					c -> patchShaderAnimation
+				)
 				.build())
 			.add(OptionImpl.createBuilder(boolean.class, cfiStorage)
 				.setName(translatable(ANIMATE_NEAR_PLAYER))
@@ -212,6 +227,15 @@ public class CFISodiumPage extends OptionPage {
 				.setControl(TickBoxControl::new)
 				.setBinding((c, v) -> cfiStorage.setBooleanDirty(CURVATURE_ENABLED_KEY, v), c -> isCurvatureEnabled)
 				.setImpact(OptionImpact.LOW)
+				.build())
+			.add(OptionImpl.createBuilder(boolean.class, cfiStorage)
+				.setName(translatable(CURVATURE_PATCH_SHADERS))
+				.setTooltip(tooltip(CURVATURE_PATCH_SHADERS))
+				.setControl(TickBoxControl::new)
+				.setBinding(
+					(c, v) -> cfiStorage.setBooleanDirty(CURVATURE_PATCH_SHADERS_KEY, v),
+					c -> patchShaderCurvature
+				)
 				.build())
 			.add(OptionImpl.createBuilder(int.class, cfiStorage)
 				.setName(translatable(CURVATURE))

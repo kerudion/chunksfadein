@@ -33,6 +33,7 @@ public class SettingsScreen extends Screen {
 	public static final MutableComponent MOD_TAB_TOOLTIP = Translations.translatable(
 		"settings.chunksfadein.mod_tab_tooltip");
 	public static final String FADE_ENABLED = "settings.chunksfadein.fade_enabled";
+	public static final String FADE_PATCH_SHADERS = "settings.chunksfadein.fade_patch_shaders";
 	public static final String FADE_TYPE = "settings.chunksfadein.fade_type";
 	public static final String FADE_CURVE = "settings.chunksfadein.fade_curve";
 	public static final String FADE_MIX_TYPE = "settings.chunksfadein.fade_mix_type";
@@ -40,6 +41,7 @@ public class SettingsScreen extends Screen {
 	public static final String FADE_TIME = "settings.chunksfadein.fade_time";
 	public static final String FADE_NEAR_PLAYER = "settings.chunksfadein.fade_near_player";
 	public static final String ANIMATION_ENABLED = "settings.chunksfadein.animation_enabled";
+	public static final String ANIMATION_PATCH_SHADERS = "settings.chunksfadein.animation_patch_shaders";
 	public static final String ANIMATION_TYPE = "settings.chunksfadein.animation_type";
 	public static final String ANIMATION_CURVE = "settings.chunksfadein.animation_curve";
 	public static final String ANIMATION_OFFSET = "settings.chunksfadein.animation_start";
@@ -49,6 +51,7 @@ public class SettingsScreen extends Screen {
 	public static final String ANIMATE_WITH_DH = "settings.chunksfadein.animate_with_dh";
 	public static final String ANIMATION_TIME = "settings.chunksfadein.animation_time";
 	public static final String CURVATURE_ENABLED = "settings.chunksfadein.world_curvature_enabled";
+	public static final String CURVATURE_PATCH_SHADERS = "settings.chunksfadein.world_curvature_patch_shaders";
 	public static final String CURVATURE = "settings.chunksfadein.world_curvature";
 	public static final MutableComponent IRIS_WARNING = Translations.translatable("settings.chunksfadein.iris_warning");
 
@@ -130,6 +133,9 @@ public class SettingsScreen extends Screen {
 				b -> b.tooltip(IRIS_WARNING)
 			)
 			.build();
+		CFIButton fadePatchShaders = CFIButtonBuilder.choice(FADE_PATCH_SHADERS, Config.FADE_PATCH_SHADERS_KEY)
+			.onPress(markEveryDirty)
+			.build();
 		CFIButton fadeType = CFIButtonBuilder.cycle(FADE_TYPE, Config.FADE_TYPE_KEY, FadeType.class)
 			.onPress(markDirty)
 			.build();
@@ -154,12 +160,19 @@ public class SettingsScreen extends Screen {
 		CFIButton fadeNearPlayer = CFIButtonBuilder.choice(FADE_NEAR_PLAYER, Config.FADE_NEAR_PLAYER_KEY)
 			.build();
 		list.add(fadeEnabled);
+		list.add(fadePatchShaders);
 		list.add(fadeType, fadeTime, fadeTime.makeResetButton(Config.FADE_TIME_KEY));
 		list.add(fadeCurve, fadeMixType);
 		list.add(fogOverride, fadeNearPlayer);
 
 		CFIButton animationEnabled = CFIButtonBuilder.choice(ANIMATION_ENABLED, Config.ANIMATION_ENABLED_KEY)
 			.onPress(markDirty)
+			.build();
+		CFIButton animationPatchShaders = CFIButtonBuilder.choice(
+				ANIMATION_PATCH_SHADERS,
+				Config.ANIMATION_PATCH_SHADERS_KEY
+			)
+			.onPress(markEveryDirty)
 			.build();
 		CFIButton animationCurve = CFIButtonBuilder.cycle(
 				ANIMATION_CURVE,
@@ -196,6 +209,7 @@ public class SettingsScreen extends Screen {
 		CFIButton animateWithDH = CFIButtonBuilder.choice(ANIMATE_WITH_DH, Config.ANIMATE_WITH_DH_KEY)
 			.build();
 		list.add(animationEnabled);
+		list.add(animationPatchShaders);
 		if (Config.animationType == AnimationType.FULL) {
 			list.add(animationType, animationOffset, animationOffset.makeResetButton(Config.ANIMATION_OFFSET_KEY));
 			list.add(animationCurve, animationAngle, animationAngle.makeResetButton(Config.ANIMATION_ANGLE_KEY));
@@ -214,6 +228,12 @@ public class SettingsScreen extends Screen {
 				b -> b.tooltip(IRIS_WARNING)
 			)
 			.build();
+		CFIButton curvaturePatchShaders = CFIButtonBuilder.choice(
+				CURVATURE_PATCH_SHADERS,
+				Config.CURVATURE_PATCH_SHADERS_KEY
+			)
+			.onPress(markEveryDirty)
+			.build();
 		CFISlider curvatureFactor = new CFISliderBuilder()
 			.getValue(() -> curvatureValueIdx(Config.worldCurvature) / 16D)
 			.applyValue(v -> {
@@ -224,7 +244,8 @@ public class SettingsScreen extends Screen {
 			.displayText(v -> GuiUtils.text(CURVATURE, String.valueOf(Config.worldCurvature)))
 			.tooltip(GuiUtils.tooltip(CURVATURE))
 			.build();
-		list.add(curvatureEnabled, curvatureFactor, curvatureFactor.makeResetButton(Config.CURVATURE_KEY));
+		list.add(curvatureEnabled);
+		list.add(curvaturePatchShaders, curvatureFactor, curvatureFactor.makeResetButton(Config.CURVATURE_KEY));
 
 		return list;
 	}

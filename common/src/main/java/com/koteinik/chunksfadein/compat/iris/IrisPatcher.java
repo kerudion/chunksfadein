@@ -1,5 +1,6 @@
 package com.koteinik.chunksfadein.compat.iris;
 
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeShader;
 import io.github.douira.glsl_transformer.ast.data.ChildNodeList;
 import io.github.douira.glsl_transformer.ast.node.Identifier;
@@ -159,6 +160,16 @@ public class IrisPatcher {
 		FadeShader shader = new FadeShader();
 
 		boolean injected = hasFn(tree, "_cfi_injected");
+
+		boolean apiUsed = hasFn(tree, "_cfi_usedMarker");
+		if (!apiUsed) {
+			if (!Config.patchShaderFade)
+				shader.overrideFade(false);
+			if (!Config.patchShaderAnimation)
+				shader.overrideAnimation(false);
+			if (!Config.patchShaderCurvature)
+				shader.overrideCurvature(false);
+		}
 
 		boolean inject = !hasFn(tree, "_cfi_noInjectMarker");
 		boolean injectMod = !hasFn(tree, "_cfi_noInjectModMarker");
@@ -343,7 +354,7 @@ public class IrisPatcher {
 				}
 
 				if (injectFragMod) {
-					injectFragMod(t, tree, root);
+					injectFragMod(shader, t, tree, root);
 				}
 
 				break;
@@ -355,12 +366,10 @@ public class IrisPatcher {
 		sortUses(tree);
 	}
 
-	public static void injectFragMod(ASTParser t, TranslationUnit tree, Root root) {
+	public static void injectFragMod(FadeShader shader, ASTParser t, TranslationUnit tree, Root root) {
 		List<Layout> layouts = findOutputColors(tree);
 		if (layouts.isEmpty())
 			return;
-
-		FadeShader shader = new FadeShader();
 
 		Layout first = layouts.getFirst();
 		Type type = first.type;

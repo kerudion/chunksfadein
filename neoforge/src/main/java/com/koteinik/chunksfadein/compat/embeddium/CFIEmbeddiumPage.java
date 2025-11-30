@@ -87,6 +87,13 @@ public class CFIEmbeddiumPage extends OptionPage {
 				.setImpact(OptionImpact.LOW)
 				.build())
 			.add(OptionImpl.createBuilder(boolean.class, cfiStorage)
+				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "fade_patch_shaders"))
+				.setName(Translations.translatable(FADE_PATCH_SHADERS))
+				.setTooltip(tooltip(FADE_PATCH_SHADERS))
+				.setControl(TickBoxControl::new)
+				.setBinding((c, v) -> cfiStorage.setBooleanDirty(FADE_PATCH_SHADERS_KEY, v), c -> patchShaderFade)
+				.build())
+			.add(OptionImpl.createBuilder(boolean.class, cfiStorage)
 				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "fade_near_player"))
 				.setName(translatable(FADE_NEAR_PLAYER))
 				.setTooltip(tooltip(FADE_NEAR_PLAYER))
@@ -148,6 +155,16 @@ public class CFIEmbeddiumPage extends OptionPage {
 				.setControl(TickBoxControl::new)
 				.setBinding((c, v) -> cfiStorage.setBooleanDirty(ANIMATION_ENABLED_KEY, v), c -> isAnimationEnabled)
 				.setImpact(OptionImpact.LOW)
+				.build())
+			.add(OptionImpl.createBuilder(boolean.class, cfiStorage)
+				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "animation_patch_shaders"))
+				.setName(Translations.translatable(ANIMATION_PATCH_SHADERS))
+				.setTooltip(tooltip(ANIMATION_PATCH_SHADERS))
+				.setControl(TickBoxControl::new)
+				.setBinding(
+					(c, v) -> cfiStorage.setBooleanDirty(ANIMATION_PATCH_SHADERS_KEY, v),
+					c -> patchShaderAnimation
+				)
 				.build())
 			.add(OptionImpl.createBuilder(boolean.class, cfiStorage)
 				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "animate_near_player"))
@@ -243,6 +260,16 @@ public class CFIEmbeddiumPage extends OptionPage {
 				.setControl(TickBoxControl::new)
 				.setBinding((c, v) -> cfiStorage.setBooleanDirty(CURVATURE_ENABLED_KEY, v), c -> isCurvatureEnabled)
 				.setImpact(OptionImpact.LOW)
+				.build())
+			.add(OptionImpl.createBuilder(boolean.class, cfiStorage)
+				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "curvature_patch_shaders"))
+				.setName(Translations.translatable(CURVATURE_PATCH_SHADERS))
+				.setTooltip(tooltip(CURVATURE_PATCH_SHADERS))
+				.setControl(TickBoxControl::new)
+				.setBinding(
+					(c, v) -> cfiStorage.setBooleanDirty(CURVATURE_PATCH_SHADERS_KEY, v),
+					c -> patchShaderCurvature
+				)
 				.build())
 			.add(OptionImpl.createBuilder(int.class, cfiStorage)
 				.setId(ResourceLocation.fromNamespaceAndPath("chunksfadein", "curvature_value"))
