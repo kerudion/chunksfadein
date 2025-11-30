@@ -96,10 +96,11 @@ public abstract class ShaderLoaderMixin {
 		injector.insertAfterUniforms(shader.utilFunctions().flushMultiline());
 
 		injector.insertAfterStr(
-			"vec3 position",
+			"_vert_init();",
 			shader
+				.newLine("vec3 cfi_position = _vert_position + u_RegionOffset + _get_draw_translation(_draw_id);")
 				.vertInitOutVarsDrawId("_vert_position", "{mesh_id}")
-				.vertInitMod("_vert_position", "position", false, "vec3({mesh_id})", true)
+				.vertInitMod("_vert_position", "cfi_position", true, "vec3({mesh_id})", true)
 				.flushMultiline()
 		);
 
