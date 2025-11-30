@@ -575,8 +575,8 @@ public class FadeShader {
 				newLine(
 					"if (%s.x != 0.0 && %s.y != 0.0 && %s.z != 0.0 && %s.x != 16.0 && %s.y != 16.0 && %s.z != 16.0) {"
 						.replace("%s", localPos));
-				newLine("float rand2 = _cfi_rand(%s - %s);".formatted(localPos, randSeed));
-				newLine("float rand3 = _cfi_rand(%s + (%s * 2));".formatted(localPos, randSeed));
+				append("float rand2 = _cfi_rand(%s - %s);".formatted(localPos, randSeed));
+				append("float rand3 = _cfi_rand(%s + (%s * 2));".formatted(localPos, randSeed));
 				append("%s += vec3(rand - 0.5, rand2 - 0.5, rand3 - 0.5) * vec3(chunkFadeData.y);".formatted(modifyLocal
 					? localPos
 					: position));
