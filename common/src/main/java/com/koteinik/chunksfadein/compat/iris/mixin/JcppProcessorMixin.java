@@ -81,7 +81,8 @@ public class JcppProcessorMixin {
 		at = @At(
 			value = "INVOKE",
 			target = "Lorg/anarres/cpp/Preprocessor;setListener(Lorg/anarres/cpp/PreprocessorListener;)V"
-		)
+		),
+		argsOnly = true
 	)
 	private static String modifyGlslPreprocessSource2(String source) {
 		if (!Config.isModEnabled)

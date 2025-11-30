@@ -77,10 +77,11 @@ public class ShaderInjector {
 
 	private static Function<String, String> insertAfter(String what, boolean first, String... code) {
 		return (src) -> {
-			int lastIdx = first ? src.indexOf(what) : src.lastIndexOf(what);
+			int idx = first ? src.indexOf(what) : src.lastIndexOf(what);
+			if (idx == -1) return src;
 
-			String indentation = getIndentationForLine(src, lastIdx);
-			int newlineIdx = src.indexOf("\n", lastIdx);
+			String indentation = getIndentationForLine(src, idx);
+			int newlineIdx = src.indexOf("\n", idx);
 
 			String toInsert = applyIndentation(indentation, code);
 
