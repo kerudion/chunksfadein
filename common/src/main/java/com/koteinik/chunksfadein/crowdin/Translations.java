@@ -2,6 +2,7 @@ package com.koteinik.chunksfadein.crowdin;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.FormattedText;
@@ -12,7 +13,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -38,8 +42,8 @@ public class Translations {
 	public static MutableComponent translatable(String key) {
 		return MutableComponent.create(new ComponentContents() {
 			@Override
-			public @NotNull Type<?> type() {
-				return PlainTextContents.TYPE;
+			public @NotNull MapCodec<? extends ComponentContents> codec() {
+				return PlainTextContents.MAP_CODEC;
 			}
 
 			@Override
