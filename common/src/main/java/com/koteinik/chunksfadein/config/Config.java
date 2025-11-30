@@ -37,6 +37,7 @@ public class Config {
 	public static final String SHOW_MOD_TAB_IN_SETTINGS_KEY = "show-mod-tab-in-settings";
 	public static final String UPDATE_NOTIFIER_ENABLED_KEY = "update-notifier-enabled";
 	public static final String FADE_ENABLED_KEY = "fade-enabled";
+	public static final String FADE_PATCH_SHADERS_KEY = "fade-patch-shaders";
 	public static final String FADE_TIME_KEY = "fade-time";
 	public static final String FADE_TYPE_KEY = "fade-type";
 	public static final String FADE_CURVE_KEY = "fade-curve";
@@ -44,6 +45,7 @@ public class Config {
 	public static final String FOG_OVERRIDE_KEY = "fog-override";
 	public static final String FADE_NEAR_PLAYER_KEY = "fade-near-player";
 	public static final String ANIMATION_ENABLED_KEY = "animation-enabled";
+	public static final String ANIMATION_PATCH_SHADERS_KEY = "animation-patch-shaders";
 	public static final String ANIMATION_TYPE_KEY = "animation-type";
 	public static final String ANIMATE_NEAR_PLAYER_KEY = "animate-near-player";
 	public static final String ANIMATE_WITH_DH_KEY = "fade-with-dh";
@@ -53,20 +55,24 @@ public class Config {
 	public static final String ANIMATION_ANGLE_KEY = "animation-angle";
 	public static final String ANIMATION_FACTOR_KEY = "animation-factor";
 	public static final String CURVATURE_ENABLED_KEY = "world-curvature-enabled";
+	public static final String CURVATURE_PATCH_SHADERS_KEY = "world-curvature-patch-shaders";
 	public static final String CURVATURE_KEY = "world-curvature";
 
 	private static final Map<String, ConfigEntry<?>> entries = new HashMap<>();
 	private static File configFile;
 
 	public static boolean isModEnabled;
-	public static boolean isFadeEnabled;
-	public static boolean isAnimationEnabled;
-	public static boolean isCurvatureEnabled;
 	public static boolean isUpdateNotifierEnabled;
 	public static boolean showModTabInSettings;
+	public static boolean isFadeEnabled;
+	public static boolean fadeNearPlayer;
+	public static boolean patchShaderFade;
+	public static boolean isAnimationEnabled;
 	public static boolean animateNearPlayer;
 	public static boolean animateWithDH;
-	public static boolean fadeNearPlayer;
+	public static boolean patchShaderAnimation;
+	public static boolean isCurvatureEnabled;
+	public static boolean patchShaderCurvature;
 
 	public static float animationAngle; // for FULL
 	public static float animationOffset; // for FULL, JAGGED
@@ -180,22 +186,28 @@ public class Config {
 
 		addEntry(new ConfigEntry<>(true, MOD_ENABLED_KEY, tooltip(MOD_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> isModEnabled = o);
-		addEntry(new ConfigEntry<>(true, FADE_ENABLED_KEY, tooltip(FADE_ENABLED), Type.BOOLEAN))
-			.addListener((o) -> isFadeEnabled = o);
-		addEntry(new ConfigEntry<>(false, ANIMATION_ENABLED_KEY, tooltip(ANIMATION_ENABLED), Type.BOOLEAN))
-			.addListener((o) -> isAnimationEnabled = o);
-		addEntry(new ConfigEntry<>(false, CURVATURE_ENABLED_KEY, tooltip(CURVATURE_ENABLED), Type.BOOLEAN))
-			.addListener((o) -> isCurvatureEnabled = o);
 		addEntry(new ConfigEntry<>(true, UPDATE_NOTIFIER_ENABLED_KEY, tooltip(UPDATE_NOTIFIER_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> isUpdateNotifierEnabled = o);
 		addEntry(new ConfigEntry<>(true, SHOW_MOD_TAB_IN_SETTINGS_KEY, tooltip(MOD_TAB_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> showModTabInSettings = o);
+		addEntry(new ConfigEntry<>(true, FADE_ENABLED_KEY, tooltip(FADE_ENABLED), Type.BOOLEAN))
+			.addListener((o) -> isFadeEnabled = o);
+		addEntry(new ConfigEntry<>(true, FADE_PATCH_SHADERS_KEY, tooltip(FADE_PATCH_SHADERS), Type.BOOLEAN))
+			.addListener((o) -> patchShaderFade = o);
+		addEntry(new ConfigEntry<>(true, FADE_NEAR_PLAYER_KEY, tooltip(FADE_NEAR_PLAYER), Type.BOOLEAN))
+			.addListener((o) -> fadeNearPlayer = o);
+		addEntry(new ConfigEntry<>(false, ANIMATION_ENABLED_KEY, tooltip(ANIMATION_ENABLED), Type.BOOLEAN))
+			.addListener((o) -> isAnimationEnabled = o);
+		addEntry(new ConfigEntry<>(true, ANIMATION_PATCH_SHADERS_KEY, tooltip(ANIMATION_PATCH_SHADERS), Type.BOOLEAN))
+			.addListener((o) -> patchShaderAnimation = o);
 		addEntry(new ConfigEntry<>(true, ANIMATE_NEAR_PLAYER_KEY, tooltip(ANIMATE_NEAR_PLAYER), Type.BOOLEAN))
 			.addListener((o) -> animateNearPlayer = o);
 		addEntry(new ConfigEntry<>(false, ANIMATE_WITH_DH_KEY, tooltip(ANIMATE_WITH_DH), Type.BOOLEAN))
 			.addListener((o) -> animateWithDH = o);
-		addEntry(new ConfigEntry<>(true, FADE_NEAR_PLAYER_KEY, tooltip(FADE_NEAR_PLAYER), Type.BOOLEAN))
-			.addListener((o) -> fadeNearPlayer = o);
+		addEntry(new ConfigEntry<>(false, CURVATURE_ENABLED_KEY, tooltip(CURVATURE_ENABLED), Type.BOOLEAN))
+			.addListener((o) -> isCurvatureEnabled = o);
+		addEntry(new ConfigEntry<>(true, CURVATURE_PATCH_SHADERS_KEY, tooltip(CURVATURE_PATCH_SHADERS), Type.BOOLEAN))
+			.addListener((o) -> patchShaderCurvature = o);
 	}
 
 	private static String tooltip(String key) {

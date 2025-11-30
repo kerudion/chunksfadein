@@ -1,5 +1,6 @@
 package com.koteinik.chunksfadein.compat.dh.mixin.iris;
 
+import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeShader;
 import io.github.douira.glsl_transformer.ast.node.TranslationUnit;
 import io.github.douira.glsl_transformer.ast.query.Root;
@@ -21,6 +22,17 @@ public class DHTerrainTransformerMixin {
 		FadeShader shader = new FadeShader();
 
 		if (hasFn(tree, "_cfi_noInjectMarker") || hasFn(tree, "_cfi_ignoreMarker")) return;
+
+		boolean apiUsed = hasFn(tree, "_cfi_usedMarker");
+		if (!apiUsed) {
+			if (!Config.patchShaderFade)
+				shader.overrideFade(false);
+			if (!Config.patchShaderAnimation)
+				shader.overrideAnimation(false);
+			if (!Config.patchShaderCurvature)
+				shader.overrideCurvature(false);
+		}
+
 		boolean inject = !hasFn(tree, "_cfi_noInjectMarker");
 		boolean injectMod = !hasFn(tree, "_cfi_noInjectModMarker");
 		boolean injectFragMod = injectMod && !hasFn(tree, "_cfi_noInjectFragModMarker");
@@ -122,7 +134,7 @@ public class DHTerrainTransformerMixin {
 				);
 
 				if (injectFragMod)
-					injectFragMod(t, tree, root);
+					injectFragMod(shader, t, tree, root);
 
 				if (injectLodMask)
 					tree.prependMainFunctionBody(

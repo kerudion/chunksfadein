@@ -93,6 +93,9 @@ public class JcppProcessorMixin {
 			return source;
 		}
 
+		if (source.contains("cfi_") || source.contains("CHUNKS_FADE_IN_") || source.contains("CFI_"))
+			source += "\nvoid _cfi_usedMarker() {}\n";
+
 		if (source.contains("CHUNKS_FADE_IN_NO_MOD_INJECT")) source += "\nvoid _cfi_noInjectModMarker() {}\n";
 		if (source.contains("CHUNKS_FADE_IN_NO_FRAG_MOD_INJECT")) source += "\nvoid _cfi_noInjectFragModMarker() {}\n";
 		if (source.contains("CHUNKS_FADE_IN_NO_VERT_MOD_INJECT")) source += "\nvoid _cfi_noInjectVertModMarker() {}\n";

@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
+	private boolean hasClass(String className) {
+		return getClass().getClassLoader().getResource(className.replace('.', '/') + ".class") != null;
+	}
+
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
 		boolean isNoIrisMixin = mixinClassName.contains("no_iris");
