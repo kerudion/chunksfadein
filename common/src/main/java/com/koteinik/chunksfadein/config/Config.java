@@ -124,7 +124,7 @@ public class Config {
 		addEntry(new ConfigEntryEnum<>(
 			FogOverrideMode.class,
 			FogOverrideMode.CYLINDRICAL,
-			tooltip(FOG_OVERRIDE, "tooltip_pre_1_21_6"),
+			tooltip(FOG_OVERRIDE),
 			FOG_OVERRIDE_KEY
 		))
 			.addListener((o) -> fogOverrideMode = o);
