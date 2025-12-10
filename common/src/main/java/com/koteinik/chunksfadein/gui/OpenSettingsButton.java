@@ -1,14 +1,13 @@
 package com.koteinik.chunksfadein.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
-public class OpenSettingsButton extends Button {
-	private static ResourceLocation MOD_ICON = ResourceLocation.fromNamespaceAndPath("chunksfadein", "icon.png");
+public class OpenSettingsButton extends Button.Plain {
+	private static Identifier MOD_ICON = Identifier.fromNamespaceAndPath("chunksfadein", "icon.png");
 
 	private static final int buttonW = 20;
 	private static final int buttonH = 20;
@@ -20,21 +19,17 @@ public class OpenSettingsButton extends Button {
 		);
 	}
 
-	@Override
-	public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		super.renderWidget(context, mouseX, mouseY, delta);
-//		context.blit(
-//			RenderPipelines.GUI_TEXTURED,
-//			MOD_ICON,
-//			getX() + 1,
-//			getY() + 1,
-//			0,
-//			0,
-//			0,
-//			width - 2,
-//			height - 2,
-//			width - 2,
-//			height - 2
-//		);
-	}
+	//		context.blit(
+	//			RenderPipelines.GUI_TEXTURED,
+	//			MOD_ICON,
+	//			getX() + 1,
+	//			getY() + 1,
+	//			0,
+	//			0,
+	//			0,
+	//			width - 2,
+	//			height - 2,
+	//			width - 2,
+	//			height - 2
+	//		);
 }

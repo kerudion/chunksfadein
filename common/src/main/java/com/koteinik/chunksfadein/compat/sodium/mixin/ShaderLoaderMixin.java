@@ -5,7 +5,7 @@ import com.koteinik.chunksfadein.core.FadeShader;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = ShaderLoader.class, remap = false)
 public abstract class ShaderLoaderMixin {
 	@Inject(method = "getShaderSource", at = @At("RETURN"), cancellable = true)
-	private static void modifyConstructor(ResourceLocation name, CallbackInfoReturnable<String> cir) {
+	private static void modifyConstructor(Identifier name, CallbackInfoReturnable<String> cir) {
 		if (CompatibilityHook.isIrisShaderPackInUse())
 			return;
 
@@ -60,7 +60,7 @@ public abstract class ShaderLoaderMixin {
 		};
 
 		injector.replace(
-			"fragColor = _linearFog({color}, v_FragDistance, u_FogColor, u_EnvironmentFog, u_RenderFog);",
+			"fragColor = _linearFog({color}, v_FragDistance, u_FogColor, u_EnvironmentFog, u_RenderFog, fadeFactor);",
 			"#ifdef USE_FOG",
 			"vec3 fadeColor;",
 			"vec4 fogColor = u_FogColor;",
@@ -70,7 +70,7 @@ public abstract class ShaderLoaderMixin {
 			"fogColor.rgb = fadeColor;",
 			"}",
 			"}",
-			"fragColor = _linearFog({color}, v_FragDistance, fogColor, u_EnvironmentFog, u_RenderFog);",
+			"fragColor = _linearFog({color}, v_FragDistance, fogColor, u_EnvironmentFog, u_RenderFog, 1.0);",
 			shader.fragColorMod("{frag_color}.rgb", "fadeColor", true).flushMultiline(),
 			"#else",
 			"if (cfi_FadeFactor < 1.0) {",

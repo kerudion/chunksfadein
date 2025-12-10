@@ -32,6 +32,31 @@ public class Config {
 	public static final int MIN_CURVATURE = -65536;
 	public static final int MAX_CURVATURE = -MIN_CURVATURE;
 
+	public static final boolean DEFAULT_MOD_ENABLED = true;
+	public static final boolean DEFAULT_SHOW_MOD_TAB_IN_SETTINGS = true;
+	public static final boolean DEFAULT_UPDATE_NOTIFIER_ENABLED = true;
+	public static final boolean DEFAULT_FADE_ENABLED = true;
+	public static final boolean DEFAULT_FADE_PATCH_SHADERS = true;
+	public static final double DEFAULT_FADE_TIME = 0.75;
+	public static final FadeType DEFAULT_FADE_TYPE = FadeType.FULL;
+	public static final FadeCurve DEFAULT_FADE_CURVE = FadeCurve.QUINTIC;
+	public static final FadeMixType DEFAULT_FADE_MIX_TYPE = FadeMixType.LINEAR;
+	public static final FogOverrideMode DEFAULT_FOG_OVERRIDE = FogOverrideMode.CYLINDRICAL;
+	public static final boolean DEFAULT_FADE_NEAR_PLAYER = true;
+	public static final boolean DEFAULT_ANIMATION_ENABLED = false;
+	public static final boolean DEFAULT_ANIMATION_PATCH_SHADERS = true;
+	public static final AnimationType DEFAULT_ANIMATION_TYPE = AnimationType.FULL;
+	public static final boolean DEFAULT_ANIMATE_NEAR_PLAYER = true;
+	public static final boolean DEFAULT_ANIMATE_WITH_DH = false;
+	public static final double DEFAULT_ANIMATION_TIME = 2.56;
+	public static final AnimationCurve DEFAULT_ANIMATION_CURVE = AnimationCurve.EASE_OUT;
+	public static final double DEFAULT_ANIMATION_OFFSET = -64;
+	public static final double DEFAULT_ANIMATION_ANGLE = 0;
+	public static final double DEFAULT_ANIMATION_FACTOR = 1;
+	public static final boolean DEFAULT_CURVATURE_ENABLED = false;
+	public static final boolean DEFAULT_CURVATURE_PATCH_SHADERS = true;
+	public static final int DEFAULT_CURVATURE = 16384;
+
 	public static final String CONFIG_VERSION_KEY = "config-version";
 	public static final String MOD_ENABLED_KEY = "mod-enabled";
 	public static final String SHOW_MOD_TAB_IN_SETTINGS_KEY = "show-mod-tab-in-settings";
@@ -95,48 +120,48 @@ public class Config {
 			.addListener((o) -> configVersion = o);
 		addEntry(new ConfigEntryEnum<>(
 			AnimationCurve.class,
-			AnimationCurve.EASE_OUT,
+			DEFAULT_ANIMATION_CURVE,
 			tooltip(ANIMATION_CURVE),
 			ANIMATION_CURVE_KEY
 		))
 			.addListener((o) -> animationCurve = o);
 		addEntry(new ConfigEntryEnum<>(
 			FadeType.class,
-			FadeType.FULL,
+			DEFAULT_FADE_TYPE,
 			tooltip(FADE_TYPE),
 			FADE_TYPE_KEY
 		))
 			.addListener((o) -> fadeType = o);
 		addEntry(new ConfigEntryEnum<>(
 			FadeCurve.class,
-			FadeCurve.QUINTIC,
+			DEFAULT_FADE_CURVE,
 			tooltip(FADE_CURVE),
 			FADE_CURVE_KEY
 		))
 			.addListener((o) -> fadeCurve = o);
 		addEntry(new ConfigEntryEnum<>(
 			FadeMixType.class,
-			FadeMixType.LINEAR,
+			DEFAULT_FADE_MIX_TYPE,
 			tooltip(FADE_MIX_TYPE),
 			FADE_MIX_TYPE_KEY
 		))
 			.addListener((o) -> fadeMixType = o);
 		addEntry(new ConfigEntryEnum<>(
 			FogOverrideMode.class,
-			FogOverrideMode.CYLINDRICAL,
+			DEFAULT_FOG_OVERRIDE,
 			tooltip(FOG_OVERRIDE),
 			FOG_OVERRIDE_KEY
 		))
 			.addListener((o) -> fogOverrideMode = o);
 		addEntry(new ConfigEntryEnum<>(
 			AnimationType.class,
-			AnimationType.FULL,
+			DEFAULT_ANIMATION_TYPE,
 			tooltip(ANIMATION_TYPE),
 			ANIMATION_TYPE_KEY
 		))
 			.addListener((o) -> animationType = o);
 		addEntry(new ConfigEntry<>(
-			16384,
+			DEFAULT_CURVATURE,
 			CURVATURE_KEY,
 			tooltip(CURVATURE),
 			Type.INTEGER
@@ -146,7 +171,7 @@ public class Config {
 		addEntry(new ConfigEntryDoubleLimitable(
 			MIN_FADE_TIME,
 			MAX_FADE_TIME,
-			0.75,
+			DEFAULT_FADE_TIME,
 			tooltip(FADE_TIME),
 			FADE_TIME_KEY
 		))
@@ -154,7 +179,7 @@ public class Config {
 		addEntry(new ConfigEntryDoubleLimitable(
 			MIN_ANIMATION_TIME,
 			MAX_ANIMATION_TIME,
-			2.56,
+			DEFAULT_ANIMATION_TIME,
 			tooltip(ANIMATION_TIME),
 			ANIMATION_TIME_KEY
 		))
@@ -162,7 +187,7 @@ public class Config {
 		addEntry(new ConfigEntryDoubleLimitable(
 			MIN_ANIMATION_OFFSET,
 			MAX_ANIMATION_OFFSET,
-			-64,
+			DEFAULT_ANIMATION_OFFSET,
 			tooltip(ANIMATION_OFFSET),
 			ANIMATION_OFFSET_KEY
 		))
@@ -170,7 +195,7 @@ public class Config {
 		addEntry(new ConfigEntryDoubleLimitable(
 			MIN_ANIMATION_ANGLE,
 			MAX_ANIMATION_ANGLE,
-			0,
+			DEFAULT_ANIMATION_ANGLE,
 			tooltip(ANIMATION_ANGLE),
 			ANIMATION_ANGLE_KEY
 		))
@@ -178,35 +203,85 @@ public class Config {
 		addEntry(new ConfigEntryDoubleLimitable(
 			MIN_ANIMATION_FACTOR,
 			MAX_ANIMATION_FACTOR,
-			1,
+			DEFAULT_ANIMATION_FACTOR,
 			tooltip(ANIMATION_FACTOR),
 			ANIMATION_FACTOR_KEY
 		))
 			.addListener((o) -> animationFactor = o.floatValue());
 
-		addEntry(new ConfigEntry<>(true, MOD_ENABLED_KEY, tooltip(MOD_ENABLED), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(DEFAULT_MOD_ENABLED, MOD_ENABLED_KEY, tooltip(MOD_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> isModEnabled = o);
-		addEntry(new ConfigEntry<>(true, UPDATE_NOTIFIER_ENABLED_KEY, tooltip(UPDATE_NOTIFIER_ENABLED), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(
+			DEFAULT_UPDATE_NOTIFIER_ENABLED,
+			UPDATE_NOTIFIER_ENABLED_KEY,
+			tooltip(UPDATE_NOTIFIER_ENABLED),
+			Type.BOOLEAN
+		))
 			.addListener((o) -> isUpdateNotifierEnabled = o);
-		addEntry(new ConfigEntry<>(true, SHOW_MOD_TAB_IN_SETTINGS_KEY, tooltip(MOD_TAB_ENABLED), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(
+			DEFAULT_SHOW_MOD_TAB_IN_SETTINGS,
+			SHOW_MOD_TAB_IN_SETTINGS_KEY,
+			tooltip(MOD_TAB_ENABLED),
+			Type.BOOLEAN
+		))
 			.addListener((o) -> showModTabInSettings = o);
-		addEntry(new ConfigEntry<>(true, FADE_ENABLED_KEY, tooltip(FADE_ENABLED), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(DEFAULT_FADE_ENABLED, FADE_ENABLED_KEY, tooltip(FADE_ENABLED), Type.BOOLEAN))
 			.addListener((o) -> isFadeEnabled = o);
-		addEntry(new ConfigEntry<>(true, FADE_PATCH_SHADERS_KEY, tooltip(FADE_PATCH_SHADERS), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(
+			DEFAULT_FADE_PATCH_SHADERS,
+			FADE_PATCH_SHADERS_KEY,
+			tooltip(FADE_PATCH_SHADERS),
+			Type.BOOLEAN
+		))
 			.addListener((o) -> patchShaderFade = o);
-		addEntry(new ConfigEntry<>(true, FADE_NEAR_PLAYER_KEY, tooltip(FADE_NEAR_PLAYER), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(
+			DEFAULT_FADE_NEAR_PLAYER,
+			FADE_NEAR_PLAYER_KEY,
+			tooltip(FADE_NEAR_PLAYER),
+			Type.BOOLEAN
+		))
 			.addListener((o) -> fadeNearPlayer = o);
-		addEntry(new ConfigEntry<>(false, ANIMATION_ENABLED_KEY, tooltip(ANIMATION_ENABLED), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(
+			DEFAULT_ANIMATION_ENABLED,
+			ANIMATION_ENABLED_KEY,
+			tooltip(ANIMATION_ENABLED),
+			Type.BOOLEAN
+		))
 			.addListener((o) -> isAnimationEnabled = o);
-		addEntry(new ConfigEntry<>(true, ANIMATION_PATCH_SHADERS_KEY, tooltip(ANIMATION_PATCH_SHADERS), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(
+			DEFAULT_ANIMATION_PATCH_SHADERS,
+			ANIMATION_PATCH_SHADERS_KEY,
+			tooltip(ANIMATION_PATCH_SHADERS),
+			Type.BOOLEAN
+		))
 			.addListener((o) -> patchShaderAnimation = o);
-		addEntry(new ConfigEntry<>(true, ANIMATE_NEAR_PLAYER_KEY, tooltip(ANIMATE_NEAR_PLAYER), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(
+			DEFAULT_ANIMATE_NEAR_PLAYER,
+			ANIMATE_NEAR_PLAYER_KEY,
+			tooltip(ANIMATE_NEAR_PLAYER),
+			Type.BOOLEAN
+		))
 			.addListener((o) -> animateNearPlayer = o);
-		addEntry(new ConfigEntry<>(false, ANIMATE_WITH_DH_KEY, tooltip(ANIMATE_WITH_DH), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(
+			DEFAULT_ANIMATE_WITH_DH,
+			ANIMATE_WITH_DH_KEY,
+			tooltip(ANIMATE_WITH_DH),
+			Type.BOOLEAN
+		))
 			.addListener((o) -> animateWithDH = o);
-		addEntry(new ConfigEntry<>(false, CURVATURE_ENABLED_KEY, tooltip(CURVATURE_ENABLED), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(
+			DEFAULT_CURVATURE_ENABLED,
+			CURVATURE_ENABLED_KEY,
+			tooltip(CURVATURE_ENABLED),
+			Type.BOOLEAN
+		))
 			.addListener((o) -> isCurvatureEnabled = o);
-		addEntry(new ConfigEntry<>(true, CURVATURE_PATCH_SHADERS_KEY, tooltip(CURVATURE_PATCH_SHADERS), Type.BOOLEAN))
+		addEntry(new ConfigEntry<>(
+			DEFAULT_CURVATURE_PATCH_SHADERS,
+			CURVATURE_PATCH_SHADERS_KEY,
+			tooltip(CURVATURE_PATCH_SHADERS),
+			Type.BOOLEAN
+		))
 			.addListener((o) -> patchShaderCurvature = o);
 	}
 

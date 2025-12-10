@@ -3,9 +3,10 @@ package com.koteinik.chunksfadein.core;
 import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
 
+import net.caffeinemc.mods.sodium.client.gui.options.TextProvider;
 import net.minecraft.network.chat.Component;
 
-public enum AnimationType implements TranslatableEnum {
+public enum AnimationType implements TranslatableEnum, TextProvider {
 	FULL,
 	SCALE,
 	JAGGED,
@@ -20,5 +21,10 @@ public enum AnimationType implements TranslatableEnum {
 	@Override
 	public Component getTranslation() {
 		return translation;
+	}
+
+	@Override
+	public Component getLocalizedName() {
+		return getTranslation();
 	}
 }

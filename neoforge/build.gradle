@@ -26,7 +26,7 @@ dependencies {
     implementation project(":common")
 
     implementation "maven.modrinth:sodium:${sodium_version.replace("fabric", "neoforge")}"
-    implementation "maven.modrinth:iris:${iris_version.replace("fabric", "neoforge")}"
+    implementation "maven.modrinth:iris:${iris_version}"
     implementation "maven.modrinth:distanthorizons:${dh_version}"
 
     compileOnly files(project(":common").sourceSets.main.compileClasspath.files.findAll { file ->

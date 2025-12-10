@@ -2,10 +2,11 @@ package com.koteinik.chunksfadein.core;
 
 import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
+import net.caffeinemc.mods.sodium.client.gui.options.TextProvider;
 import net.minecraft.network.chat.Component;
 
 @SuppressWarnings("unused")
-public enum FadeMixType implements TranslatableEnum {
+public enum FadeMixType implements TranslatableEnum, TextProvider {
 	LINEAR,
 	OKLAB;
 
@@ -18,5 +19,10 @@ public enum FadeMixType implements TranslatableEnum {
 	@Override
 	public Component getTranslation() {
 		return translation;
+	}
+
+	@Override
+	public Component getLocalizedName() {
+		return getTranslation();
 	}
 }

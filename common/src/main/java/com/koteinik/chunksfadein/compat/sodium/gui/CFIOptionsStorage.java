@@ -4,9 +4,8 @@ import com.koteinik.chunksfadein.ShaderUtils;
 import com.koteinik.chunksfadein.config.Config;
 
 import com.koteinik.chunksfadein.core.TranslatableEnum;
-import net.caffeinemc.mods.sodium.client.gui.options.storage.OptionStorage;
 
-public class CFIOptionsStorage implements OptionStorage<Config> {
+public class CFIOptionsStorage {
 	private boolean needReload = false;
 
 	public void setBooleanDirty(String key, boolean value) {
@@ -37,11 +36,7 @@ public class CFIOptionsStorage implements OptionStorage<Config> {
 		Config.setDouble(key, value);
 	}
 
-	public Config getData() {
-		return new Config();
-	}
-
-	public void save() {
+	public void flush() {
 		if (needReload) {
 			ShaderUtils.reloadWorldRenderer();
 			needReload = false;

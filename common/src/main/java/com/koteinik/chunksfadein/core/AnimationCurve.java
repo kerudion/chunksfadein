@@ -3,12 +3,13 @@ package com.koteinik.chunksfadein.core;
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
+import net.caffeinemc.mods.sodium.client.gui.options.TextProvider;
 import net.minecraft.network.chat.Component;
 
 import java.util.function.Function;
 
 @SuppressWarnings("unused")
-public enum AnimationCurve implements TranslatableEnum {
+public enum AnimationCurve implements TranslatableEnum, TextProvider {
 	LINEAR((f) -> f),
 	EASE_OUT((f) -> 1f - MathUtils.pow(1 - f, 3)),
 	EASE_CIRCULAR((f) -> {
@@ -45,6 +46,11 @@ public enum AnimationCurve implements TranslatableEnum {
 	@Override
 	public Component getTranslation() {
 		return translation;
+	}
+
+	@Override
+	public Component getLocalizedName() {
+		return getTranslation();
 	}
 }
 

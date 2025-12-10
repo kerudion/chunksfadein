@@ -11,6 +11,7 @@ import net.caffeinemc.mods.sodium.client.render.chunk.shader.ShaderBindingContex
 import net.irisshaders.iris.gl.blending.BlendModeOverride;
 import net.irisshaders.iris.gl.blending.BufferBlendOverride;
 import net.irisshaders.iris.gl.program.ProgramSamplers;
+import net.irisshaders.iris.gl.sampler.GlSampler;
 import net.irisshaders.iris.pipeline.IrisRenderingPipeline;
 import net.irisshaders.iris.pipeline.programs.SodiumPrograms.Pass;
 import net.irisshaders.iris.pipeline.programs.SodiumShader;
@@ -40,7 +41,7 @@ public class IrisSodiumShaderMixin implements ChunkShaderInterfaceExt {
 	                                 @Local ProgramSamplers.Builder builder) {
 		if (!Config.isModEnabled) return;
 
-		builder.addDynamicSampler(SkyFBO::getTextureId, "cfi_sky");
+		builder.addDynamicSampler(SkyFBO::getTextureId, GlSampler.NEAREST, "cfi_sky");
 	}
 
 	@Override

@@ -56,6 +56,9 @@
     ],
     "modmenu": [
       "com.koteinik.chunksfadein.hooks.ModMenuHook"
+    ],
+    "sodium:config_api_user": [
+      "com.koteinik.chunksfadein.compat.sodium.gui.CFISodiumPage"
     ]
   }
 }

@@ -30,7 +30,7 @@ public class Utils {
 	}
 
 	public static Vec3 cameraPosition() {
-		return Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+		return Minecraft.getInstance().gameRenderer.getMainCamera().position();
 	}
 
 	public static int chunkRenderDistance() {

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CFIButton extends Button {
+public class CFIButton extends Button.Plain {
 	private final Supplier<Component> createText;
 
 	public CFIButton(int x, int y, int width, int height, Supplier<Component> createText, Runnable onPress, boolean active, Component tooltip) {
