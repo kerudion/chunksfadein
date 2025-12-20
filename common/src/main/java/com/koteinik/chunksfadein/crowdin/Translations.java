@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
@@ -29,7 +30,7 @@ public class Translations {
 			.getClassLoader()
 			.getResourceAsStream("assets/chunksfadein/lang/en_us.json")) {
 			BufferedInputStream bis = new BufferedInputStream(Objects.requireNonNull(inputStream));
-			enUs = parseJsonTranslations(new String(bis.readAllBytes()));
+			enUs = parseJsonTranslations(new String(bis.readAllBytes(), StandardCharsets.UTF_8));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

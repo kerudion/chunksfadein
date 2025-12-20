@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -217,7 +218,10 @@ public class TranslationsDownloader extends Thread {
 				if (buffer == null)
 					continue;
 
-				translationsMap.put(entry.getKey(), Translations.parseJsonTranslations(new String(buffer)));
+				translationsMap.put(
+					entry.getKey(),
+					Translations.parseJsonTranslations(new String(buffer, StandardCharsets.UTF_8))
+				);
 				break;
 			}
 		}
@@ -245,7 +249,7 @@ public class TranslationsDownloader extends Thread {
 
 			URL url = URI.create(buildUrl).toURL();
 
-			zis = new ZipInputStream(url.openStream());
+			zis = new ZipInputStream(url.openStream(), StandardCharsets.UTF_8);
 
 			ZipEntry entry;
 			while ((entry = zis.getNextEntry()) != null) {
