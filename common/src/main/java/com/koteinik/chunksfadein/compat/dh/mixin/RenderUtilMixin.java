@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(value = RenderUtil.class, remap = false)
 public class RenderUtilMixin {
-	@ModifyVariable(method = "getNearClipPlaneDistanceInBlocks(FF)F", at = @At(value = "RETURN"), name = "nearClipPlane", ordinal = 0)
+	@ModifyVariable(method = "getNearClipPlaneDistanceInBlocks(FF)F", at = @At(value = "RETURN"), name = "nearClipPlane", ordinal = 0, argsOnly = true)
 	private static float modifyGetNearClipPlaneDistanceInBlocks(float value) {
 		if (Config.isModEnabled)
 			return 0f;
