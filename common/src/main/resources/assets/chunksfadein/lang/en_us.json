@@ -9,7 +9,7 @@
   "settings.chunksfadein.units.blocks": " b",
   "settings.chunksfadein.units.degrees": "°",
   "settings.chunksfadein.mod_enabled": "Mod enabled",
-  "settings.chunksfadein.mod_enabled.tooltip": "If disabled, fade, animation and world curvature are also disabled.\nYou can also assing a keybind to toggle this without using this menu.",
+  "settings.chunksfadein.mod_enabled.tooltip": "If disabled, fade, animation and world curvature are also disabled.\nYou can also assign a keybind to toggle this without using this menu.",
   "settings.chunksfadein.update_notifier_enabled": "Update notifier",
   "settings.chunksfadein.update_notifier_enabled.tooltip": "Enables the update notifier when joining a world.",
   "settings.chunksfadein.mod_tab_enabled": "Mod tab in settings",
