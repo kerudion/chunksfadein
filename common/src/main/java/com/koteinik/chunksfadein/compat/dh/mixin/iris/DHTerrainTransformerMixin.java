@@ -135,12 +135,6 @@ public class DHTerrainTransformerMixin {
 
 				if (injectFragMod)
 					injectFragMod(shader, t, tree, root);
-
-				if (injectLodMask)
-					tree.prependMainFunctionBody(
-						t,
-						"if (cfi_dhLodIsMasked()) { discard; }"
-					);
 			}
 			default -> {
 			}

@@ -46,6 +46,6 @@ public abstract class SSAOShaderMixin extends AbstractShaderRenderer {
 		SkyFBO.bind(13);
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE3);
-		GL13.glBindTexture(GL13.GL_TEXTURE_2D, LodRenderer.getActiveColorTextureId());
+		GL13.glBindTexture(GL13.GL_TEXTURE_2D, LodRenderer.INSTANCE.getActiveColorTextureId());
 	}
 }

@@ -219,7 +219,9 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 			injector.replace(
 				"out vec4 fragColor;",
 				"layout(location = 0) out vec4 fragColor;",
-				"layout(location = 1) out vec4 cfi_terrainFadeOut;"
+				CompatibilityHook.isDHSSAOEnabled()
+					? "layout(location = 1) out vec4 cfi_terrainFadeOut;"
+					: ""
 			);
 		}
 
@@ -258,14 +260,8 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 		String whenOccluded = Config.isFadeEnabled ? "if (cfi_material != 12.0) { discard; }" : "discard;";
 		shader.dhMaskLod(whenOccluded, "vPos", "vertexWorldPos", true);
 
-		if (Config.isFadeEnabled) {
-			shader.newLine("if (fragColor.a < 1.0) {");
-			shader.newLine("vec3 destinationColor = texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb;");
-			shader.newLine("cfi_terrainFadeOut.rgb = mix(destinationColor, fragColor.rgb, fragColor.a);");
-			shader.newLine("} else {");
-			shader.newLine("cfi_terrainFadeOut.rgb = fragColor.rgb;");
-			shader.newLine("}");
-		}
+		if (Config.isFadeEnabled && CompatibilityHook.isDHSSAOEnabled())
+			shader.newLine("cfi_terrainFadeOut.rgb = texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb;");
 
 		injector.appendToFunction(
 			"main",
