@@ -13,10 +13,10 @@
     "RenderUtilMixin",
     "SSAOApplyShaderMixin",
     "iris.DHTerrainTransformerMixin",
-    "iris.IrisColumnRenderBufferMixin",
+    "iris.IrisLodBufferContainerMixin",
     "iris.IrisLodRendererMixin",
     "iris.IrisLodRenderProgramMixin",
-    "no_iris.NoIrisColumnRenderBufferMixin",
+    "no_iris.NoIrisLodBufferContainerMixin",
     "no_iris.NoIrisLodRendererMixin"
   ],
   "server": [],

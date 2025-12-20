@@ -51,8 +51,7 @@ public class ShaderProgramMixin {
 
 		injector.replace(
 			"out vec4 fragColor;",
-			"layout(location = 0) out vec4 fragColor;",
-			"layout(location = 1) out vec4 cfi_terrainFadeOut;"
+			"layout(location = 0) out vec4 fragColor;"
 		);
 
 		injector.insertAfterUniforms(
@@ -63,7 +62,6 @@ public class ShaderProgramMixin {
 			"main",
 			"fragColor.rgb = vec3(0.0);",
 			"fragColor.a = 1.0 - fragColor.a;",
-			"cfi_terrainFadeOut = fragColor;",
 			"fragColor.a *= texture(cfi_fadeTex, TexCoord).a;"
 		);
 

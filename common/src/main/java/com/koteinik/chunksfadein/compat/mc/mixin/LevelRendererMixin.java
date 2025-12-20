@@ -1,11 +1,13 @@
 package com.koteinik.chunksfadein.compat.mc.mixin;
 
+import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.core.Utils;
+import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
@@ -85,6 +87,9 @@ public class LevelRendererMixin {
 				while (geometrySections.hasNext())
 					processChunk(renderList.getRegion(), geometrySections.nextByteAsInt());
 		}
+
+		if (CompatibilityHook.isDHRenderingEnabled())
+			LodMaskTexture.createAndUpdate();
 	}
 
 	@Inject(
