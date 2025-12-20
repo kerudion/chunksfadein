@@ -87,10 +87,10 @@ public class SkyFBO {
 		this.textureId = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 
-		GlStateManager._texImage2D(
+		GL11.glTexImage2D(
 			GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA,
 			width, height,
-			0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, null
+			0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (IntBuffer) null
 		);
 
 		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);

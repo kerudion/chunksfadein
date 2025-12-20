@@ -36,7 +36,6 @@ public class ShaderUtils {
 				field.setAccessible(true);
 				monocleTransformCache = field.get(null);
 			} catch (Throwable t) {
-				t.printStackTrace();
 				monocleTransformCache = null;
 			}
 		} else {

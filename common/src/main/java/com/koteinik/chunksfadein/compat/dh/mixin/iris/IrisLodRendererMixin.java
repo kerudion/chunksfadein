@@ -2,6 +2,7 @@ package com.koteinik.chunksfadein.compat.dh.mixin.iris;
 
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.ShaderUtils;
+import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
 import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;
 import com.koteinik.chunksfadein.compat.dh.ext.LodBufferContainerExt;
 import com.koteinik.chunksfadein.compat.dh.ext.LodRendererExt;
@@ -77,7 +78,12 @@ public abstract class IrisLodRendererMixin implements LodRendererExt {
 		)
 	)
 	private void avoidClear(DhApiRenderParam renderEventParam, boolean firstPass, CallbackInfo ci) {
-		if (!Config.isModEnabled || !Config.isFadeEnabled || !CompatibilityHook.isDHSSAOEnabled())
+		if (!Config.isModEnabled)
+			return;
+
+		LodMaskTexture.createAndUpdate();
+
+		if (!Config.isFadeEnabled || !CompatibilityHook.isDHSSAOEnabled())
 			return;
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -162,7 +168,7 @@ public abstract class IrisLodRendererMixin implements LodRendererExt {
 					getActiveColorTextureId(),
 					Utils.mainTargetWidth(),
 					Utils.mainTargetHeight(),
-					false
+					true
 				);
 			}
 		} catch (Exception e) {
