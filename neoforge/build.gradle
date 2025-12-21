@@ -1,5 +1,6 @@
 plugins {
     id "net.neoforged.moddev"
+    id "com.gradleup.shadow" version "8.3.0"
 }
 
 base {
@@ -22,6 +23,11 @@ sourceSets.main.resources {
     srcDir project(":common").sourceSets.main.resources
 }
 
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
 dependencies {
     implementation project(":common")
 
@@ -31,8 +37,30 @@ dependencies {
     implementation "maven.modrinth:embeddium:${embeddium_version}"
 
     implementation "org.anarres:jcpp:1.4.14"
-    implementation "com.moandjiezana.toml:toml4j:${toml4j_version}"
     implementation "io.github.douira:glsl-transformer:${glsl_transformer_version}"
 
-    jarJar "com.moandjiezana.toml:toml4j:${toml4j_version}"
+    shade("com.moandjiezana.toml:toml4j:${toml4j_version}") {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shade]
+
+    relocate 'com.moandjiezana.toml', 'chunksfadein.repack.com.moandjiezana.toml'
+
+    archiveClassifier = ''
+}
+
+tasks.named('assemble') {
+    dependsOn tasks.shadowJar
+}
+
+tasks.named('jar', Jar) {
+    manifest {
+        attributes([
+                "Implementation-Title"  : project.name,
+                "Implementation-Version": project.version
+        ])
+    }
 }
