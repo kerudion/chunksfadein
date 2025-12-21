@@ -2,12 +2,6 @@ plugins {
     id "fabric-loom"
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
 base {
     archivesName = "chunksfadein-fabric"
 }

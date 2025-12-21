@@ -52,7 +52,7 @@ public class Translations {
 	}
 
 	public static synchronized String resolve(String key) {
-		String language = Minecraft.getInstance().options.languageCode;
+		String language = Minecraft.getInstance().getLanguageManager().getSelected();
 
 		Map<String, String> map = translations.get(language);
 		if (map != null) {
