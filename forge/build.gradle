@@ -1,0 +1,91 @@
+plugins {
+    id "net.minecraftforge.gradle"
+    id "org.parchmentmc.librarian.forgegradle"
+    id "org.spongepowered.mixin"
+
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+}
+
+base {
+    archivesName = "chunksfadein-forge"
+}
+
+mixin {
+    add sourceSets.main, "chunksfadein.refmap.json"
+
+    config "chunksfadein_dh.mixins.json"
+    config "chunksfadein_iris.mixins.json"
+    config "chunksfadein_mc.mixins.json"
+    config "chunksfadein_sodium.mixins.json"
+}
+
+minecraft {
+    mappings channel: "parchment", version: "${parchment_version}-${parchment_minecraft}"
+
+    reobf = true
+
+    copyIdeResources = true
+}
+
+sourceSets.main.java {
+    srcDir project(":common").sourceSets.main.java
+}
+sourceSets.main.resources {
+    srcDir project(":common").sourceSets.main.resources
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    implementation project(":common")
+
+    compileOnly "io.github.llamalad7:mixinextras-common:0.4.1"
+
+    annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+    annotationProcessor "io.github.llamalad7:mixinextras-common:0.4.1"
+
+    implementation "io.github.llamalad7:mixinextras-forge:0.4.1"
+    jarJar "io.github.llamalad7:mixinextras-forge:[0.4.1]"
+
+    implementation "maven.modrinth:embeddium:${embeddium_version}"
+    implementation "maven.modrinth:oculus:${oculus_version}"
+    implementation "maven.modrinth:distanthorizons:${dh_version}"
+
+    implementation "org.lwjgl:lwjgl-opengl:3.3.6"
+
+    implementation "org.anarres:jcpp:1.4.14"
+    implementation "com.moandjiezana.toml:toml4j:${toml4j_version}"
+    implementation "io.github.douira:glsl-transformer:${glsl_transformer_version}"
+
+    shadow("com.moandjiezana.toml:toml4j:[${toml4j_version}]") {
+        exclude group: "com.google.code.gson", module: "gson"
+    }
+}
+
+compileJava {
+    options.compilerArgs += [
+            "-AoutRefMapFile=${destinationDirectory.get().asFile.absolutePath}/chunksfadein.refmap.json"
+    ]
+}
+
+jar {
+    archiveClassifier = "slim"
+}
+
+shadowJar {
+    archiveClassifier = ""
+    configurations = [project.configurations.shadow]
+
+    relocate "com.moandjiezana.toml", "chunksfadein.repack.com.moandjiezana.toml"
+}
+
+reobf {
+    shadowJar {}
+}
+
+jar.finalizedBy("shadowJar")
+shadowJar.finalizedBy("reobfShadowJar")
+
+afterEvaluate {
+    tasks.named("reobfJar").configure { enabled = false }
+}

@@ -1,106 +1,53 @@
 plugins {
-	id 'fabric-loom' version '1.1-SNAPSHOT'
-	id 'maven-publish'
+    id "java"
+    id "fabric-loom" version "1.13-SNAPSHOT" apply false
+    id "net.minecraftforge.gradle" version "6.0.+" apply false
+    id "org.parchmentmc.librarian.forgegradle" version "1.+" apply false
+    id "org.spongepowered.mixin" version "0.7.+" apply false
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+subprojects {
+    apply plugin: "java"
+    apply plugin: "maven-publish"
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
+    repositories {
+        mavenCentral()
+        maven { url = "https://api.modrinth.com/maven" }
+        maven { url = "https://maven.terraformersmc.com/releases/" }
+        maven { url = "https://maven.blamejared.com" }
+        maven { url = "https://maven.parchmentmc.org/" }
+        maven { url = "https://repo.spongepowered.org/repository/maven-public" }
+        maven { url = "https://maven.minecraftforge.net/" }
+    }
 
-repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(project.java_version as int)
+        withSourcesJar()
+    }
 
-	maven {
-		url 'https://maven.terraformersmc.com/releases/'
-		content {
-			includeGroup("com.terraformersmc")
-		} 
-	}
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+    }
 
-	maven {
-        url 'https://api.modrinth.com/maven'
-        content {
-            includeGroup("maven.modrinth")
+    version = project.version
+    group = project.group
+
+    boolean isFabric = it.name == "fabric"
+
+    processResources {
+        var expandProps = [
+                "version"                : project.version,
+                "minecraft_version_range": isFabric ? project.minecraft_version_range_fabric : project.minecraft_version_range_forge,
+                "sodium_version_range"   : project.sodium_version_range_fabric,
+                "iris_version_range"     : project.iris_version_range_fabric,
+                "embeddium_version_range": project.embeddium_version_range,
+                "oculus_version_range"   : project.oculus_version_range,
+        ]
+
+        filesMatching(["fabric.mod.json", "META-INF/mods.toml"]) {
+            expand expandProps
         }
-	}
 
-	maven {
-		url 'https://minecraft.guntram.de/maven/'
-	}
-
-	mavenCentral()
-}
-
-dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation "maven.modrinth:sodium:${project.sodium_version}"
-	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-	modImplementation "maven.modrinth:iris:${project.iris_version}"
-
-	modImplementation "de.guntram.mcmod:crowdin-translate:${project.crowdin_translate_version}"
-    include "de.guntram.mcmod:crowdin-translate:${project.crowdin_translate_version}"
-
-	include "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
-	implementation "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
-
-	// Uncomment the following line to enable the deprecated Fabric API modules. 
-	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
-
-	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
-}
-
-processResources {
-	inputs.property "version", project.version
-
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-	it.options.release = 17
-}
-
-java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
-	withSourcesJar()
-}
-
-jar {
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
-	}
-}
-
-// configure the maven publication
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
-
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
-	}
+        inputs.properties(expandProps)
+    }
 }

@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.koteinik.chunksfadein.compat.sodium.mixin",
+  "refmap": "chunksfadein.refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [],
+  "client": [
+    "ChunkShaderInterfaceMixin",
+    "CommandListMixin",
+    "DefaultChunkRendererMixin",
+    "GlMutableBufferMixin",
+    "GlUniformBlockMixin",
+    "GlUniformIntMixin",
+    "RenderRegionMixin",
+    "RenderSectionManagerMixin",
+    "RenderSectionMixin",
+    "ShaderBindingContextMixin",
+    "SodiumWorldRendererMixin",
+    "ShaderLoaderMixin",
+    "SodiumOptionsGUIMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "plugin": "com.koteinik.chunksfadein.ChunksFadeInMixinPlugin"
+}

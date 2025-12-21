@@ -1,0 +1,96 @@
+name: Publish release
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: 17
+
+      - name: Build
+        run: ./gradlew clean build
+
+      - name: Publish Fabric/Quilt
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: 720811
+          curseforge-token: "${{secrets.CURSEFORGE_TOKEN}}"
+
+          modrinth-id: JaNmzvA8
+          modrinth-token: "${{secrets.MODRINTH_TOKEN}}"
+          modrinth-featured: false
+
+          github-token: "${{secrets.GITHUB_TOKEN}}"
+
+          name: "${{github.event.release.name}} for Fabric"
+          version: "${{github.ref_name}}-fabric"
+
+          loaders: |
+            fabric
+            quilt
+
+          files: |
+            fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+            fabric/build/libs/*-@(dev|sources|javadocs).jar
+
+          dependencies: |
+            sodium(required){modrinth:AANobbMI}{curseforge:394468}
+            iris(optional){modrinth:YL57xq9U}{curseforge:455508}
+            optifabric(incompatible){curseforge:322385}#(ignore:modrinth)
+
+          java: |
+            17
+
+          game-version-filter: releases
+
+      - name: Get Forge version range
+        id: forge_version
+        run: |
+          range=$(grep -w "minecraft_version_range_forge" gradle.properties | cut -d'=' -f2- | cut -d' ' -f2-)
+          echo "value=$range" >> "$GITHUB_OUTPUT"
+      - name: Publish Forge
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: 720811
+          curseforge-token: "${{secrets.CURSEFORGE_TOKEN}}"
+
+          modrinth-id: JaNmzvA8
+          modrinth-token: "${{secrets.MODRINTH_TOKEN}}"
+          modrinth-featured: false
+
+          github-token: "${{secrets.GITHUB_TOKEN}}"
+
+          name: "${{github.event.release.name}} for Forge"
+          version: "${{github.ref_name}}-forge"
+
+          loaders: |
+            forge
+
+          game-versions: ${{ steps.forge_version.outputs.value }}
+
+          files: |
+            forge/build/libs/!(*-@(dev|sources|javadoc|slim)).jar
+            forge/build/libs/*-@(dev|sources|javadocs).jar
+
+          dependencies: |
+            sodium(required){modrinth:AANobbMI}{curseforge:394468}
+            iris(optional){modrinth:YL57xq9U}{curseforge:455508}
+            optifabric(incompatible){curseforge:322385}#(ignore:modrinth)
+
+          java: |
+            17
+
+          game-version-filter: releases
