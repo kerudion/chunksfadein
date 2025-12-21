@@ -179,10 +179,12 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 		ShaderInjector injector = new ShaderInjector();
 		FadeShader shader = new FadeShader();
 
-		injector.insertAfterInVars("in vec4 irisExtra;");
+		injector.replace("#version 150 core", "#version 330 core");
+
+		injector.insertAfterInVars("layout(location = 2) in ivec4 irisExtra;");
 
 		if (Config.isFadeEnabled)
-			injector.insertAfterOutVars("out float cfi_material;");
+			injector.insertAfterOutVars("flat out int cfi_material;");
 
 		injector.insertAfterOutVars(shader
 			.newLine("uniform vec4 cfi_chunkFadeData;")
@@ -200,7 +202,7 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 				.vertInitOutVars("localPos", "offsetPos")
 				.vertInitMod("localPos", "vertexWorldPos", false, "offsetPos", true)
 				// push water and lava slightly down
-				.newLine("if (irisExtra.x == 12.0 || irisExtra.x == 6.0) { vertexWorldPos.y -= 0.115; }")
+				.newLine("if (irisExtra.x == 12 || irisExtra.x == 6) { vertexWorldPos.y -= 0.115; }")
 				.newLineIf(Config.isFadeEnabled, "cfi_material = irisExtra.x;")
 				.flushMultiline()
 		);
@@ -255,9 +257,9 @@ public abstract class DhTerrainShaderProgramMixin extends ShaderProgram implemen
 		);
 
 		if (Config.isFadeEnabled)
-			injector.insertAfterInVars("in float cfi_material;");
+			injector.insertAfterInVars("flat in int cfi_material;");
 
-		String whenOccluded = Config.isFadeEnabled ? "if (cfi_material != 12.0) { discard; }" : "discard;";
+		String whenOccluded = Config.isFadeEnabled ? "if (cfi_material != 12) { discard; }" : "discard;";
 		shader.dhMaskLod(whenOccluded, "vPos", "vertexWorldPos", true);
 
 		if (Config.isFadeEnabled && CompatibilityHook.isDHSSAOEnabled())
