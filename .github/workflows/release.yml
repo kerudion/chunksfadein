@@ -82,7 +82,7 @@ jobs:
           game-versions: ${{ steps.forge_version.outputs.value }}
 
           files: |
-            forge/build/libs/!(*-@(dev|sources|javadoc|slim)).jar
+            forge/build/libs/!(*-@(dev|sources|javadocs|slim)).jar
             forge/build/libs/*-@(dev|sources|javadocs).jar
 
           dependencies: |
