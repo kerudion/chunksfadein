@@ -3,11 +3,11 @@ package com.koteinik.chunksfadein.compat.sodium.mixin;
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.GlMutableBufferExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.GlUniformIntExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.ShaderBindingContextExt;
 import com.koteinik.chunksfadein.core.FadeShaderInterface;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
-import me.jellysquid.mods.sodium.client.gl.shader.uniform.GlUniformInt;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ChunkShaderInterface.class, remap = false)
 public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceExt {
-	private GlUniformInt sky;
+	private GlUniformIntExt sky;
 
 	private FadeShaderInterface fadeInterface;
 	private static boolean warned = false;
@@ -29,8 +29,10 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
 		if (CompatibilityHook.isIrisShaderPackInUse())
 			return;
 
-		fadeInterface = new FadeShaderInterface((ShaderBindingContextExt) context);
-		sky = context.bindUniform("cfi_sky", GlUniformInt::new);
+		ShaderBindingContextExt ext = (ShaderBindingContextExt) context;
+
+		fadeInterface = new FadeShaderInterface(ext);
+		sky = ext.bindUniformInt("cfi_sky");
 	}
 
 	@Override
