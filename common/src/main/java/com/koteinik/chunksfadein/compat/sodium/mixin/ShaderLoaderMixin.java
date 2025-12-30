@@ -1,7 +1,9 @@
 package com.koteinik.chunksfadein.compat.sodium.mixin;
 
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.FadeMixType;
 import com.koteinik.chunksfadein.core.FadeShader;
+import com.koteinik.chunksfadein.core.FogOverrideMode;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader;
@@ -26,6 +28,10 @@ public abstract class ShaderLoaderMixin {
 		String source = cir.getReturnValue();
 
 		switch (shaderFileName) {
+			case "fog.glsl":
+				source = prepareFogInjector().get(source);
+				break;
+
 			case "block_layer_opaque.fsh":
 				source = prepareFragmentInjector().get(source);
 				break;
@@ -41,6 +47,21 @@ public abstract class ShaderLoaderMixin {
 		cir.setReturnValue(source);
 	}
 
+	private static ShaderInjector prepareFogInjector() {
+		ShaderInjector injector = new ShaderInjector();
+
+		if (!Config.isModEnabled || !Config.isFadeEnabled || Config.fogOverrideMode == FogOverrideMode.NONE)
+			return injector;
+
+		if (Config.fadeMixType == FadeMixType.OKLAB)
+			injector.replace(
+				"mix(fragColor.rgb, fogColor.rgb, fogValue * fogColor.a)",
+				"_cfi_mix_srgb_in_oklab(fragColor.rgb, fogColor.rgb, fogValue * fogColor.a)"
+			);
+
+		return injector;
+	}
+
 	private static ShaderInjector prepareFragmentInjector() {
 		ShaderInjector injector = new ShaderInjector();
 		FadeShader shader = new FadeShader();
@@ -50,7 +71,7 @@ public abstract class ShaderLoaderMixin {
 		if (!Config.isModEnabled || !Config.isFadeEnabled)
 			return injector;
 
-		injector.insertAfterUniforms(shader.utilFunctions().flushMultiline());
+		injector.insertAfterStr("#version 330 core", shader.utilFunctions().flushMultiline());
 
 		String inFogRange = switch (Config.fogOverrideMode) {
 			case BOTH -> "v_FragDistance.x > u_RenderFog.x || v_FragDistance.y > u_EnvironmentFog.x";
@@ -95,7 +116,7 @@ public abstract class ShaderLoaderMixin {
 			.vertOutVars()
 			.flushMultiline());
 
-		injector.insertAfterUniforms(shader.utilFunctions().flushMultiline());
+		injector.insertAfterStr("#version 330 core", shader.utilFunctions().flushMultiline());
 
 		injector.insertAfterStr(
 			"_vert_init();",
