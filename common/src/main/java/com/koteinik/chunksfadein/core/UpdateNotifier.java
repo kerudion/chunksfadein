@@ -27,7 +27,6 @@ public class UpdateNotifier {
 					List<Component> textList = new ArrayList<>();
 					textList.add(Component.literal("§7New version of §2Chunks Fade In §7is available!"));
 
-					Style linkStyle = Style.EMPTY.withClickEvent(new ClickEvent.OpenUrl(URI.create(latestVersion.downloadUrl)));
 
 					String versions = newVersions.size() == 1
 						? "§6v" + latestVersion.version
@@ -41,7 +40,15 @@ public class UpdateNotifier {
 					).replace("\r", "");
 					textList.add(Component.literal("§7" + changelogs));
 
-					textList.addAll(Component.literal("§7§nClick to download").toFlatList(linkStyle));
+					Style issuesLink = Style.EMPTY.withClickEvent(new ClickEvent.OpenUrl(URI.create(
+						"https://github.com/kerudion/chunksfadein/issues"
+					)));
+					textList.addAll(
+						Component.literal("§cIMPORTANT: Report bugs to Github §n(click)§r§c!").toFlatList(issuesLink)
+					);
+
+					Style downloadLink = Style.EMPTY.withClickEvent(new ClickEvent.OpenUrl(URI.create(latestVersion.downloadUrl)));
+					textList.addAll(Component.literal("§7§nClick to download").toFlatList(downloadLink));
 
 					Minecraft minecraft = Minecraft.getInstance();
 					LocalPlayer player = minecraft.player;
