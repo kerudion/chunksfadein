@@ -6,11 +6,12 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [],
   "client": [
+    "ClientboundLoginPacketMixin",
     "EntityRendererMixin",
     "ItemFrameEntityRendererMixin",
-    "ClientboundLoginPacketMixin",
-    "MinecraftMixin",
-    "LevelRendererMixin"
+    "LanguageMixin",
+    "LevelRendererMixin",
+    "MinecraftMixin"
   ],
   "server": [],
   "injectors": {

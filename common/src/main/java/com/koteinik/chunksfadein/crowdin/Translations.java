@@ -52,6 +52,10 @@ public class Translations {
 		});
 	}
 
+	public static boolean hasKey(String key) {
+		return enUs.containsKey(key);
+	}
+
 	public static synchronized String resolve(String key) {
 		String language = Minecraft.getInstance().getLanguageManager().getSelected();
 
