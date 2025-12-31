@@ -10,7 +10,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public class Keybinds {
 	private static final String KEYBINDS = "chunksfadein.keybinds";
@@ -26,7 +26,7 @@ public class Keybinds {
 			TOGGLE_MOD,
 			InputConstants.Type.KEYSYM,
 			InputConstants.UNKNOWN.getValue(),
-			KeyMapping.Category.register(Identifier.fromNamespaceAndPath("chunksfadein", "keybinds"))
+			KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath("chunksfadein", "keybinds"))
 		));
 	}
 
