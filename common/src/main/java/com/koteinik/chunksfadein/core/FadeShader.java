@@ -198,7 +198,7 @@ public class FadeShader {
 		newLine("vec3 cfi_calculateCurvature(vec3 globalPos) {");
 
 		if (curvature)
-			newLine("return vec3(0.0, -dot(globalPos, globalPos) / " + worldCurvature + ", 0.0);");
+			newLine("return vec3(0.0, -dot(globalPos.xz, globalPos.xz) / " + worldCurvature + ", 0.0);");
 		else
 			newLine("return vec3(0.0);");
 
@@ -519,7 +519,7 @@ public class FadeShader {
 			calculateVertexDisplacement(localPos, position, modifyLocal, randSeed);
 
 		if (addCurvature && curvature)
-			newLine("%s.y -= dot(%s, %s) / %s;".formatted(
+			newLine("%s.y -= dot(%s.xz, %s.xz) / %s;".formatted(
 				modifyLocal ? localPos : position,
 				position,
 				position,
