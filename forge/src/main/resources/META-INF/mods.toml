@@ -29,14 +29,6 @@ ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.chunksfadein]]
-modId = "embeddium"
-mandatory = true
-reason = "Embeddium is required for Chunks Fade In."
-versionRange = "${embeddium_version_range}"
-ordering = "NONE"
-side = "CLIENT"
-
-[[dependencies.chunksfadein]]
 modId = "oculus"
 mandatory = false
 versionRange = "${oculus_version_range}"

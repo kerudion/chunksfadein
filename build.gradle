@@ -40,7 +40,6 @@ subprojects {
                 "minecraft_version_range": isFabric ? project.minecraft_version_range_fabric : project.minecraft_version_range_forge,
                 "sodium_version_range"   : project.sodium_version_range_fabric,
                 "iris_version_range"     : project.iris_version_range_fabric,
-                "embeddium_version_range": project.embeddium_version_range,
                 "oculus_version_range"   : project.oculus_version_range,
         ]
 
