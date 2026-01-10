@@ -44,14 +44,17 @@ public class EmbeddiumWorldRendererMixin implements SodiumWorldRendererExt {
 
 			Entity camera = client.getCameraEntity();
 			if (camera != null) {
-				float len = (float) pos.subtract(camera.position()).length();
+				Vec3 cam = camera.position();
+
+				double x = pos.x - cam.x;
+				double z = pos.z - cam.z;
 
 				if (offset == null)
 					offset = new float[3];
 				else
 					offset = offset.clone();
 
-				offset[1] -= (len * len) / Config.worldCurvature;
+				offset[1] -= (float) ((x * x + z * z) / Config.worldCurvature);
 			}
 		}
 
