@@ -57,7 +57,7 @@ public class UpdateNotifier {
 						return;
 
 					for (Component text : textList)
-						Minecraft.getInstance().execute(() -> player.displayClientMessage(text, false));
+						Minecraft.getInstance().execute(() -> player.sendSystemMessage(text));
 				}
 			} catch (Exception e) {
 				Logger.warn("Failed to get latest mod version!");

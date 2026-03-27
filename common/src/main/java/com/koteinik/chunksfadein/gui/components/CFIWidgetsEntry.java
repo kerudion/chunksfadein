@@ -1,6 +1,6 @@
 package com.koteinik.chunksfadein.gui.components;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList.Entry;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -36,7 +36,7 @@ public class CFIWidgetsEntry extends Entry<CFIWidgetsEntry> {
 	}
 
 	@Override
-	public void renderContent(GuiGraphics context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+	public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 		for (int i = 0; i < widgets.size(); i++) {
 			AbstractWidget widget = widgets.get(i);
 
@@ -45,7 +45,7 @@ public class CFIWidgetsEntry extends Entry<CFIWidgetsEntry> {
 				gridX = -1;
 
 			widget.setPosition(calculateX(gridX), y - (int) listWidget.scrollAmount());
-			widget.render(context, mouseX, mouseY, tickDelta);
+			widget.extractRenderState(context, mouseX, mouseY, tickDelta);
 		}
 	}
 

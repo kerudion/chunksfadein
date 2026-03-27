@@ -11,7 +11,7 @@ import com.koteinik.chunksfadein.gui.components.CFIListWidget;
 import com.koteinik.chunksfadein.gui.components.CFISlider;
 import com.koteinik.chunksfadein.gui.components.CFISlider.CFISliderBuilder;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -87,9 +87,9 @@ public class SettingsScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredString(font, title, width / 2, 12, 16777215 | 255 << 24);
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(context, mouseX, mouseY, delta);
+		context.centeredText(font, title, width / 2, 12, 16777215 | 255 << 24);
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import com.koteinik.chunksfadein.crowdin.Translations;
 import com.koteinik.chunksfadein.gui.GuiUtils;
 import com.koteinik.chunksfadein.gui.SettingsScreen;
 import com.koteinik.chunksfadein.gui.components.CFIButton.CFIButtonBuilder;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetTooltipHolder;
@@ -50,8 +50,8 @@ public class CFISlider extends AbstractSliderButton {
 	}
 
 	@Override
-	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-		super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+		super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTick);
 	}
 
 	public CFIButton makeResetButton(String key) {
@@ -144,9 +144,9 @@ public class CFISlider extends AbstractSliderButton {
 			if (onChange != null) {
 				DoubleConsumer previousApplyValue = applyValue;
 
-				applyValue = (value) -> {
+				applyValue = (valu) -> {
 					if (previousApplyValue != null)
-						previousApplyValue.accept(value);
+						previousApplyValue.accept(valu);
 
 					onChange.run();
 				};

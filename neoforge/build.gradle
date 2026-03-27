@@ -8,11 +8,6 @@ base {
 
 neoForge {
     version = neoforge_version
-
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
-    }
 }
 
 sourceSets.main.java {

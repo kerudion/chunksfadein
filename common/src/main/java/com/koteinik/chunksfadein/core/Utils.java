@@ -34,7 +34,7 @@ public class Utils {
 	}
 
 	public static int chunkRenderDistance() {
-		return (int) Math.floor(Minecraft.getInstance().gameRenderer.getRenderDistance() / 16);
+		return Minecraft.getInstance().options.getEffectiveRenderDistance();
 	}
 
 	public static void debugWriteTexture(int texture, int width, int height, File file) {

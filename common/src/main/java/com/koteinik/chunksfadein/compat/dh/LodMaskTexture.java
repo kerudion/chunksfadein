@@ -143,9 +143,9 @@ public class LodMaskTexture {
 					int centerX = sizeX / 2;
 					int centerZ = sizeZ / 2;
 					boolean wasRendered = rendered.remove(SectionPos.of(
-						origin.x - centerX + x,
+						origin.x() - centerX + x,
 						minY + y,
-						origin.z - centerZ + z
+						origin.z() - centerZ + z
 					));
 					// this gap is required so that there are no holes when chunks unload, I couldn't find a better way :(
 					if (Math.floor(Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(z - centerZ, 2))) >= renderDistance)

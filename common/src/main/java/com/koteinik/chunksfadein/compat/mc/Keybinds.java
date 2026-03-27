@@ -38,7 +38,7 @@ public class Keybinds {
 
 			LocalPlayer player = minecraft.player;
 			if (player != null)
-				player.displayClientMessage(enabled ? FADING_ENABLED : FADING_DISABLED, false);
+				player.sendSystemMessage(enabled ? FADING_ENABLED : FADING_DISABLED);
 		}
 	}
 }
