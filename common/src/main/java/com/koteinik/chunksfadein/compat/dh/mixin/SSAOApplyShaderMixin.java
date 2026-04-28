@@ -3,8 +3,9 @@ package com.koteinik.chunksfadein.compat.dh.mixin;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
-import com.seibel.distanthorizons.core.render.renderer.shaders.AbstractShaderRenderer;
-import com.seibel.distanthorizons.core.render.renderer.shaders.SSAOApplyShader;
+import com.seibel.distanthorizons.common.render.openGl.postProcessing.ssao.GlDhSSAOApplyShader;
+import com.seibel.distanthorizons.common.render.openGl.util.GlAbstractShaderRenderer;
+import com.seibel.distanthorizons.core.render.RenderParams;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
@@ -14,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = SSAOApplyShader.class, remap = false)
-public abstract class SSAOApplyShaderMixin extends AbstractShaderRenderer {
+@Mixin(value = GlDhSSAOApplyShader.class, remap = false)
+public abstract class SSAOApplyShaderMixin extends GlAbstractShaderRenderer {
 	@Unique
 	private int fadeTex;
 
@@ -25,7 +26,7 @@ public abstract class SSAOApplyShaderMixin extends AbstractShaderRenderer {
 	}
 
 	@Inject(method = "onApplyUniforms", at = @At(value = "TAIL"))
-	private void modifyOnApplyUniforms(float a, CallbackInfo ci) {
+	private void modifyOnApplyUniforms(RenderParams renderParams, CallbackInfo ci) {
 		if (!Config.isModEnabled || !Config.isFadeEnabled || !CompatibilityHook.isDHSSAOEnabled())
 			return;
 
@@ -42,7 +43,7 @@ public abstract class SSAOApplyShaderMixin extends AbstractShaderRenderer {
 		GL13.glBindTexture(GL13.GL_TEXTURE_2D, SkyFBO.getTextureId());
 	}
 
-	@Inject(method = "onRender", at = @At(value = "INVOKE", target = "Lcom/seibel/distanthorizons/core/render/renderer/ScreenQuad;render()V"))
+	@Inject(method = "onRender", at = @At(value = "INVOKE", target = "Lcom/seibel/distanthorizons/common/render/openGl/postProcessing/GlScreenQuad;render()V"))
 	private void modifyOnRender(CallbackInfo ci) {
 		if (!Config.isModEnabled || !Config.isFadeEnabled)
 			return;

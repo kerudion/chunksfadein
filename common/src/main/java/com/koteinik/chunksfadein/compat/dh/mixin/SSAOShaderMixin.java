@@ -3,9 +3,9 @@ package com.koteinik.chunksfadein.compat.dh.mixin;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
-import com.seibel.distanthorizons.core.render.renderer.LodRenderer;
-import com.seibel.distanthorizons.core.render.renderer.shaders.AbstractShaderRenderer;
-import com.seibel.distanthorizons.core.render.renderer.shaders.SSAOShader;
+import com.seibel.distanthorizons.common.render.openGl.postProcessing.ssao.GlDhSSAOShader;
+import com.seibel.distanthorizons.common.render.openGl.util.GlAbstractShaderRenderer;
+import com.seibel.distanthorizons.core.render.RenderParams;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = SSAOShader.class, remap = false)
-public abstract class SSAOShaderMixin extends AbstractShaderRenderer {
+@Mixin(value = GlDhSSAOShader.class, remap = false)
+public abstract class SSAOShaderMixin extends GlAbstractShaderRenderer {
 	@Unique
 	private int fadeTexture;
 	@Unique
@@ -28,7 +28,7 @@ public abstract class SSAOShaderMixin extends AbstractShaderRenderer {
 	}
 
 	@Inject(method = "onApplyUniforms", at = @At(value = "TAIL"))
-	private void modifyOnApplyUniforms(float a, CallbackInfo ci) {
+	private void modifyOnApplyUniforms(RenderParams renderParams, CallbackInfo ci) {
 		if (!Config.isModEnabled || !Config.isFadeEnabled || !CompatibilityHook.isDHSSAOEnabled())
 			return;
 
@@ -43,9 +43,11 @@ public abstract class SSAOShaderMixin extends AbstractShaderRenderer {
 		if (!Config.isModEnabled || !Config.isFadeEnabled)
 			return;
 
+		int prev = GL13.glGetInteger(GL13.GL_TEXTURE_BINDING_2D);
+
 		SkyFBO.bind(13);
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE3);
-		GL13.glBindTexture(GL13.GL_TEXTURE_2D, LodRenderer.INSTANCE.getActiveColorTextureId());
+		GL13.glBindTexture(GL13.GL_TEXTURE_2D, prev);
 	}
 }

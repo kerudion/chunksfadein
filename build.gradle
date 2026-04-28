@@ -35,7 +35,7 @@ subprojects {
     processResources {
         var expandProps = [
                 "version"                : project.version,
-                "minecraft_version_range": isFabric ? project.minecraft_version_range_fabric : project.minecraft_version_range_neoforge,
+                "minecraft_version_range": project.minecraft_version_range_fabric,
                 "sodium_version_range"   : isFabric ? project.sodium_version_range_fabric : project.sodium_version_range_neoforge,
                 "iris_version_range"     : isFabric ? project.iris_version_range_fabric : project.iris_version_range_neoforge,
         ]

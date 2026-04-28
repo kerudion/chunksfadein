@@ -722,7 +722,7 @@ public class FadeShader {
 		newLine("vec2 absWorldPosXZ = abs(%s.xz);".formatted(vertexWorldPos));
 		newLine("if (absWorldPosXZ.x < cfi_lodMaskMaxDist.x &&" +
 			"absWorldPosXZ.y < cfi_lodMaskMaxDist.z" +
-			(addDhFadeCheck ? " && dot(%s, %s) < cfi_dhStartFadeBlockDistanceSq".formatted(
+			(addDhFadeCheck ? "&& (!cfi_dhFadeActive || dot(%s, %s) < cfi_dhStartFadeBlockDistanceSq)".formatted(
 				vertexWorldPos,
 				vertexWorldPos
 			) : "") +

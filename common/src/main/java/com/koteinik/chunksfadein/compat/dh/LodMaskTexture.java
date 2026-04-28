@@ -197,7 +197,7 @@ public class LodMaskTexture {
 		if (id != -1)
 			GL11.glDeleteTextures(id);
 		if (textureDataBuffer != null)
-			MemoryUtil.memFree(textureDataBuffer);
+			MemoryUtil.memFree((java.nio.Buffer) textureDataBuffer);
 	}
 
 	private void clearGlState() {

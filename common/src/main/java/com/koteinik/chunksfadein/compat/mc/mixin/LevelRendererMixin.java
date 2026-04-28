@@ -54,7 +54,7 @@ public class LevelRendererMixin {
 		)
 	)
 	private void modifyRenderLevel(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker, boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, ChunkSectionsToRender chunkSectionsToRender, CallbackInfo ci, @Local FrameGraphBuilder frameGraphBuilder) {
-		if (!Config.isModEnabled || (!Config.isFadeEnabled && !Config.isAnimationEnabled))
+		if (!Config.isModEnabled)
 			return;
 
 		if (Config.isFadeEnabled) {
