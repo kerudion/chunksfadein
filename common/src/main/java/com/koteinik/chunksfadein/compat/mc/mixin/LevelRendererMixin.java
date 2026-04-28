@@ -53,7 +53,7 @@ public class LevelRendererMixin {
 		)
 	)
 	private void modifyRenderLevel(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, Matrix4f matrix4f, Matrix4f matrix4f2, Matrix4f matrix4f3, GpuBufferSlice gpuBufferSlice, Vector4f vector4f, boolean bl2, CallbackInfo ci, @Local FrameGraphBuilder frameGraphBuilder) {
-		if (!Config.isModEnabled || (!Config.isFadeEnabled && !Config.isAnimationEnabled))
+		if (!Config.isModEnabled)
 			return;
 
 		if (Config.isFadeEnabled) {

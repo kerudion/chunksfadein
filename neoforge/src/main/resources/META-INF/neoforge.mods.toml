@@ -24,13 +24,6 @@ config = "chunksfadein_iris.mixins.json"
 config = "chunksfadein_dh.mixins.json"
 
 [[dependencies.chunksfadein]]
-modId = "minecraft"
-type = "required"
-versionRange = "${minecraft_version_range}"
-ordering = "NONE"
-side = "CLIENT"
-
-[[dependencies.chunksfadein]]
 modId = "sodium"
 type = "required"
 reason = "Sodium is required for Chunks Fade In."
