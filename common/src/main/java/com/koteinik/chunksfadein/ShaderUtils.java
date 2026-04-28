@@ -1,6 +1,6 @@
 package com.koteinik.chunksfadein;
 
-import com.koteinik.chunksfadein.compat.dh.ext.LodRendererExt;
+import com.koteinik.chunksfadein.compat.dh.ext.GlDhMetaRendererExt;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.pipeline.transform.TransformPatcher;
@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 public class ShaderUtils {
-	public static LodRendererExt lodRenderer = null;
+	public static GlDhMetaRendererExt lodRenderer = null;
 
 	private static Object irisTransformCache;
 	private static Method clearCache;
