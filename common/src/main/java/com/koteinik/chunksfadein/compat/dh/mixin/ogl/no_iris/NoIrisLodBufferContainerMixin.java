@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.compat.dh.mixin.iris;
+package com.koteinik.chunksfadein.compat.dh.mixin.ogl.no_iris;
 
 import com.koteinik.chunksfadein.compat.dh.DHState;
 import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;
@@ -6,14 +6,9 @@ import com.koteinik.chunksfadein.compat.dh.ext.LodBufferContainerExt;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.Fader;
 import com.koteinik.chunksfadein.core.Utils;
-import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.seibel.distanthorizons.core.dataObjects.render.bufferBuilding.LodBufferContainer;
 import com.seibel.distanthorizons.core.pos.DhSectionPos;
 import com.seibel.distanthorizons.core.pos.blockPos.DhBlockPos;
-import net.irisshaders.iris.Iris;
-import net.irisshaders.iris.compat.dh.DHCompat;
-import net.irisshaders.iris.compat.dh.DHCompatInternal;
-import net.irisshaders.iris.pipeline.WorldRenderingPipeline;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = LodBufferContainer.class, remap = false)
-public abstract class IrisLodBufferContainerMixin implements LodBufferContainerExt {
+public abstract class NoIrisLodBufferContainerMixin implements LodBufferContainerExt {
 	@Shadow
 	@Final
 	public DhBlockPos minCornerBlockPos;
@@ -53,23 +48,6 @@ public abstract class IrisLodBufferContainerMixin implements LodBufferContainerE
 		float z = xyz[2];
 		float w = fader.incrementFadeCoeff(delta, inRenderDistance);
 		fader.setRenderedBefore();
-
-		if (CompatibilityHook.isIrisShaderPackInUse()) {
-			DHCompatInternal irisDh = (DHCompatInternal) Iris.getPipelineManager()
-				.getPipeline()
-				.map(WorldRenderingPipeline::getDHCompat)
-				.map(DHCompat::getInstance)
-				.orElse(null);
-			if (irisDh != null) {
-				if (irisDh.getSolidShader() instanceof DhRenderProgramExt ext)
-					ext.bindUniforms(x, y, z, w);
-				if (irisDh.getShadowShader() instanceof DhRenderProgramExt ext)
-					ext.bindUniforms(x, y, z, w);
-				if (irisDh.getTranslucentShader() instanceof DhRenderProgramExt ext)
-					ext.bindUniforms(x, y, z, w);
-				return;
-			}
-		}
 
 		renderContext.bindUniforms(x, y, z, w);
 	}

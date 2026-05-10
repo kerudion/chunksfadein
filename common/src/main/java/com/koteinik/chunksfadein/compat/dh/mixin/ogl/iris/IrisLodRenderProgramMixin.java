@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.compat.dh.mixin.iris;
+package com.koteinik.chunksfadein.compat.dh.mixin.ogl.iris;
 
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.Utils;

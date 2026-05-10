@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.compat.dh.mixin;
+package com.koteinik.chunksfadein.compat.dh.mixin.ogl;
 
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.FadeShader;

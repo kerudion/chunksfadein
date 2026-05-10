@@ -1,9 +1,9 @@
-package com.koteinik.chunksfadein.compat.dh.mixin.iris;
+package com.koteinik.chunksfadein.compat.dh.mixin.ogl.iris;
 
 import com.koteinik.chunksfadein.ShaderUtils;
 import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;
 import com.koteinik.chunksfadein.compat.dh.ext.GlDhMetaRendererExt;
-import com.koteinik.chunksfadein.compat.dh.mixin.GlDhTerrainRendererMixin;
+import com.koteinik.chunksfadein.compat.dh.mixin.ogl.GlDhTerrainRendererMixin;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.seibel.distanthorizons.api.interfaces.override.rendering.IDhApiShaderProgram;
