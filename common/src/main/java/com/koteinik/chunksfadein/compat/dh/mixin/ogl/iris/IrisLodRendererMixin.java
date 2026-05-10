@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.compat.dh.mixin.iris;
+package com.koteinik.chunksfadein.compat.dh.mixin.ogl.iris;
 
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.compat.dh.ext.GlDhMetaRendererExt;
@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = LodRenderer.class, remap = false)
 public class IrisLodRendererMixin {
-
 	@Shadow
 	private IDhMetaRenderer metaRenderer;
 

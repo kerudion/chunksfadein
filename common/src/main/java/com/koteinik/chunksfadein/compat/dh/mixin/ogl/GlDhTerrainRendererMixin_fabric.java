@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.compat.dh.mixin;
+package com.koteinik.chunksfadein.compat.dh.mixin.ogl;
 
 import com.seibel.distanthorizons.common.render.openGl.GlDhTerrainRenderer_fabric;
 import com.seibel.distanthorizons.common.render.openGl.terrain.GlDhTerrainShaderProgram_fabric;

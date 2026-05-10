@@ -1,9 +1,9 @@
-package com.koteinik.chunksfadein.compat.dh.mixin;
+package com.koteinik.chunksfadein.compat.dh.mixin.ogl;
 
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
-import com.seibel.distanthorizons.common.render.openGl.postProcessing.ssao.GlDhSSAOApplyShader_neoforge;
+import com.seibel.distanthorizons.common.render.openGl.postProcessing.ssao.GlDhSSAOApplyShader_fabric;
 import com.seibel.distanthorizons.common.render.openGl.util.GlAbstractShaderRenderer;
 import com.seibel.distanthorizons.core.render.RenderParams;
 import org.lwjgl.opengl.GL13;
@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = GlDhSSAOApplyShader_neoforge.class, remap = false)
-public abstract class SSAOApplyShaderMixin_neoforge extends GlAbstractShaderRenderer {
+@Mixin(value = GlDhSSAOApplyShader_fabric.class, remap = false)
+public abstract class SSAOApplyShaderMixin_fabric extends GlAbstractShaderRenderer {
 	@Unique
 	private int fadeTex;
 

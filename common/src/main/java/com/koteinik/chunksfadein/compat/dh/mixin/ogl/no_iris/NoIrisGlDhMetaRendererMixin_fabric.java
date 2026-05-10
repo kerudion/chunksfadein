@@ -1,9 +1,9 @@
-package com.koteinik.chunksfadein.compat.dh.mixin.iris;
+package com.koteinik.chunksfadein.compat.dh.mixin.ogl.no_iris;
 
 import com.koteinik.chunksfadein.ShaderUtils;
 import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;
 import com.koteinik.chunksfadein.compat.dh.ext.GlDhMetaRendererExt;
-import com.koteinik.chunksfadein.compat.dh.mixin.GlDhTerrainRendererMixin_fabric;
+import com.koteinik.chunksfadein.compat.dh.mixin.ogl.GlDhTerrainRendererMixin_fabric;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.seibel.distanthorizons.api.interfaces.override.rendering.IDhApiShaderProgram;
@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.nio.IntBuffer;
 
 @Mixin(value = GlDhMetaRenderer_fabric.class, remap = false)
-public abstract class IrisGlDhMetaRendererMixin_fabric implements GlDhMetaRendererExt {
+public abstract class NoIrisGlDhMetaRendererMixin_fabric implements GlDhMetaRendererExt {
 	@Shadow
 	private IDhApiShaderProgram shaderProgramForThisFrame;
 
@@ -84,4 +84,5 @@ public abstract class IrisGlDhMetaRendererMixin_fabric implements GlDhMetaRender
 			GL20.glDrawBuffers(drawBuffers);
 		}
 	}
+
 }

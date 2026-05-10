@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.compat.dh.mixin;
+package com.koteinik.chunksfadein.compat.dh.mixin.ogl;
 
 import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
 import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;

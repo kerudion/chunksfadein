@@ -1,5 +1,6 @@
 package com.koteinik.chunksfadein;
 
+import com.koteinik.chunksfadein.compat.dh.ext.BlazeDhTerrainRendererExt;
 import com.koteinik.chunksfadein.compat.dh.ext.GlDhMetaRendererExt;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import net.irisshaders.iris.Iris;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 public class ShaderUtils {
 	public static GlDhMetaRendererExt lodRenderer = null;
+	public static BlazeDhTerrainRendererExt blazeLodRenderer = null;
 
 	private static Object irisTransformCache;
 	private static Method clearCache;
@@ -52,6 +54,9 @@ public class ShaderUtils {
 
 			if (CompatibilityHook.isDHRenderingEnabled() && lodRenderer != null)
 				lodRenderer.rebuildShaders();
+
+			if (CompatibilityHook.isDHBlazeAPI() && blazeLodRenderer != null)
+				blazeLodRenderer.cfi_rebuildPipeline();
 		} catch (Exception e) {
 			Logger.warn("Failed to reload renderers:", e);
 		}
