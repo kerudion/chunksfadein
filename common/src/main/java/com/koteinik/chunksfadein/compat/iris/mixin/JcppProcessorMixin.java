@@ -88,20 +88,23 @@ public class JcppProcessorMixin {
 		if (!Config.isModEnabled)
 			return source;
 
+		boolean used = source.contains("cfi_") || source.contains("CHUNKS_FADE_IN_") || source.contains("CFI_");
+
 		if (!whitelistedPrograms.contains(IrisPatcher.currentShaderName.get())) {
-			source += "\nvoid _cfi_ignoreMarker() {}\n";
+			if (used) source += "\nint _cfi_ignoreMarker;\n";
+
 			return source;
 		}
 
-		if (source.contains("cfi_") || source.contains("CHUNKS_FADE_IN_") || source.contains("CFI_"))
-			source += "\nvoid _cfi_usedMarker() {}\n";
+		if (used)
+			source += "\nint _cfi_usedMarker;\n";
 
-		if (source.contains("CHUNKS_FADE_IN_NO_MOD_INJECT")) source += "\nvoid _cfi_noInjectModMarker() {}\n";
-		if (source.contains("CHUNKS_FADE_IN_NO_FRAG_MOD_INJECT")) source += "\nvoid _cfi_noInjectFragModMarker() {}\n";
-		if (source.contains("CHUNKS_FADE_IN_NO_VERT_MOD_INJECT")) source += "\nvoid _cfi_noInjectVertModMarker() {}\n";
-		if (source.contains("CHUNKS_FADE_IN_NO_INJECT")) source += "\nvoid _cfi_noInjectMarker() {}\n";
-		if (source.contains("CHUNKS_FADE_IN_NO_CURVATURE")) source += "\nvoid _cfi_noCurvatureMarker() {}\n";
-		if (source.contains("CHUNKS_FADE_IN_NO_LOD_MASK")) source += "\nvoid _cfi_noLodMaskMarker() {}\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_MOD_INJECT")) source += "\nint _cfi_noInjectModMarker;\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_FRAG_MOD_INJECT")) source += "\nint _cfi_noInjectFragModMarker;\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_VERT_MOD_INJECT")) source += "\nint _cfi_noInjectVertModMarker;\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_INJECT")) source += "\nint _cfi_noInjectMarker;\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_CURVATURE")) source += "\nint _cfi_noCurvatureMarker;\n";
+		if (source.contains("CHUNKS_FADE_IN_NO_LOD_MASK")) source += "\nint _cfi_noLodMaskMarker;\n";
 
 		return source;
 	}
