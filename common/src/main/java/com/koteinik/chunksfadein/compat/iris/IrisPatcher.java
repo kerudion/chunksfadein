@@ -88,12 +88,12 @@ public class IrisPatcher {
 	}
 
 	private static void internalInjectVarsAndDummyAPI(ASTParser t, TranslationUnit tree, Parameters parameters) {
-		if (hasFn(tree, "_cfi_injected"))
+		if (hasDef(tree, "_cfi_injected"))
 			return;
 
 		FadeShader shader = new FadeShader();
 
-		boolean inject = !hasFn(tree, "_cfi_noInjectMarker");
+		boolean inject = !hasDef(tree, "_cfi_noInjectMarker");
 
 		switch (parameters.type) {
 			case VERTEX:
@@ -159,9 +159,9 @@ public class IrisPatcher {
 	public static void injectModAndAPI(ASTParser t, TranslationUnit tree, Root root, ShaderType glShaderType) {
 		FadeShader shader = new FadeShader();
 
-		boolean injected = hasFn(tree, "_cfi_injected");
+		boolean injected = hasDef(tree, "_cfi_injected");
 
-		boolean apiUsed = hasFn(tree, "_cfi_usedMarker");
+		boolean apiUsed = hasDef(tree, "_cfi_usedMarker");
 		if (!apiUsed) {
 			if (!Config.patchShaderFade)
 				shader.overrideFade(false);
@@ -171,11 +171,11 @@ public class IrisPatcher {
 				shader.overrideCurvature(false);
 		}
 
-		boolean inject = !hasFn(tree, "_cfi_noInjectMarker");
-		boolean injectMod = !hasFn(tree, "_cfi_noInjectModMarker");
-		boolean injectFragMod = injectMod && !hasFn(tree, "_cfi_noInjectFragModMarker");
-		boolean injectVertMod = injectMod && !hasFn(tree, "_cfi_noInjectVertModMarker");
-		boolean injectCurvature = injectMod && !hasFn(tree, "_cfi_noCurvatureMarker");
+		boolean inject = !hasDef(tree, "_cfi_noInjectMarker");
+		boolean injectMod = !hasDef(tree, "_cfi_noInjectModMarker");
+		boolean injectFragMod = injectMod && !hasDef(tree, "_cfi_noInjectFragModMarker");
+		boolean injectVertMod = injectMod && !hasDef(tree, "_cfi_noInjectVertModMarker");
+		boolean injectCurvature = injectMod && !hasDef(tree, "_cfi_noCurvatureMarker");
 
 		boolean hasTessControl = currentPipelineShaders.get().contains(PatchShaderType.TESS_CONTROL);
 		boolean hasTessEval = currentPipelineShaders.get().contains(PatchShaderType.TESS_EVAL);
@@ -604,13 +604,8 @@ public class IrisPatcher {
 		}
 	}
 
-	public static boolean hasFn(TranslationUnit tree, String name) {
-		try {
-			tree.getOneFunctionDefinitionBody(name);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+	public static boolean hasDef(TranslationUnit tree, String name) {
+		return tree.getRoot().identifierIndex.index.containsKey(name);
 	}
 
 	public static List<ExternalDeclaration> parseDeclarations(ASTParser t, Root root, String... input) {
