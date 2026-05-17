@@ -21,9 +21,9 @@ public class DHTerrainTransformerMixin {
 	private static void modifyTransform(ASTParser t, TranslationUnit tree, Root root, Parameters parameters, CallbackInfo ci) {
 		FadeShader shader = new FadeShader();
 
-		if (hasFn(tree, "_cfi_noInjectMarker") || hasFn(tree, "_cfi_ignoreMarker")) return;
+		if (hasDef(tree, "_cfi_noInjectMarker") || hasDef(tree, "_cfi_ignoreMarker")) return;
 
-		boolean apiUsed = hasFn(tree, "_cfi_usedMarker");
+		boolean apiUsed = hasDef(tree, "_cfi_usedMarker");
 		if (!apiUsed) {
 			if (!Config.patchShaderFade)
 				shader.overrideFade(false);
@@ -33,12 +33,12 @@ public class DHTerrainTransformerMixin {
 				shader.overrideCurvature(false);
 		}
 
-		boolean inject = !hasFn(tree, "_cfi_noInjectMarker");
-		boolean injectMod = !hasFn(tree, "_cfi_noInjectModMarker");
-		boolean injectFragMod = injectMod && !hasFn(tree, "_cfi_noInjectFragModMarker");
-		boolean injectVertMod = injectMod && !hasFn(tree, "_cfi_noInjectVertModMarker");
-		boolean injectCurvature = injectMod && !hasFn(tree, "_cfi_noCurvatureMarker");
-		boolean injectLodMask = injectMod && !hasFn(tree, "_cfi_noLodMaskMarker");
+		boolean inject = !hasDef(tree, "_cfi_noInjectMarker");
+		boolean injectMod = !hasDef(tree, "_cfi_noInjectModMarker");
+		boolean injectFragMod = injectMod && !hasDef(tree, "_cfi_noInjectFragModMarker");
+		boolean injectVertMod = injectMod && !hasDef(tree, "_cfi_noInjectVertModMarker");
+		boolean injectCurvature = injectMod && !hasDef(tree, "_cfi_noCurvatureMarker");
+		boolean injectLodMask = injectMod && !hasDef(tree, "_cfi_noLodMaskMarker");
 
 		switch (parameters.type) {
 			case VERTEX -> {
