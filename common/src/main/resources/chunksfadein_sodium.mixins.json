@@ -18,7 +18,6 @@
     "ext.RenderSectionMixin",
     "ext.ShaderBindingContextMixin",
     "ext.SodiumWorldRendererMixin",
-    "ShaderLoaderMixin",
     "SodiumOptionsGUIMixin"
   ],
   "server": [],

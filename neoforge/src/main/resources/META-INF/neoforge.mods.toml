@@ -19,6 +19,8 @@ config = "chunksfadein_mc.mixins.json"
 [[mixins]]
 config = "chunksfadein_sodium.mixins.json"
 [[mixins]]
+config = "chunksfadein_sodium_neoforge.mixins.json"
+[[mixins]]
 config = "chunksfadein_embeddium.mixins.json"
 [[mixins]]
 config = "chunksfadein_iris.mixins.json"

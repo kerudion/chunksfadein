@@ -37,6 +37,7 @@
   "mixins": [
     "chunksfadein_mc.mixins.json",
     "chunksfadein_sodium.mixins.json",
+    "chunksfadein_sodium_fabric.mixins.json",
     "chunksfadein_iris.mixins.json",
     "chunksfadein_dh.mixins.json"
   ],
