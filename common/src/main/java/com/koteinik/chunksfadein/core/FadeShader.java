@@ -819,11 +819,11 @@ public class FadeShader {
 		newLine("    float l = l_ * l_ * l_;");
 		newLine("    float m = m_ * m_ * m_;");
 		newLine("    float s = s_ * s_ * s_;");
-		newLine("    return sqrt(vec3(");
+		newLine("    return sqrt(max(vec3(");
 		newLine("        4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,");
 		newLine("        -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,");
 		newLine("        -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s");
-		newLine("    ));");
+		newLine("    ), vec3(0.0)));");
 		newLine("}");
 
 		return this;
