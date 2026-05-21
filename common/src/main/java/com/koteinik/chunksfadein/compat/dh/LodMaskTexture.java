@@ -5,21 +5,21 @@ import com.koteinik.chunksfadein.core.GlStateSaver;
 import com.koteinik.chunksfadein.core.Utils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Arrays;
 
 public class LodMaskTexture {
 	private static LodMaskTexture instance = null;
 	private static int lastLevel = 0;
 
-	public static synchronized void createAndUpdate() {
+	public static void createAndUpdate() {
+		RenderSystem.assertOnRenderThread();
+
 		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft.level == null) return;
 
@@ -40,11 +40,11 @@ public class LodMaskTexture {
 
 		try {
 			if (instance == null) {
-				instance = new LodMaskTexture(sizeX, sizeY, sizeZ, minY, maxY, origin, null);
+				instance = new LodMaskTexture(sizeX, sizeY, sizeZ, minY, maxY, origin);
 			} else if (instance.sizeX != sizeX || instance.sizeY != sizeY || instance.sizeZ != sizeZ
 				|| instance.minY != minY || instance.maxY != maxY) {
 				instance.cleanup();
-				instance = new LodMaskTexture(sizeX, sizeY, sizeZ, minY, maxY, origin, instance.rendered);
+				instance = new LodMaskTexture(sizeX, sizeY, sizeZ, minY, maxY, origin);
 			}
 		} catch (Exception e) {
 			Logger.error("Failed to create LodMaskTexture: ", e);
@@ -53,7 +53,7 @@ public class LodMaskTexture {
 
 		int currentLevel = minecraft.level.hashCode();
 		if (lastLevel != currentLevel)
-			instance.rendered.clear();
+			Arrays.fill(instance.rendered, false);
 		lastLevel = currentLevel;
 
 		instance.origin = origin;
@@ -72,7 +72,7 @@ public class LodMaskTexture {
 	}
 
 	public static void markRendered(int chunkX, int chunkY, int chunkZ) {
-		if (instance != null) instance.markRendered(SectionPos.of(chunkX, chunkY, chunkZ));
+		if (instance != null) instance.markChunk(chunkX, chunkY, chunkZ);
 	}
 
 	public static void bind(int slot) {
@@ -89,18 +89,18 @@ public class LodMaskTexture {
 	public ChunkPos origin;
 
 	private final ByteBuffer textureDataBuffer;
-	private final Set<SectionPos> rendered;
+	private final boolean[] rendered;
 
 	private boolean needUpdate = false;
 
-	private LodMaskTexture(int sizeX, int sizeY, int sizeZ, int minY, int maxY, ChunkPos origin, Set<SectionPos> rendered) {
+	private LodMaskTexture(int sizeX, int sizeY, int sizeZ, int minY, int maxY, ChunkPos origin) {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
 		this.sizeZ = sizeZ;
 		this.minY = minY;
 		this.maxY = maxY;
 		this.origin = origin;
-		this.rendered = rendered == null ? ConcurrentHashMap.newKeySet(sizeX * sizeY * sizeZ) : rendered;
+		this.rendered = new boolean[sizeX * sizeY * sizeZ];
 
 		this.textureDataBuffer = MemoryUtil.memAlloc(sizeX * sizeY * sizeZ * 4);
 
@@ -127,12 +127,13 @@ public class LodMaskTexture {
 		});
 	}
 
-	public synchronized void update() {
+	public void update() {
 		RenderSystem.assertOnRenderThread();
 
 		int renderDistance = Utils.chunkRenderDistance();
 
 		textureDataBuffer.clear();
+		int i = 0;
 		for (int z = 0; z < sizeZ; z++)
 			for (int y = 0; y < sizeY; y++)
 				for (int x = 0; x < sizeX; x++) {
@@ -142,11 +143,7 @@ public class LodMaskTexture {
 
 					int centerX = sizeX / 2;
 					int centerZ = sizeZ / 2;
-					boolean wasRendered = rendered.remove(SectionPos.of(
-						origin.x - centerX + x,
-						minY + y,
-						origin.z - centerZ + z
-					));
+					boolean wasRendered = rendered[i];
 					// this gap is required so that there are no holes when chunks unload, I couldn't find a better way :(
 					if (Math.floor(Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(z - centerZ, 2))) >= renderDistance)
 						wasRendered = false;
@@ -158,9 +155,12 @@ public class LodMaskTexture {
 					textureDataBuffer.put((byte) 0);
 					textureDataBuffer.put((byte) 0);
 					textureDataBuffer.put((byte) 0);
+
+					rendered[i] = false;
+
+					i++;
 				}
 		textureDataBuffer.flip();
-		rendered.clear();
 
 		if (!needUpdate) return;
 
@@ -180,8 +180,20 @@ public class LodMaskTexture {
 		needUpdate = false;
 	}
 
-	public synchronized void markRendered(SectionPos pos) {
-		rendered.add(pos);
+	public void markChunk(int chunkX, int chunkY, int chunkZ) {
+		RenderSystem.assertOnRenderThread();
+
+		int x = chunkX - (origin.x - sizeX / 2);
+		int y = chunkY - minY;
+		int z = chunkZ - (origin.z - sizeZ / 2);
+
+		if (x >= 0 && x < sizeX &&
+			y >= 0 && y < sizeY &&
+			z >= 0 && z < sizeZ) {
+			int i = (z * sizeY * sizeX) + (y * sizeX) + x;
+
+			rendered[i] = true;
+		}
 	}
 
 	public void bindTexture(int slot) {
