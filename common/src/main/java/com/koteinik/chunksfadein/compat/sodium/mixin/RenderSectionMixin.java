@@ -57,7 +57,7 @@ public class RenderSectionMixin implements RenderSectionExt {
 
 	@Override
 	public void dhMarkRendered() {
-		if (completedFade)
+		if ((completedFade || !Config.isFadeEnabled) && (completedAnimation || !Config.isAnimationEnabled))
 			LodMaskTexture.markRendered(chunkX, chunkY, chunkZ);
 	}
 

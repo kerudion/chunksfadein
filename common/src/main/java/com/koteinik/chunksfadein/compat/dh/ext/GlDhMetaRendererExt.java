@@ -1,7 +1,9 @@
 package com.koteinik.chunksfadein.compat.dh.ext;
 
-public interface LodRendererExt {
+public interface GlDhMetaRendererExt {
 	DhRenderProgramExt getShader();
 
 	void rebuildShaders();
+
+	int activeColorTexture();
 }

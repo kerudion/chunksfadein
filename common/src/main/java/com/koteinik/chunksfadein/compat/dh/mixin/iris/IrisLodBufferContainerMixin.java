@@ -3,14 +3,13 @@ package com.koteinik.chunksfadein.compat.dh.mixin.iris;
 import com.koteinik.chunksfadein.compat.dh.DHState;
 import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;
 import com.koteinik.chunksfadein.compat.dh.ext.LodBufferContainerExt;
-import com.koteinik.chunksfadein.compat.dh.ext.LodRendererExt;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.Fader;
 import com.koteinik.chunksfadein.core.Utils;
+import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.seibel.distanthorizons.core.dataObjects.render.bufferBuilding.LodBufferContainer;
 import com.seibel.distanthorizons.core.pos.DhSectionPos;
 import com.seibel.distanthorizons.core.pos.blockPos.DhBlockPos;
-import com.seibel.distanthorizons.core.render.renderer.LodRenderer;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.compat.dh.DHCompat;
 import net.irisshaders.iris.compat.dh.DHCompatInternal;
@@ -29,20 +28,20 @@ public abstract class IrisLodBufferContainerMixin implements LodBufferContainerE
 	@Final
 	public DhBlockPos minCornerBlockPos;
 
+	@Shadow
+	@Final
+	public long pos;
+
 	private Fader fader = null;
-	private long sectionPos = 0L;
 
 	@Inject(method = "<init>", at = @At(value = "TAIL"))
 	private void modifyConstructor(long pos, DhBlockPos minCornerBlockPos, CallbackInfo ci) {
-		sectionPos = DHState.sectionPosForCreatingBuffer.get();
-		DHState.sectionPosForCreatingBuffer.remove();
-		fader = DHState.getFader(sectionPos);
+		fader = DHState.getFader(pos);
 	}
 
 	@Override
-	public void bind(LodRenderer renderContext) {
+	public void bind(DhRenderProgramExt renderContext) {
 		if (!Config.isModEnabled) return;
-		if (!(renderContext instanceof LodRendererExt rendererExt)) return;
 		if (fader == null) return;
 
 		long delta = fader.calculateAndGetDelta();
@@ -55,30 +54,28 @@ public abstract class IrisLodBufferContainerMixin implements LodBufferContainerE
 		float w = fader.incrementFadeCoeff(delta, inRenderDistance);
 		fader.setRenderedBefore();
 
-		DHCompatInternal irisDh = (DHCompatInternal) Iris.getPipelineManager()
-			.getPipeline()
-			.map(WorldRenderingPipeline::getDHCompat)
-			.map(DHCompat::getInstance)
-			.orElse(null);
-		if (irisDh != null) {
-			if (irisDh.getSolidShader() instanceof DhRenderProgramExt ext)
-				ext.bindUniforms(x, y, z, w);
-			if (irisDh.getShadowShader() instanceof DhRenderProgramExt ext)
-				ext.bindUniforms(x, y, z, w);
-			if (irisDh.getTranslucentShader() instanceof DhRenderProgramExt ext)
-				ext.bindUniforms(x, y, z, w);
-
-			return;
+		if (CompatibilityHook.isIrisShaderPackInUse()) {
+			DHCompatInternal irisDh = (DHCompatInternal) Iris.getPipelineManager()
+				.getPipeline()
+				.map(WorldRenderingPipeline::getDHCompat)
+				.map(DHCompat::getInstance)
+				.orElse(null);
+			if (irisDh != null) {
+				if (irisDh.getSolidShader() instanceof DhRenderProgramExt ext)
+					ext.bindUniforms(x, y, z, w);
+				if (irisDh.getShadowShader() instanceof DhRenderProgramExt ext)
+					ext.bindUniforms(x, y, z, w);
+				if (irisDh.getTranslucentShader() instanceof DhRenderProgramExt ext)
+					ext.bindUniforms(x, y, z, w);
+				return;
+			}
 		}
 
-		DhRenderProgramExt shader = rendererExt.getShader();
-		if (shader == null) return;
-
-		shader.bindUniforms(x, y, z, w);
+		renderContext.bindUniforms(x, y, z, w);
 	}
 
 	private boolean isInRenderDistance() {
-		int size = DhSectionPos.getChunkWidth(sectionPos);
+		int size = DhSectionPos.getChunkWidth(pos);
 		int bX = (int) Math.floor((double) minCornerBlockPos.getX() / 16);
 		int bZ = (int) Math.floor((double) minCornerBlockPos.getZ() / 16);
 

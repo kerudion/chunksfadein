@@ -13,8 +13,6 @@ import java.util.Map;
 import static com.seibel.distanthorizons.core.pos.DhSectionPos.*;
 
 public class DHState {
-	public static final ThreadLocal<Long> sectionPosForCreatingBuffer = new ThreadLocal<>();
-
 	private static final Byte2ObjectMap<Long2ObjectMap<Fader>> faders = new Byte2ObjectOpenHashMap<>();
 	private static byte maxDetailLevel = 0;
 	private static int lastLevel = 0;
