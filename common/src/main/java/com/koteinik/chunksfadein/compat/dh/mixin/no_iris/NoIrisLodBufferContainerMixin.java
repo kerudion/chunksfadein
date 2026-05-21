@@ -3,14 +3,12 @@ package com.koteinik.chunksfadein.compat.dh.mixin.no_iris;
 import com.koteinik.chunksfadein.compat.dh.DHState;
 import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;
 import com.koteinik.chunksfadein.compat.dh.ext.LodBufferContainerExt;
-import com.koteinik.chunksfadein.compat.dh.ext.LodRendererExt;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.Fader;
 import com.koteinik.chunksfadein.core.Utils;
 import com.seibel.distanthorizons.core.dataObjects.render.bufferBuilding.LodBufferContainer;
 import com.seibel.distanthorizons.core.pos.DhSectionPos;
 import com.seibel.distanthorizons.core.pos.blockPos.DhBlockPos;
-import com.seibel.distanthorizons.core.render.renderer.LodRenderer;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,20 +23,20 @@ public abstract class NoIrisLodBufferContainerMixin implements LodBufferContaine
 	@Final
 	public DhBlockPos minCornerBlockPos;
 
+	@Shadow
+	@Final
+	public long pos;
+
 	private Fader fader = null;
-	private long sectionPos = 0L;
 
 	@Inject(method = "<init>", at = @At(value = "TAIL"))
 	private void modifyConstructor(long pos, DhBlockPos minCornerBlockPos, CallbackInfo ci) {
-		sectionPos = DHState.sectionPosForCreatingBuffer.get();
-		DHState.sectionPosForCreatingBuffer.remove();
-		fader = DHState.getFader(sectionPos);
+		fader = DHState.getFader(pos);
 	}
 
 	@Override
-	public void bind(LodRenderer renderContext) {
+	public void bind(DhRenderProgramExt renderContext) {
 		if (!Config.isModEnabled) return;
-		if (!(renderContext instanceof LodRendererExt rendererExt)) return;
 		if (fader == null) return;
 
 		long delta = fader.calculateAndGetDelta();
@@ -51,14 +49,11 @@ public abstract class NoIrisLodBufferContainerMixin implements LodBufferContaine
 		float w = fader.incrementFadeCoeff(delta, inRenderDistance);
 		fader.setRenderedBefore();
 
-		DhRenderProgramExt shader = rendererExt.getShader();
-		if (shader == null) return;
-
-		shader.bindUniforms(x, y, z, w);
+		renderContext.bindUniforms(x, y, z, w);
 	}
 
 	private boolean isInRenderDistance() {
-		int size = DhSectionPos.getChunkWidth(sectionPos);
+		int size = DhSectionPos.getChunkWidth(pos);
 		int bX = (int) Math.floor((double) minCornerBlockPos.getX() / 16);
 		int bZ = (int) Math.floor((double) minCornerBlockPos.getZ() / 16);
 
