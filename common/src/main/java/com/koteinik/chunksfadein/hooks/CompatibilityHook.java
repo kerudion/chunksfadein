@@ -1,6 +1,7 @@
 package com.koteinik.chunksfadein.hooks;
 
 import com.seibel.distanthorizons.api.enums.rendering.EDhApiRendererMode;
+import com.seibel.distanthorizons.core.config.Config;
 import net.irisshaders.iris.api.v0.IrisApi;
 
 public class CompatibilityHook {
@@ -22,8 +23,17 @@ public class CompatibilityHook {
 		if (!isDHLoaded) return false;
 
 		try {
-			return !isIrisShaderPackInUse()
-				&& com.seibel.distanthorizons.core.config.Config.Client.Advanced.Graphics.Ssao.enableSsao.get();
+			return !isIrisShaderPackInUse() && Config.Client.Advanced.Graphics.enableSsao.get();
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public static boolean isDHDitherEnabled() {
+		if (!isDHLoaded) return false;
+
+		try {
+			return !isIrisShaderPackInUse() && Config.Client.Advanced.Graphics.Quality.ditherDhFade.get();
 		} catch (Exception e) {
 			return false;
 		}
