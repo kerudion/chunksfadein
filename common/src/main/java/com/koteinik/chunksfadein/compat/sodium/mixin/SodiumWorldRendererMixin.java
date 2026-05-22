@@ -91,6 +91,8 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
 			return;
 
 		float[] offset = ext.getAnimationOffset(entity.getBlockPos().getCenter());
+		if (offset == null)
+			return;
 
 		matrices.translate(offset[0], offset[1], offset[2]);
 	}
