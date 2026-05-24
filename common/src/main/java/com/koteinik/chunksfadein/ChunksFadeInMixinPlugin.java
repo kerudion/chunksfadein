@@ -17,9 +17,11 @@ public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 		boolean isNoIrisMixin = mixinClassName.contains("no_iris");
 		boolean isIrisMixin = mixinClassName.contains("iris");
 		boolean isDHMixin = mixinClassName.contains("dh");
+		boolean isSableMixin =  mixinClassName.contains("sable");
 
 		boolean hasIris = hasClass("net.irisshaders.iris.api.v0.IrisApi");
 		boolean hasDH = hasClass("com.seibel.distanthorizons.api.DhApi");
+		boolean hasSable = hasClass("dev.ryanhcode.sable.api.SubLevelHelper");
 
 		if (isNoIrisMixin)
 			return !hasIris;
@@ -29,6 +31,9 @@ public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 
 		if (isDHMixin)
 			return hasDH;
+
+		if (isSableMixin)
+			return hasSable;
 
 		boolean hasEmbeddium = hasClass("org.embeddedt.embeddium.impl.render.EmbeddiumWorldRenderer");
 		if (mixinClassName.contains("embeddium"))

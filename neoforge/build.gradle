@@ -35,6 +35,9 @@ dependencies {
     implementation "maven.modrinth:iris:${iris_version.replace("fabric", "neoforge")}"
     implementation "maven.modrinth:distanthorizons:${dh_version}"
     implementation "maven.modrinth:embeddium:${embeddium_version}"
+    implementation "maven.modrinth:sable:${sable_version}"
+
+    jarJar api("dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:${sable_companion_version}")
 
     implementation "org.anarres:jcpp:1.4.14"
     implementation "io.github.douira:glsl-transformer:${glsl_transformer_version}"

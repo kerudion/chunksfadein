@@ -28,6 +28,8 @@ config = "chunksfadein_iris.mixins.json"
 config = "chunksfadein_monocle.mixins.json"
 [[mixins]]
 config = "chunksfadein_dh.mixins.json"
+[[mixins]]
+config = "chunksfadein_sable.mixins.json"
 
 [[dependencies.chunksfadein]]
 modId = "sodium"
