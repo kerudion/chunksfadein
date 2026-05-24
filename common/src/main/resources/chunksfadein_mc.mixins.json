@@ -7,7 +7,7 @@
   "mixins": [],
   "client": [
     "ClientboundLoginPacketMixin",
-    "EntityRendererMixin",
+    "EntityRenderDispatcherMixin",
     "ItemFrameEntityRendererMixin",
     "LanguageMixin",
     "LevelRendererMixin",

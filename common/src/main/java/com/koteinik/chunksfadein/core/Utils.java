@@ -1,7 +1,9 @@
 package com.koteinik.chunksfadein.core;
 
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -12,7 +14,38 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static com.mojang.math.Constants.DEG_TO_RAD;
+
 public class Utils {
+	private static float lastYaw = Float.NaN;
+	private static float lastPitch = Float.NaN;
+	private static final Quaternionf viewRot = new Quaternionf();
+
+	public static Camera camera() {
+		return Minecraft.getInstance().gameRenderer.getMainCamera();
+	}
+
+	public static Vec3 cameraPosition() {
+		return camera().getPosition();
+	}
+
+	public static Quaternionf cameraViewRot() {
+		Camera cam = camera();
+		float yaw = cam.getYRot();
+		float pitch = cam.getXRot();
+
+		if (yaw != lastYaw || pitch != lastPitch) {
+			viewRot.identity()
+				.rotateX(pitch * DEG_TO_RAD)
+				.rotateY((yaw + 180.0F) * DEG_TO_RAD);
+
+			lastYaw = yaw;
+			lastPitch = pitch;
+		}
+
+		return viewRot;
+	}
+
 	public static int mainTargetWidth() {
 		return Minecraft.getInstance().getMainRenderTarget().width;
 	}
@@ -23,10 +56,6 @@ public class Utils {
 
 	public static int mainColorTexture() {
 		return Minecraft.getInstance().getMainRenderTarget().getColorTextureId();
-	}
-
-	public static Vec3 cameraPosition() {
-		return Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
 	}
 
 	public static int chunkRenderDistance() {

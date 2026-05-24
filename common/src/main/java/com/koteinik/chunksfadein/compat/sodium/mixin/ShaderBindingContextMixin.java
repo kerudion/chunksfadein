@@ -1,10 +1,8 @@
 package com.koteinik.chunksfadein.compat.sodium.mixin;
 
 import com.koteinik.chunksfadein.compat.sodium.GlUniformFloat2v;
-import com.koteinik.chunksfadein.compat.sodium.ext.GlUniformBlockExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.GlUniformFloat2vExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.GlUniformIntExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.ShaderBindingContextExt;
+import com.koteinik.chunksfadein.compat.sodium.GlUniformMatrix3f;
+import com.koteinik.chunksfadein.compat.sodium.ext.*;
 import me.jellysquid.mods.sodium.client.gl.GlObject;
 import me.jellysquid.mods.sodium.client.gl.shader.GlProgram;
 import me.jellysquid.mods.sodium.client.gl.shader.uniform.GlUniformBlock;
@@ -37,5 +35,12 @@ public abstract class ShaderBindingContextMixin extends GlObject implements Shad
 		int index = GL20C.glGetUniformLocation(handle(), name);
 
 		return index < 0 ? null : (GlUniformIntExt) new GlUniformInt(index);
+	}
+
+	@Override
+	public GlUniformMatrix3fExt bindUniformMat3f(String name) {
+		int index = GL20C.glGetUniformLocation(handle(), name);
+
+		return index < 0 ? null : new GlUniformMatrix3f(index);
 	}
 }

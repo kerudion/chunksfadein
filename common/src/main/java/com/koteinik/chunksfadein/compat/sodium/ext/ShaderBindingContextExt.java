@@ -6,4 +6,6 @@ public interface ShaderBindingContextExt {
 	GlUniformFloat2vExt bindUniformFloat2v(String name);
 
 	GlUniformIntExt bindUniformInt(String name);
+
+	GlUniformMatrix3fExt bindUniformMat3f(String name);
 }

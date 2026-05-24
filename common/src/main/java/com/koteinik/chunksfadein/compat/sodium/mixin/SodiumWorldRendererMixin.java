@@ -3,6 +3,7 @@ package com.koteinik.chunksfadein.compat.sodium.mixin;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionManagerExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.Utils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
@@ -17,6 +18,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -90,10 +93,19 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
 		if (ext.getRenderSectionManager() == null)
 			return;
 
-		float[] offset = ext.getAnimationOffset(entity.getBlockPos().getCenter());
+		Quaternionf viewRot = Utils.cameraViewRot();
+
+		Vector3f origin = matrices.last().pose().getTranslation(new Vector3f());
+		viewRot.transformInverse(origin);
+
+		Vec3 pos = Utils.cameraPosition().add(origin.x, origin.y, origin.z);
+
+		float[] offset = ext.getAnimationOffset(pos);
 		if (offset == null)
 			return;
 
-		matrices.translate(offset[0], offset[1], offset[2]);
+		Vector3f worldShift = new Vector3f(offset[0],  offset[1], offset[2]);
+		viewRot.transform(worldShift);
+		matrices.last().pose().translateLocal(worldShift.x, worldShift.y, worldShift.z);
 	}
 }

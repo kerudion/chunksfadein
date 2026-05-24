@@ -118,8 +118,9 @@ public abstract class ShaderLoaderMixin {
 			"_vert_init();",
 			shader
 				.newLine("vec3 cfi_position = _vert_position + u_RegionOffset + _get_draw_translation(_draw_id);")
+				.worldToLocal("u_ModelViewMatrix")
 				.vertInitOutVarsDrawId("_vert_position", "{mesh_id}")
-				.vertInitMod("_vert_position", "cfi_position", true, "vec3({mesh_id})", true)
+				.vertInitMod("_vert_position", "cfi_position", "_vert_position", "vec3({mesh_id})", true)
 				.flushMultiline()
 		);
 

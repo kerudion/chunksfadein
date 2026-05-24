@@ -83,7 +83,7 @@ public class GlShaderProgramMixin {
 				.newLine("vec3 localPos = vec3(vPosition.xyz);")
 				.newLine("vec3 offsetPos = floor((vertexWorldPos - mod(localPos, 16.0)) / 16.0) + cfi_lodMaskOrigin;")
 				.vertInitOutVars("localPos", "offsetPos")
-				.vertInitMod("localPos", "vertexWorldPos", false, "offsetPos", true)
+				.vertInitMod("localPos", "vertexWorldPos", "vertexWorldPos", "offsetPos", true)
 				// push water and lava slightly down
 				.newLine("if (irisExtra.x == 12 || irisExtra.x == 6) { vertexWorldPos.y -= 0.115; }")
 				.newLineIf(Config.isFadeEnabled, "cfi_material = irisExtra.x;")

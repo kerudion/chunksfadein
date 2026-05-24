@@ -231,7 +231,9 @@ public class IrisPatcher {
 					.vertInitOutVarsDrawId("_vert_position", "_draw_id");
 
 				if (injectVertMod)
-					shader.vertInitMod("_vert_position", "position", true, "vec3(_draw_id)", injectCurvature);
+					shader
+						.worldToLocal("gl_ModelViewMatrix")
+						.vertInitMod("_vert_position", "position", "_vert_position", "vec3(_draw_id)", injectCurvature);
 
 				tree.appendFunctionBody("_vert_init", parseStatements(t, root, shader.flushArray()));
 

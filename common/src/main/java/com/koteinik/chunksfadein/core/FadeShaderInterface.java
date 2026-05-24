@@ -1,17 +1,17 @@
 package com.koteinik.chunksfadein.core;
 
-import com.koteinik.chunksfadein.compat.sodium.ext.GlMutableBufferExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.GlUniformBlockExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.GlUniformFloat2vExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.ShaderBindingContextExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.*;
+import org.joml.Matrix3f;
 
 public class FadeShaderInterface {
 	private GlUniformBlockExt uniformFadeDatas;
 	private GlUniformFloat2vExt screenSize;
+	private GlUniformMatrix3fExt worldInView;
 
 	public FadeShaderInterface(ShaderBindingContextExt context) {
 		this.uniformFadeDatas = context.bindUniformBlock("cfi_ubo_ChunkFadeDatas");
 		this.screenSize = context.bindUniformFloat2v("cfi_screenSize");
+		this.worldInView = context.bindUniformMat3f("cfi_worldInView");
 	}
 
 	public void bindUniforms(GlMutableBufferExt fadeDataBuffer) {
@@ -20,5 +20,8 @@ public class FadeShaderInterface {
 
 		if (screenSize != null)
 			screenSize.set(Utils.mainTargetWidth(), Utils.mainTargetHeight());
+
+		if (worldInView != null)
+			worldInView.set(new Matrix3f().rotation(Utils.cameraViewRot()));
 	}
 }

@@ -13,6 +13,7 @@ public class FadeShader {
 
 	private String inPrefix = "";
 	private String outPrefix = "";
+	private String worldToLocalPrefix = "";
 
 	private boolean animation = isAnimationEnabled;
 	private boolean fade = isFadeEnabled;
@@ -46,6 +47,12 @@ public class FadeShader {
 		outPrefix = value;
 
 		return this;
+	}
+
+	public FadeShader worldToLocal(String mat) {
+		worldToLocalPrefix = "cfi_worldToLocal * ";
+
+		return newLine("mat3 cfi_worldToLocal = transpose(mat3(%s)) * cfi_worldInView;".formatted(mat));
 	}
 
 	public FadeShader dummyApiFragSampleSkyLodTexture() {
@@ -248,7 +255,7 @@ public class FadeShader {
 			if (animationType == JAGGED || animationType == DISPLACEMENT)
 				newLine("float rand = _cfi_rand(localPos + vec3(_draw_id));");
 
-			calculateVertexDisplacement("localPos", null, true, "int(_draw_id)");
+			calculateVertexDisplacement("localPos", null, "localPos", "int(_draw_id)");
 
 			newLine("return localPos - originalPos;");
 		} else {
@@ -281,6 +288,7 @@ public class FadeShader {
 	public FadeShader vertInVars() {
 		newLine("struct cfi_ChunkFadeData { vec4 fadeData; };");
 		newLine("layout(std140) uniform cfi_ubo_ChunkFadeDatas { cfi_ChunkFadeData cfi_ChunkFadeDatas[256]; };");
+		newLine("uniform mat3 cfi_worldInView;");
 
 		return this;
 	}
@@ -511,16 +519,17 @@ public class FadeShader {
 		return this;
 	}
 
-	public FadeShader vertInitMod(String localPos, String position, boolean modifyLocal, String randSeed, boolean addCurvature) {
+	public FadeShader vertInitMod(String localPos, String position, String modify, String randSeed, boolean addCurvature) {
 		if (!isModEnabled)
 			return this;
 
 		if (animation)
-			calculateVertexDisplacement(localPos, position, modifyLocal, randSeed);
+			calculateVertexDisplacement(localPos, position, modify, randSeed);
 
 		if (addCurvature && curvature)
-			newLine("%s.y -= dot(%s.xz, %s.xz) / %s;".formatted(
-				modifyLocal ? localPos : position,
+			newLine("%s += %svec3(0.0, -dot(%s.xz, %s.xz) / %s, 0.0);".formatted(
+				modify,
+				worldToLocalPrefix,
 				position,
 				position,
 				worldCurvature
@@ -562,11 +571,11 @@ public class FadeShader {
 		return this;
 	}
 
-	public FadeShader calculateVertexDisplacement(String localPos, String position, boolean modifyLocal, String randSeed) {
+	public FadeShader calculateVertexDisplacement(String localPos, String position, String modify, String randSeed) {
 		switch (animationType) {
 			case FULL:
 			case JAGGED:
-				newLine("%s += chunkFadeData.xyz".formatted(modifyLocal ? localPos : position));
+				newLine("%s += %schunkFadeData.xyz".formatted(modify, worldToLocalPrefix));
 				if (animationType == JAGGED)
 					append(" * rand");
 				append(";");
@@ -577,18 +586,12 @@ public class FadeShader {
 						.replace("%s", localPos));
 				append("float rand2 = _cfi_rand(%s - %s);".formatted(localPos, randSeed));
 				append("float rand3 = _cfi_rand(%s + (%s * 2));".formatted(localPos, randSeed));
-				append("%s += vec3(rand - 0.5, rand2 - 0.5, rand3 - 0.5) * vec3(chunkFadeData.y);".formatted(modifyLocal
-					? localPos
-					: position));
+				append("%s += %s(vec3(rand - 0.5, rand2 - 0.5, rand3 - 0.5) * vec3(chunkFadeData.y));".formatted(modify, worldToLocalPrefix));
 				append("}");
 				break;
 			case SCALE:
-				if (modifyLocal)
-					newLine("%s = mix(vec3(8.0), %s, 1.0 - chunkFadeData.y);"
-						.formatted(localPos, localPos));
-				else
-					newLine("%s += vec3(8.0) - mix(vec3(8.0), %s, chunkFadeData.y);"
-						.formatted(position, localPos));
+				newLine("%s += (vec3(8.0) - %s) * chunkFadeData.y;"
+					.formatted(modify, localPos));
 				break;
 		}
 
@@ -681,7 +684,7 @@ public class FadeShader {
 
 			newLine("vec3 offsetPos = floor((worldPos - mod(localPos, 16.0)) / 16.0) + cfi_lodMaskOrigin;");
 
-			calculateVertexDisplacement("localPos", null, true, "offsetPos");
+			calculateVertexDisplacement("localPos", null, "localPos", "offsetPos");
 
 			newLine("return localPos - originalPos;");
 		} else {
