@@ -183,9 +183,9 @@ public class LodMaskTexture {
 	public void markChunk(int chunkX, int chunkY, int chunkZ) {
 		RenderSystem.assertOnRenderThread();
 
-		int x = chunkX - (origin.x - sizeX / 2);
+		int x = chunkX - (origin.x() - sizeX / 2);
 		int y = chunkY - minY;
-		int z = chunkZ - (origin.z - sizeZ / 2);
+		int z = chunkZ - (origin.z() - sizeZ / 2);
 
 		if (x >= 0 && x < sizeX &&
 			y >= 0 && y < sizeY &&
