@@ -1,7 +1,9 @@
-package com.koteinik.chunksfadein.compat.sodium.mixin.ext;
+package com.koteinik.chunksfadein.compat.sodium.v8.mixin.ext;
 
 import com.koteinik.chunksfadein.compat.sodium.ext.CommandListExt;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -17,7 +19,10 @@ import net.caffeinemc.mods.sodium.client.gl.device.GLRenderDevice;
 import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
 
 @Mixin(value = RenderRegion.class, remap = false)
-public class RenderRegionMixin implements RenderRegionExt {
+public abstract class RenderRegionMixin implements RenderRegionExt {
+	@Shadow
+	public abstract RenderSection getSection(int id);
+
 	private ChunkFadeInController fadeController;
 
 	@Inject(method = "<init>", at = @At(value = "TAIL"))
@@ -38,5 +43,10 @@ public class RenderRegionMixin implements RenderRegionExt {
 	@Override
 	public void uploadToBuffer(ChunkShaderInterfaceExt shader, CommandListExt commandList) {
 		fadeController.uploadToBuffer(shader, commandList);
+	}
+
+	@Override
+	public RenderSectionExt section(int index) {
+		return (RenderSectionExt) getSection(index);
 	}
 }

@@ -1,12 +1,12 @@
-package com.koteinik.chunksfadein.compat.embeddium.mixin;
+package com.koteinik.chunksfadein.compat.sodium.v8.mixin.ext;
 
 import com.koteinik.chunksfadein.compat.sodium.ext.ChunkRenderListExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionManagerExt;
 import com.koteinik.chunksfadein.config.Config;
-import org.embeddedt.embeddium.impl.render.chunk.RenderSection;
-import org.embeddedt.embeddium.impl.render.chunk.RenderSectionManager;
-import org.embeddedt.embeddium.impl.render.chunk.lists.SortedRenderLists;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
+import net.caffeinemc.mods.sodium.client.render.chunk.lists.SortedRenderLists;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

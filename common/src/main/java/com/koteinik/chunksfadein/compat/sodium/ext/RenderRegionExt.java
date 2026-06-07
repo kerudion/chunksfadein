@@ -6,4 +6,6 @@ public interface RenderRegionExt {
 	void processChunk(RenderSectionExt section, int sectionIndex);
 
 	void uploadToBuffer(ChunkShaderInterfaceExt shader, CommandListExt commandList);
+
+	RenderSectionExt section(int index);
 }

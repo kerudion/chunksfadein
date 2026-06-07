@@ -36,7 +36,8 @@
   "environment": "client",
   "mixins": [
     "chunksfadein_mc.mixins.json",
-    "chunksfadein_sodium.mixins.json",
+    "chunksfadein_sodium_v6.mixins.json",
+    "chunksfadein_sodium_v8.mixins.json",
     "chunksfadein_sodium_fabric.mixins.json",
     "chunksfadein_iris.mixins.json",
     "chunksfadein_dh.mixins.json"
@@ -57,6 +58,9 @@
     ],
     "modmenu": [
       "com.koteinik.chunksfadein.hooks.ModMenuHook"
+    ],
+    "sodium:config_api_user": [
+      "com.koteinik.chunksfadein.compat.sodium.v8.gui.CFISodiumPage"
     ]
   }
 }

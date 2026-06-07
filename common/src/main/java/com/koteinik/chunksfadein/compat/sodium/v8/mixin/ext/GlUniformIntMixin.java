@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.compat.sodium.mixin.ext;
+package com.koteinik.chunksfadein.compat.sodium.v8.mixin.ext;
 
 import com.koteinik.chunksfadein.compat.sodium.ext.GlUniformIntExt;
 import net.caffeinemc.mods.sodium.client.gl.shader.uniform.GlUniformInt;

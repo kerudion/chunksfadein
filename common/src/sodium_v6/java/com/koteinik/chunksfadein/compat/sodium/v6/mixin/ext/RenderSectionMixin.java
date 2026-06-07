@@ -1,4 +1,4 @@
-package com.koteinik.chunksfadein.compat.sodium.mixin.ext;
+package com.koteinik.chunksfadein.compat.sodium.v6.mixin.ext;
 
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;

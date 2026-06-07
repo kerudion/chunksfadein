@@ -1,20 +1,22 @@
-package com.koteinik.chunksfadein.compat.embeddium.mixin;
+package com.koteinik.chunksfadein.compat.sodium.v6.mixin.ext;
 
-import com.koteinik.chunksfadein.compat.sodium.ChunkFadeInController;
-import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.CommandListExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
-import org.embeddedt.embeddium.impl.gl.arena.staging.StagingBuffer;
-import org.embeddedt.embeddium.impl.gl.device.CommandList;
-import org.embeddedt.embeddium.impl.gl.device.GLRenderDevice;
-import org.embeddedt.embeddium.impl.render.chunk.RenderSection;
-import org.embeddedt.embeddium.impl.render.chunk.region.RenderRegion;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.koteinik.chunksfadein.compat.sodium.ChunkFadeInController;
+import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
+
+import net.caffeinemc.mods.sodium.client.gl.arena.staging.StagingBuffer;
+import net.caffeinemc.mods.sodium.client.gl.device.CommandList;
+import net.caffeinemc.mods.sodium.client.gl.device.GLRenderDevice;
+import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
 
 @Mixin(value = RenderRegion.class, remap = false)
 public abstract class RenderRegionMixin implements RenderRegionExt {

@@ -14,10 +14,15 @@ description = '''
 Adds fade-in and motion animations for chunks!
 '''
 
+[modproperties.chunksfadein]
+"sodium:config_api_user" = "com.koteinik.chunksfadein.compat.sodium.v8.gui.CFISodiumPage"
+
 [[mixins]]
 config = "chunksfadein_mc.mixins.json"
 [[mixins]]
-config = "chunksfadein_sodium.mixins.json"
+config = "chunksfadein_sodium_v6.mixins.json"
+[[mixins]]
+config = "chunksfadein_sodium_v8.mixins.json"
 [[mixins]]
 config = "chunksfadein_sodium_neoforge.mixins.json"
 [[mixins]]

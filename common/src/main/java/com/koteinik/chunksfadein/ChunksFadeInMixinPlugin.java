@@ -14,39 +14,53 @@ public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		boolean isNoIrisMixin = mixinClassName.contains("no_iris");
-		boolean isIrisMixin = mixinClassName.contains("iris");
-		boolean isDHMixin = mixinClassName.contains("dh");
-		boolean isSableMixin =  mixinClassName.contains("sable");
+		boolean isV6 = mixinClassName.contains("v6");
+		boolean isV8 = mixinClassName.contains("v8");
+		boolean isGenericSodium = mixinClassName.contains("sodium") && !isV6 && !isV8;
+		boolean isEmbeddium = mixinClassName.contains("embeddium");
+		boolean isMonocle = mixinClassName.contains("monocle");
+		boolean isNoIris = mixinClassName.contains("no_iris");
+		boolean isIris = mixinClassName.contains("iris");
+		boolean isDH = mixinClassName.contains("dh");
+		boolean isSable = mixinClassName.contains("sable");
 
+		boolean hasV6 = hasClass("net.caffeinemc.mods.sodium.client.gui.options.OptionPage");
+		boolean hasV8 = hasClass("net.caffeinemc.mods.sodium.api.config.ConfigEntryPoint");
+		boolean hasEmbeddium = hasClass("org.embeddedt.embeddium.impl.render.EmbeddiumWorldRenderer");
 		boolean hasIris = hasClass("net.irisshaders.iris.api.v0.IrisApi");
 		boolean hasDH = hasClass("com.seibel.distanthorizons.api.DhApi");
 		boolean hasSable = hasClass("dev.ryanhcode.sable.api.SubLevelHelper");
 
-		if (isNoIrisMixin)
-			return !hasIris;
+		boolean allow = true;
 
-		if (isIrisMixin)
-			return hasIris;
+		if (isNoIris && !hasIris)
+			allow = false;
 
-		if (isDHMixin)
-			return hasDH;
+		if (isIris && !hasIris)
+			allow = false;
 
-		if (isSableMixin)
-			return hasSable;
+		if (isDH && !hasDH)
+			allow = false;
 
-		boolean hasEmbeddium = hasClass("org.embeddedt.embeddium.impl.render.EmbeddiumWorldRenderer");
-		if (mixinClassName.contains("embeddium"))
-			return hasEmbeddium;
+		if (isSable && !hasSable)
+			allow = false;
 
-		if (mixinClassName.contains("sodium"))
-			return !hasEmbeddium;
+		if (isEmbeddium && !hasEmbeddium)
+			allow = false;
 
-		boolean hasMonocle = hasEmbeddium && hasIris;
-		if (mixinClassName.contains("monocle"))
-			return hasMonocle;
+		if (isGenericSodium && !(hasV6 || hasV8))
+			allow = false;
 
-		return true;
+		if (isV6 && !hasV6)
+			allow = false;
+
+		if (isV8 && !hasV8)
+			allow = false;
+
+		if (isMonocle && !(hasEmbeddium && hasIris))
+			allow = false;
+
+		return allow;
 	}
 
 	@Override

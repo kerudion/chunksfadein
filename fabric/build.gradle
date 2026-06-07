@@ -1,5 +1,5 @@
 plugins {
-    id "fabric-loom"
+    id "net.fabricmc.fabric-loom-remap"
 }
 
 base {
@@ -19,7 +19,30 @@ sourceSets.main.resources {
     srcDir project(":common").sourceSets.main.resources
 }
 
+sourceSets {
+    sodium_v6 {
+        java.srcDir project(":common").file("src/sodium_v6/java")
+        compileClasspath += sourceSets.main.output +
+                sourceSets.main.compileClasspath.filter { !it.name.toLowerCase().contains("sodium") }
+    }
+}
+
+loom {
+    addRemapConfiguration("sodium_v6_modCompileOnly") {
+        sourceSet = sourceSets.sodium_v6
+        targetConfigurationName = "sodium_v6_modCompileOnly"
+        onCompileClasspath = true
+        onRuntimeClasspath = false
+    }
+}
+
+jar {
+    from sourceSets.sodium_v6.output
+}
+
 dependencies {
+    sodium_v6_modCompileOnly "maven.modrinth:sodium:${sodium_old_version}"
+
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered {
         officialMojangMappings()

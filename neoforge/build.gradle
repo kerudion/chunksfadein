@@ -1,6 +1,6 @@
 plugins {
     id "net.neoforged.moddev"
-    id "com.gradleup.shadow" version "8.3.0"
+    id "com.gradleup.shadow" version "9.0.0"
 }
 
 base {
@@ -23,6 +23,14 @@ sourceSets.main.resources {
     srcDir project(":common").sourceSets.main.resources
 }
 
+sourceSets {
+    sodium_v6 {
+        java.srcDir project(":common").file("src/sodium_v6/java")
+        compileClasspath += sourceSets.main.output +
+                sourceSets.main.compileClasspath.filter { !it.name.toLowerCase().contains("sodium") }
+    }
+}
+
 configurations {
     shade
     implementation.extendsFrom shade
@@ -31,6 +39,8 @@ configurations {
 dependencies {
     implementation project(":common")
 
+    sodium_v6CompileOnly "maven.modrinth:sodium:${sodium_old_version.replace("fabric", "neoforge")}"
+
     implementation "maven.modrinth:sodium:${sodium_version.replace("fabric", "neoforge")}"
     implementation "maven.modrinth:iris:${iris_version.replace("fabric", "neoforge")}"
     implementation "maven.modrinth:distanthorizons:${dh_version}"
@@ -38,6 +48,11 @@ dependencies {
     implementation "maven.modrinth:sable:${sable_version}"
 
     jarJar api("dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:${sable_companion_version}")
+
+    compileOnly files(project(":common").sourceSets.main.compileClasspath.files.findAll { file ->
+        def fileName = file.name.toLowerCase()
+        return (fileName.contains("sodium") || fileName.contains("iris")) && !fileName.contains("minecraft")
+    })
 
     implementation "org.anarres:jcpp:1.4.14"
     implementation "io.github.douira:glsl-transformer:${glsl_transformer_version}"
@@ -49,6 +64,8 @@ dependencies {
 
 shadowJar {
     configurations = [project.configurations.shade]
+
+    from sourceSets.sodium_v6.output
 
     relocate 'com.moandjiezana.toml', 'chunksfadein.repack.com.moandjiezana.toml'
 
