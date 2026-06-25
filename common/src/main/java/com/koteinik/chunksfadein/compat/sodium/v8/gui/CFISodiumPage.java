@@ -28,6 +28,8 @@ public class CFISodiumPage implements ConfigEntryPoint {
 	@Override
 	public void registerConfigLate(ConfigBuilder builder) {
 		boolean forceEnableTab = !Services.PLATFORM.isForge() && !CompatibilityHook.isModMenuLoaded;
+		if (!forceEnableTab && !showModTabInSettings)
+			return;
 
 		builder.registerOwnModOptions()
 			.setIcon(ResourceLocation.parse("chunksfadein:icon.png"))
