@@ -12,11 +12,15 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 public class ShaderUtils {
+	public static int shaderVersion = 0;
+
 	public static GlDhMetaRendererExt lodRenderer = null;
 	public static BlazeDhTerrainRendererExt blazeLodRenderer = null;
 
 	private static Object irisTransformCache;
 	private static Method clearCache;
+
+	private static Runnable clearSodiumCache;
 
 	static {
 		if (CompatibilityHook.isIrisLoaded) {
@@ -36,12 +40,25 @@ public class ShaderUtils {
 		}
 	}
 
+	public static void setClearSodiumCache(Runnable clearSodiumCache) {
+		ShaderUtils.clearSodiumCache = clearSodiumCache;
+	}
+
 	public static boolean reloadOnEveryChange() {
 		return CompatibilityHook.isIrisLoaded || CompatibilityHook.isDHRenderingEnabled();
 	}
 
 	public static void reloadWorldRenderer() {
 		try {
+			shaderVersion++;
+			clearSodiumCache.run();
+
+			if (CompatibilityHook.isDHRenderingEnabled() && lodRenderer != null)
+				lodRenderer.rebuildShaders();
+
+			if (CompatibilityHook.isDHBlazeAPI() && blazeLodRenderer != null)
+				blazeLodRenderer.cfi_rebuildPipeline();
+
 			if (CompatibilityHook.isIrisLoaded)
 				clearCache.invoke(irisTransformCache);
 
@@ -49,14 +66,8 @@ public class ShaderUtils {
 				Iris.reload();
 			} else {
 				Minecraft minecraft = Minecraft.getInstance();
-				minecraft.levelRenderer.allChanged();
+				minecraft.levelExtractor.allChanged();
 			}
-
-			if (CompatibilityHook.isDHRenderingEnabled() && lodRenderer != null)
-				lodRenderer.rebuildShaders();
-
-			if (CompatibilityHook.isDHBlazeAPI() && blazeLodRenderer != null)
-				blazeLodRenderer.cfi_rebuildPipeline();
 		} catch (Exception e) {
 			Logger.warn("Failed to reload renderers:", e);
 		}

@@ -2,6 +2,7 @@ package com.koteinik.chunksfadein.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.koteinik.chunksfadein.config.Config.*;
 import static com.koteinik.chunksfadein.core.AnimationType.DISPLACEMENT;
@@ -272,15 +273,14 @@ public class FadeShader {
 			return this;
 
 		newLine("vec4 cfi_getFadeData() {");
-		newLine("return cfi_ChunkFadeDatas[%s].fadeData;".formatted(drawId));
+		newLine("return texelFetch(cfi_u_FadeData, int(u_RegionID * 256u + uint(%s)));".formatted(drawId));
 		newLine("}");
 
 		return this;
 	}
 
 	public FadeShader vertInVars() {
-		newLine("struct cfi_ChunkFadeData { vec4 fadeData; };");
-		newLine("layout(std140) uniform cfi_ubo_ChunkFadeDatas { cfi_ChunkFadeData cfi_ChunkFadeDatas[256]; };");
+		newLine("uniform samplerBuffer cfi_u_FadeData;");
 
 		return this;
 	}
@@ -452,7 +452,8 @@ public class FadeShader {
 			return this;
 
 		newLine("uniform sampler2D cfi_sky;");
-		newLine("uniform vec2 cfi_screenSize;");
+
+		newLine("layout(std140) uniform cfi_u_Globals { vec2 cfi_screenSize; };");
 
 		insertVars(
 			"in",
@@ -482,7 +483,8 @@ public class FadeShader {
 			return this;
 
 		if (animation || fade)
-			newLine("vec4 chunkFadeData = cfi_ChunkFadeDatas[%s].fadeData;".formatted(drawId));
+			newLine("vec4 chunkFadeData = texelFetch(cfi_u_FadeData, int(u_RegionID * 256u + uint(%s)));"
+				.formatted(drawId));
 
 		return vertInitOutVars(localPos, "vec3(%s)".formatted(drawId));
 	}
@@ -735,10 +737,10 @@ public class FadeShader {
 		newLine("vec3 offsetChunkPos = floor(offsetPos / 16.0) + vec3(1.0);");
 		newLine("vec2 texChunkXZ = offsetChunkPos.xz + floor(cfi_lodMaskDim.xz / 2.0);");
 		newLine("float texChunkY = offsetChunkPos.y + cfi_lodMaskOrigin.y - cfi_lodMaskMinY;");
-		newLine("vec3 uvw = (vec3(texChunkXZ.x, texChunkY, texChunkXZ.y) + vec3(0.5)) / cfi_lodMaskDim;");
-		newLine("if (texture(cfi_lodMask, uvw).r == 1.0) { %s }".formatted(whenOccluded));
+		newLine("int cfi_lodMaskIndex = (int(texChunkXZ.y) * int(cfi_lodMaskDim.y) * int(cfi_lodMaskDim.x)) + (int(texChunkY) * int(cfi_lodMaskDim.x)) + int(texChunkXZ.x);");
+		newLine("if (texelFetch(cfi_lodMask, cfi_lodMaskIndex).r != 0) { %s }".formatted(whenOccluded));
 		//		newLine("if (uvw.x > 0.0 && uvw.x < 1.0 && uvw.y > 0.0 && uvw.y < 1.0 && uvw.z > 0.0 && uvw.z < 1.0) { fragColor.r = 1.0; }");
-		//		newLine("if (texture(cfi_lodMask, uvw).r != 0.0) { fragColor.g = texture(cfi_lodMask, uvw).r; }");
+		//		newLine("if (texelFetch(cfi_lodMask, cfi_lodMaskIndex).r != 0) { fragColor.g = float(texelFetch(cfi_lodMask, cfi_lodMaskIndex).r) / 255.0; }");
 		newLine("}");
 
 		return this;
@@ -762,13 +764,30 @@ public class FadeShader {
 		return this;
 	}
 
-	public FadeShader dhUniforms() {
-		newLine("uniform vec4 cfi_chunkFadeData;");
-		newLine("uniform sampler3D cfi_lodMask;");
-		newLine("uniform vec3 cfi_lodMaskDim;");
-		newLine("uniform vec3 cfi_lodMaskMaxDist;");
-		newLine("uniform vec3 cfi_lodMaskOrigin;");
-		newLine("uniform float cfi_lodMaskMinY;");
+	public FadeShader dhSamplers() {
+		newLine("uniform isamplerBuffer cfi_lodMask;");
+
+		return this;
+	}
+
+	public FadeShader dhUniforms(boolean asBlock) {
+		Consumer<String> put = (s) -> {
+			if (asBlock) append(s);
+			else newLine("uniform " + s);
+		};
+
+		if (asBlock) newLine("layout(std140) uniform cfi_u_DHPerDraw {");
+		put.accept("vec4 cfi_chunkFadeData;");
+		if (asBlock) append("};");
+
+		if (asBlock) newLine("layout(std140) uniform cfi_u_DHGlobals {");
+		put.accept("vec3 cfi_lodMaskDim;");
+		put.accept("float cfi_lodMaskMinY;");
+		put.accept("vec3 cfi_lodMaskMaxDist;");
+		put.accept("float cfi_dhStartFadeBlockDistanceSq;");
+		put.accept("vec3 cfi_lodMaskOrigin;");
+		put.accept("bool cfi_dhFadeActive;");
+		if (asBlock) append("};");
 
 		return this;
 	}

@@ -1,6 +1,6 @@
 package com.koteinik.chunksfadein.compat.sodium.ext;
 
-import com.koteinik.chunksfadein.core.DataBuffer;
+import com.koteinik.chunksfadein.compat.sodium.ChunkFadeInController;
 
 public interface RenderSectionExt {
 	boolean hasRenderedBefore();
@@ -15,7 +15,7 @@ public interface RenderSectionExt {
 
 	float getFadeCoeff();
 
-	boolean incrementFadeCoeff(long delta, int sectionIndex, DataBuffer buffer);
+	void incrementFadeCoeff(long delta, int regionIndex, int sectionIndex, ChunkFadeInController controller);
 
-	boolean incrementAnimationOffset(long delta, int sectionIndex, DataBuffer buffer);
+	void incrementAnimationOffset(long delta, int regionIndex, int sectionIndex, ChunkFadeInController controller);
 }

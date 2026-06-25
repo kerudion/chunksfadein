@@ -1,22 +1,48 @@
 package com.koteinik.chunksfadein.compat.sodium.mixin;
 
+import com.koteinik.chunksfadein.compat.sodium.ChunkFadeInController;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionManagerExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
 import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = SodiumWorldRenderer.class, remap = false)
 public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
 	@Shadow
 	private RenderSectionManager renderSectionManager;
+	@Shadow
+	private ClientLevel level;
+	@Shadow
+	private int renderDistance;
+
+	@Unique
+	private ChunkFadeInController cfi_chunkFadeInController = null;
+
+	@Inject(method = "initRenderer", at = @At("TAIL"))
+	private void cfi_initController(CallbackInfo ci) {
+		cfi_chunkFadeInController = new ChunkFadeInController(level, renderDistance);
+	}
+
+	@Inject(method = "deleteRendererState", at = @At("TAIL"))
+	private void cfi_deleteController(CallbackInfo ci) {
+		if (cfi_chunkFadeInController != null) {
+			cfi_chunkFadeInController.delete();
+			cfi_chunkFadeInController = null;
+		}
+	}
 
 	@Override
 	public float[] getAnimationOffset(Vec3 pos) {
@@ -52,5 +78,10 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
 	@Override
 	public @Nullable RenderSectionManager getRenderSectionManager() {
 		return renderSectionManager;
+	}
+
+	@Override
+	public @Nullable ChunkFadeInController getChunkFadeInController() {
+		return cfi_chunkFadeInController;
 	}
 }

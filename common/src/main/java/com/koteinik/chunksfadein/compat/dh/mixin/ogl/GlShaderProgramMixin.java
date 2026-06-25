@@ -99,13 +99,9 @@ public class GlShaderProgramMixin {
 		FadeShader shader = new FadeShader();
 
 		injector.insertAfterInVars(
-			"uniform sampler3D cfi_lodMask;",
-			"uniform vec3 cfi_lodMaskDim;",
-			"uniform vec3 cfi_lodMaskMaxDist;",
-			"uniform vec3 cfi_lodMaskOrigin;",
-			"uniform float cfi_lodMaskMinY;",
-			"uniform bool cfi_dhFadeActive;",
-			"uniform float cfi_dhStartFadeBlockDistanceSq;"
+			shader.dhSamplers()
+				.dhUniforms(false)
+				.flushMultiline()
 		);
 
 		if (Config.isFadeEnabled)

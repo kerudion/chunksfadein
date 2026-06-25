@@ -1,6 +1,7 @@
 package com.koteinik.chunksfadein.compat.mc.mixin;
 
 import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
+import com.koteinik.chunksfadein.compat.sodium.ChunkFadeInController;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
@@ -15,7 +16,6 @@ import com.mojang.blaze3d.framegraph.FramePass;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
-import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import net.caffeinemc.mods.sodium.client.render.chunk.lists.ChunkRenderList;
 import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
@@ -24,11 +24,12 @@ import net.caffeinemc.mods.sodium.client.world.LevelRendererExtension;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
-import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Final;
@@ -47,13 +48,13 @@ public class LevelRendererMixin {
 	private LevelTargetBundle targets;
 
 	@Inject(
-		method = "renderLevel",
+		method = "render",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/renderer/LevelRenderer;addMainPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/culling/Frustum;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;ZLnet/minecraft/client/renderer/state/level/LevelRenderState;Lnet/minecraft/client/DeltaTracker;Lnet/minecraft/util/profiling/ProfilerFiller;Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;)V"
+			target = "Lnet/minecraft/client/renderer/LevelRenderer;addMainPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/feature/FeatureRenderDispatcher$PreparedFrame;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lnet/minecraft/client/renderer/state/level/LevelRenderState;Lnet/minecraft/util/profiling/ProfilerFiller;Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;)V"
 		)
 	)
-	private void modifyRenderLevel(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker, boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, ChunkSectionsToRender chunkSectionsToRender, CallbackInfo ci, @Local FrameGraphBuilder frameGraphBuilder) {
+	private void modifyRenderLevel(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker, boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, CallbackInfo ci, @Local FrameGraphBuilder frameGraphBuilder) {
 		if (!Config.isModEnabled)
 			return;
 
@@ -64,33 +65,51 @@ public class LevelRendererMixin {
 			framePass.executes(() -> {
 				SkyFBO fbo = SkyFBO.getInstance();
 				if (fbo != null)
-					fbo.blitFromTexture(
-						Utils.mainColorTexture(),
-						Utils.mainTargetWidth(),
-						Utils.mainTargetHeight(),
-						true
-					);
+					fbo.blitFromTexture(Utils.mainColorTexture());
 			});
 		}
 
-		SodiumWorldRenderer sodiumWorld = ((LevelRendererExtension) this).sodium$getWorldRenderer();
-		SodiumWorldRendererExt ext = (SodiumWorldRendererExt) sodiumWorld;
-		RenderSectionManager manager = ext.getRenderSectionManager();
-		if (manager == null)
+		SodiumWorldRendererExt worldRenderer = (SodiumWorldRendererExt) ((LevelRendererExtension) this).sodium$getWorldRenderer();
+		RenderSectionManager sectionManager = worldRenderer.getRenderSectionManager();
+		if (sectionManager == null)
 			return;
 
-		Iterator<ChunkRenderList> renderLists = manager.getRenderLists().iterator();
+		ChunkFadeInController controller = worldRenderer.getChunkFadeInController();
+		if (controller == null)
+			return;
+
+		controller.updateUniforms();
+
+		if (CompatibilityHook.isDHRenderingEnabled())
+			LodMaskTexture.prepare();
+
+		Iterator<ChunkRenderList> renderLists = sectionManager.getRenderLists().iterator();
 		while (renderLists.hasNext()) {
 			ChunkRenderList renderList = renderLists.next();
 
+			RenderRegion region = renderList.getRegion();
+			int regionIndex = region.getId();
+			if (regionIndex == -1) continue;
+
+			RenderRegionExt regionExt = (RenderRegionExt) region;
+
 			ByteIterator geometrySections = renderList.sectionsWithGeometryIterator(false);
-			if (geometrySections != null)
-				while (geometrySections.hasNext())
-					processChunk(renderList.getRegion(), geometrySections.nextByteAsInt());
+			if (geometrySections == null) continue;
+
+			while (geometrySections.hasNext()) {
+				int sectionIndex = geometrySections.nextByteAsInt();
+
+				RenderSectionExt section = regionExt.getSection(sectionIndex);
+				if (section == null) continue;
+
+				controller.processChunk(section, regionIndex, sectionIndex);
+			}
 		}
 
+		controller.uploadToBuffer();
+
 		if (CompatibilityHook.isDHRenderingEnabled())
-			LodMaskTexture.createAndUpdate();
+			LodMaskTexture.upload();
 	}
 
 	@Inject(
@@ -104,7 +123,7 @@ public class LevelRendererMixin {
 	private void modifySubmitBlockEntities(
 		PoseStack matrices,
 		LevelRenderState levelRenderState,
-		SubmitNodeStorage submitNodeStorage,
+		SubmitNodeCollector submitNodeCollector,
 		CallbackInfo ci,
 		@Local BlockEntityRenderState state
 	) {
@@ -115,19 +134,11 @@ public class LevelRendererMixin {
 		if (ext.getRenderSectionManager() == null)
 			return;
 
-		float[] offset = ext.getAnimationOffset(state.blockPos.getCenter());
+		BlockPos pos = state.blockPos;
+		float[] offset = ext.getAnimationOffset(new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
 		if (offset == null)
 			return;
 
 		matrices.translate(offset[0], offset[1], offset[2]);
-	}
-
-	private static void processChunk(RenderRegion region, int sectionIndex) {
-		RenderSection section = region.getSection(sectionIndex);
-		if (section == null) return;
-
-		RenderRegionExt regionExt = (RenderRegionExt) region;
-
-		regionExt.processChunk((RenderSectionExt) section, sectionIndex);
 	}
 }

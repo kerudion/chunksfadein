@@ -6,12 +6,12 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "client": [
-    "ShaderLoaderMixin",
-    "ChunkShaderInterfaceMixin",
     "DefaultChunkRendererMixin",
     "RenderRegionMixin",
     "RenderSectionManagerMixin",
     "RenderSectionMixin",
+    "ShaderChunkRendererMixin",
+    "ShaderManagerMixin",
     "SodiumWorldRendererMixin"
   ],
   "server": [],

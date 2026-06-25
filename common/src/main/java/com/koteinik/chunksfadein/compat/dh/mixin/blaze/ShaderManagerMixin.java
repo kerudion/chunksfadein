@@ -47,8 +47,7 @@ public abstract class ShaderManagerMixin {
 			injector.insertAfterOutVars("flat out int cfi_material;");
 
 		injector.insertAfterOutVars(shader
-			.newLine("uniform vec4 cfi_chunkFadeData;")
-			.newLine("uniform vec3 cfi_lodMaskOrigin;")
+			.dhUniforms(true)
 			.vertOutVars()
 			.utilFunctions()
 			.flushMultiline());
@@ -63,7 +62,10 @@ public abstract class ShaderManagerMixin {
 				.vertInitMod("localPos", "vertexWorldPos", false, "offsetPos", true)
 				// push water and lava slightly down
 				.newLine("if (irisMaterial == 12 || irisMaterial == 6) { vertexWorldPos.y -= 0.115; }")
-				.newLineIf(Config.isFadeEnabled && !CompatibilityHook.isDHDitherEnabled(), "cfi_material = irisMaterial;")
+				.newLineIf(
+					Config.isFadeEnabled && !CompatibilityHook.isDHDitherEnabled(),
+					"cfi_material = irisMaterial;"
+				)
 				.flushMultiline()
 		);
 
@@ -76,13 +78,9 @@ public abstract class ShaderManagerMixin {
 		FadeShader shader = new FadeShader();
 
 		injector.insertAfterInVars(
-			"uniform sampler3D cfi_lodMask;",
-			"uniform vec3 cfi_lodMaskDim;",
-			"uniform vec3 cfi_lodMaskMaxDist;",
-			"uniform vec3 cfi_lodMaskOrigin;",
-			"uniform float cfi_lodMaskMinY;",
-			"uniform bool cfi_dhFadeActive;",
-			"uniform float cfi_dhStartFadeBlockDistanceSq;"
+			shader.dhSamplers()
+				.dhUniforms(true)
+				.flushMultiline()
 		);
 
 		if (Config.isFadeEnabled && !CompatibilityHook.isDHDitherEnabled())

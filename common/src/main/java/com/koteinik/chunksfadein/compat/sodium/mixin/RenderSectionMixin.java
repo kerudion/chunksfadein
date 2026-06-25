@@ -2,9 +2,9 @@ package com.koteinik.chunksfadein.compat.sodium.mixin;
 
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
+import com.koteinik.chunksfadein.compat.sodium.ChunkFadeInController;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
 import com.koteinik.chunksfadein.config.Config;
-import com.koteinik.chunksfadein.core.DataBuffer;
 import com.koteinik.chunksfadein.core.Fader;
 import com.koteinik.chunksfadein.core.Utils;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
@@ -62,31 +62,31 @@ public class RenderSectionMixin implements RenderSectionExt {
 	}
 
 	@Override
-	public boolean incrementFadeCoeff(long delta, int sectionIndex, DataBuffer buffer) {
+	public void incrementFadeCoeff(long delta, int regionIndex, int sectionIndex, ChunkFadeInController controller) {
 		if (completedFade)
-			return false;
+			return;
 
 		float fadeCoeff = fader.incrementFadeCoeff(delta, isNearPlayer());
-		buffer.put(sectionIndex, 3, fadeCoeff);
+		controller.write(regionIndex, sectionIndex, 3, fadeCoeff);
 
 		completedFade |= fadeCoeff == 1f;
-		return true;
 	}
 
 	@Override
-	public boolean incrementAnimationOffset(long delta, int sectionIndex, DataBuffer buffer) {
+	public void incrementAnimationOffset(long delta, int regionIndex, int sectionIndex, ChunkFadeInController controller) {
 		if (completedAnimation)
-			return false;
+			return;
 
-		if (!Config.animateWithDH && CompatibilityHook.isDHRenderingEnabled())
-			return completedAnimation = true;
+		if (!Config.animateWithDH && CompatibilityHook.isDHRenderingEnabled()) {
+			controller.write(regionIndex, sectionIndex, 0f, 0f, 0f);
+			completedAnimation = true;
+			return;
+		}
 
 		float[] offset = fader.incrementAnimationOffset(delta, isNearPlayer());
-		for (int i = 0; i < 3; i++)
-			buffer.put(sectionIndex, i, offset[i]);
+		controller.write(regionIndex, sectionIndex, offset[0], offset[1], offset[2]);
 
 		completedAnimation |= offset[0] == 0f && offset[1] == 0f && offset[2] == 0f;
-		return true;
 	}
 
 	@Override

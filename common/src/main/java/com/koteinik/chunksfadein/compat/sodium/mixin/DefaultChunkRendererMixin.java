@@ -1,16 +1,18 @@
 package com.koteinik.chunksfadein.compat.sodium.mixin;
 
-import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
-import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.compat.sodium.ChunkFadeInController;
+import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
+import com.koteinik.chunksfadein.core.SkyFBO;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuSampler;
-import net.caffeinemc.mods.sodium.client.gl.device.CommandList;
+import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.ChunkRenderMatrices;
 import net.caffeinemc.mods.sodium.client.render.chunk.DefaultChunkRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.lists.ChunkRenderListIterable;
-import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
-import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
 import net.caffeinemc.mods.sodium.client.render.chunk.terrain.TerrainRenderPass;
 import net.caffeinemc.mods.sodium.client.render.viewport.CameraTransform;
 import net.caffeinemc.mods.sodium.client.util.FogParameters;
@@ -25,35 +27,38 @@ public class DefaultChunkRendererMixin {
 		method = "render",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/caffeinemc/mods/sodium/client/render/chunk/DefaultChunkRenderer;executeDrawBatch(Lnet/caffeinemc/mods/sodium/client/gl/device/CommandList;Lnet/caffeinemc/mods/sodium/client/gl/tessellation/GlTessellation;Lnet/caffeinemc/mods/sodium/client/gl/device/MultiDrawBatch;)V"
+			target = "Lcom/mojang/blaze3d/systems/RenderPass;setUniform(Ljava/lang/String;Lcom/mojang/blaze3d/buffers/GpuBuffer;)V",
+			shift = At.Shift.AFTER,
+			ordinal = 1
 		)
 	)
-	private void modifyChunkRender(
+	private void cfi_bindUniforms(
 		ChunkRenderMatrices matrices,
-		CommandList commandList,
 		ChunkRenderListIterable renderLists,
 		TerrainRenderPass renderPass,
 		CameraTransform camera,
 		FogParameters parameters,
 		boolean indexedRenderingEnabled,
 		GpuSampler terrainSampler,
+		GpuBuffer uniformData,
+		GpuBuffer sectionTimeInfo,
 		CallbackInfo ci,
-		@Local(ordinal = 0) ChunkShaderInterface shader,
-		@Local(ordinal = 0) RenderRegion region
+		@Local(name = "pass") RenderPass pass
 	) {
-		if (shader == null)
+		SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();
+		if (renderer == null)
 			return;
-		if (!Config.isModEnabled)
+
+		ChunkFadeInController controller = ((SodiumWorldRendererExt) renderer).getChunkFadeInController();
+		if (controller == null)
 			return;
 
-		// Made to not interrupt Axiom mixin
-		uploadToBuffer(commandList, shader, region);
-	}
-
-	private void uploadToBuffer(CommandList commandList, ChunkShaderInterface shader, RenderRegion region) {
-		ChunkShaderInterfaceExt ext = (ChunkShaderInterfaceExt) shader;
-		RenderRegionExt regionExt = (RenderRegionExt) region;
-
-		regionExt.uploadToBuffer(ext, commandList);
+		pass.setUniform("cfi_u_FadeData", controller.getFadeBuffer());
+		pass.setUniform("cfi_u_Globals", controller.getUniformBuffer());
+		pass.bindTexture(
+			"cfi_sky",
+			SkyFBO.getInstance().texture.getColorTextureView(),
+			RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)
+		);
 	}
 }

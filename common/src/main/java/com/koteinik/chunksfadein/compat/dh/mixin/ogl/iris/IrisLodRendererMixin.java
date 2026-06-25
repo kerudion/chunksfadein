@@ -38,7 +38,7 @@ public class IrisLodRendererMixin {
 		if (!Config.isModEnabled || !Config.isFadeEnabled || !CompatibilityHook.isDHSSAOEnabled())
 			return;
 
-		SkyFBO.bindAttachment(GL30.GL_COLOR_ATTACHMENT1);
+		SkyFBO.getGlInstance().bindColorAttachment(GL30.GL_COLOR_ATTACHMENT1);
 	}
 
 	@Inject(
@@ -53,7 +53,7 @@ public class IrisLodRendererMixin {
 		if (!Config.isModEnabled || !Config.isFadeEnabled || !CompatibilityHook.isDHRenderingEnabled())
 			return;
 
-		SkyFBO fbo = SkyFBO.getInstance();
+		SkyFBO.Gl fbo = SkyFBO.getGlInstance();
 		if (fbo == null)
 			return;
 
@@ -69,15 +69,13 @@ public class IrisLodRendererMixin {
 				fbo.blitFromFramebuffer(
 					irisDh.getSolidFBWrapper().getId(),
 					Utils.mainTargetWidth(),
-					Utils.mainTargetHeight(),
-					false
+					Utils.mainTargetHeight()
 				);
 			} else {
 				fbo.blitFromTexture(
 					((GlDhMetaRendererExt) metaRenderer).activeColorTexture(),
 					Utils.mainTargetWidth(),
-					Utils.mainTargetHeight(),
-					false
+					Utils.mainTargetHeight()
 				);
 			}
 		} catch (Exception e) {

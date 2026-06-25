@@ -6,35 +6,34 @@ import com.koteinik.chunksfadein.core.FadeShader;
 import com.koteinik.chunksfadein.core.FogOverrideMode;
 import com.koteinik.chunksfadein.core.ShaderInjector;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.shaders.ShaderType;
+import net.minecraft.client.renderer.ShaderManager;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(value = ShaderLoader.class, remap = false)
-public abstract class ShaderLoaderMixin {
-	@WrapMethod(method = "getShaderSource")
-	private static String modifyConstructor(Identifier name, Operation<String> original) {
-		String source = original.call(name);
-		if (source == null || CompatibilityHook.isIrisShaderPackInUse())
+@Mixin(value = ShaderManager.class)
+public class ShaderManagerMixin {
+	@ModifyReturnValue(method = "getShader", at = @At("RETURN"))
+	private String cfi_injectShaders(String source, @Local Identifier location, @Local ShaderType type) {
+		if (CompatibilityHook.isIrisShaderPackInUse())
 			return source;
 
-		String path = name.getPath();
+		String path = location.getPath();
 
 		String[] splittedPath = path.split("/");
 		String shaderFileName = splittedPath[splittedPath.length - 1];
+		if (!shaderFileName.startsWith("block_layer_opaque"))
+			return source;
 
-		switch (shaderFileName) {
-			case "fog.glsl":
-				source = prepareFogInjector().get(source);
-				break;
-
-			case "block_layer_opaque.fsh":
+		switch (type) {
+			case FRAGMENT:
 				source = prepareFragmentInjector().get(source);
 				break;
 
-			case "block_layer_opaque.vsh":
+			case VERTEX:
 				source = prepareVertexInjector().get(source);
 				break;
 
@@ -45,29 +44,20 @@ public abstract class ShaderLoaderMixin {
 		return source;
 	}
 
-	private static ShaderInjector prepareFogInjector() {
-		ShaderInjector injector = new ShaderInjector();
-
-		if (!Config.isModEnabled || !Config.isFadeEnabled || Config.fogOverrideMode == FogOverrideMode.NONE)
-			return injector;
-
-		if (Config.fadeMixType == FadeMixType.OKLAB)
-			injector.replace(
-				"mix(fragColor.rgb, fogColor.rgb, fogValue * fogColor.a)",
-				"_cfi_mix_srgb_in_oklab(fragColor.rgb, fogColor.rgb, fogValue * fogColor.a)"
-			);
-
-		return injector;
-	}
-
 	private static ShaderInjector prepareFragmentInjector() {
 		ShaderInjector injector = new ShaderInjector();
 		FadeShader shader = new FadeShader();
 
-		injector.insertAfterUniforms(shader.fragInVars().flushMultiline());
+		injector.insertAfterInVars(shader.fragInVars().flushMultiline());
 
 		if (!Config.isModEnabled || !Config.isFadeEnabled)
 			return injector;
+
+		if (Config.fogOverrideMode != FogOverrideMode.NONE && Config.fadeMixType == FadeMixType.OKLAB)
+			injector.replace(
+				"mix(fragColor.rgb, fogColor.rgb, fogValue * fogColor.a)",
+				"_cfi_mix_srgb_in_oklab(fragColor.rgb, fogColor.rgb, fogValue * fogColor.a)"
+			);
 
 		injector.insertAfterStr("#version 330 core", shader.utilFunctions().flushMultiline());
 
@@ -109,10 +99,13 @@ public abstract class ShaderLoaderMixin {
 		ShaderInjector injector = new ShaderInjector();
 		FadeShader shader = new FadeShader();
 
-		injector.insertAfterUniforms(shader
-			.vertInVars()
-			.vertOutVars()
-			.flushMultiline());
+		injector.insertAfterStr(
+			"uint _material_params;",
+			shader
+				.vertInVars()
+				.vertOutVars()
+				.flushMultiline()
+		);
 
 		injector.insertAfterStr("#version 330 core", shader.utilFunctions().flushMultiline());
 
@@ -124,6 +117,12 @@ public abstract class ShaderLoaderMixin {
 				.vertInitMod("_vert_position", "cfi_position", true, "vec3({mesh_id})", true)
 				.flushMultiline()
 		);
+
+		if (Config.isModEnabled)
+			injector.replace(
+				"fadeFactor = (chunkFade < 0) ? 1.0 : fade;",
+				"fadeFactor = 1.0;"
+			);
 
 		return injector;
 	}

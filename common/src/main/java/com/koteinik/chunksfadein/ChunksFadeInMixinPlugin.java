@@ -2,7 +2,7 @@ package com.koteinik.chunksfadein;
 
 import DistantHorizons.libraries.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.koteinik.chunksfadein.platform.Services;
-import com.seibel.distanthorizons.api.enums.config.EDhApiRenderApi;
+import com.seibel.distanthorizons.api.enums.config.EDhApiRenderingEngine;
 import com.seibel.distanthorizons.common.wrappers.VersionConstants;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -17,25 +17,25 @@ public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 
 	static {
 		if (hasClass("com.seibel.distanthorizons.api.DhApi")) {
-			EDhApiRenderApi api = EDhApiRenderApi.AUTO;
+			EDhApiRenderingEngine api = EDhApiRenderingEngine.AUTO;
 
 			File dhConfig = new File(Services.PLATFORM.getConfigDirectory(), "DistantHorizons.toml");
 			if (dhConfig.exists()) {
 				try (CommentedFileConfig cfg = CommentedFileConfig.builder(dhConfig).build()) {
 					cfg.load();
-					EDhApiRenderApi v = cfg.getEnum(
-						"client.advanced.graphics.experimental.renderingApi",
-						EDhApiRenderApi.class
+					EDhApiRenderingEngine v = cfg.getEnum(
+						"client.advanced.graphics.experimental.renderingEngine",
+						EDhApiRenderingEngine.class
 					);
 
 					if (v != null) api = v;
 				}
 			}
 
-			if (api == EDhApiRenderApi.AUTO)
-				api = VersionConstants.INSTANCE.getDefaultRenderingApi();
+			if (api == EDhApiRenderingEngine.AUTO)
+				api = VersionConstants.INSTANCE.getDefaultRenderingEngine();
 
-			dhIsBlaze = api == EDhApiRenderApi.BLAZE_3D;
+			dhIsBlaze = api == EDhApiRenderingEngine.BLAZE_3D;
 		}
 	}
 

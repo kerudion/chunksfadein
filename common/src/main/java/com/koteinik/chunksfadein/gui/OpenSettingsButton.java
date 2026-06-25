@@ -15,7 +15,7 @@ public class OpenSettingsButton extends Button.Plain {
 	public OpenSettingsButton(Screen parent, Minecraft client, int x, int y) {
 		super(
 			x, y, buttonH, buttonW, CommonComponents.EMPTY,
-			(btn) -> client.setScreen(new SettingsScreen(parent)), DEFAULT_NARRATION
+			(btn) -> client.setScreenAndShow(new SettingsScreen(parent)), DEFAULT_NARRATION
 		);
 	}
 

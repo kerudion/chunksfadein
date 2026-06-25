@@ -99,7 +99,7 @@ public class SettingsScreen extends Screen {
 		if (dirty)
 			ShaderUtils.reloadWorldRenderer();
 
-		minecraft.setScreen(parent);
+		minecraft.setScreenAndShow(parent);
 	}
 
 	private void rebuildList() {

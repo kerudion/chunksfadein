@@ -1,6 +1,6 @@
 package com.koteinik.chunksfadein.core;
 
-import com.mojang.blaze3d.opengl.GlTexture;
+import com.mojang.blaze3d.textures.GpuTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.BufferUtils;
@@ -15,22 +15,19 @@ import java.nio.ByteBuffer;
 
 public class Utils {
 	public static int mainTargetWidth() {
-		return Minecraft.getInstance().getMainRenderTarget().width;
+		return Minecraft.getInstance().gameRenderer.mainRenderTarget().width;
 	}
 
 	public static int mainTargetHeight() {
-		return Minecraft.getInstance().getMainRenderTarget().height;
+		return Minecraft.getInstance().gameRenderer.mainRenderTarget().height;
 	}
 
-	public static int mainColorTexture() {
-		if (Minecraft.getInstance().getMainRenderTarget().getColorTexture() instanceof GlTexture texture)
-			return texture.glId();
-		else
-			return -1;
+	public static GpuTexture mainColorTexture() {
+		return Minecraft.getInstance().gameRenderer.mainRenderTarget().getColorTexture();
 	}
 
 	public static Vec3 cameraPosition() {
-		return Minecraft.getInstance().gameRenderer.getMainCamera().position();
+		return Minecraft.getInstance().gameRenderer.mainCamera().position();
 	}
 
 	public static int chunkRenderDistance() {
