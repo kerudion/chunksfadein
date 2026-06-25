@@ -25,36 +25,34 @@ public class UpdateNotifier {
 					ModrinthVersion latestVersion = newVersions.get(0);
 
 					List<Component> textList = new ArrayList<>();
-					textList.add(Component.literal("§7New version of §2Chunks Fade In §7is available!"));
+					textList.add(Component.literal(" §2§lChunks Fade In §7has a new version!"));
 
 					String versions = newVersions.size() == 1
 						? "§6v" + latestVersion.version
-						: "§6v%s§7-§6v%s".formatted(
+						: "§6v%s§8–§6v%s".formatted(
 							newVersions.get(newVersions.size() - 1).version,
 							latestVersion.version
 						);
-					textList.add(Component.literal(versions + "§r§7 changelog:"));
+					textList.add(Component.literal(" §8↳ " + versions + "§r§7 changelog:"));
 
 					String changelogs = String.join(
-						"\n", newVersions.stream()
-							.map(v -> v.changelog)
-							.toList()
+						"\n", newVersions.stream().map(v -> v.changelog.replaceAll("(?m)^", "  ")).toList()
 					).replace("\r", "");
-					textList.add(Component.literal("§7" + changelogs));
-
-					Style issuesLink = Style.EMPTY.withClickEvent(new ClickEvent(
-						ClickEvent.Action.OPEN_URL,
-						"https://github.com/kerudion/chunksfadein/issues"
-					));
-					textList.addAll(
-						Component.literal("§cIMPORTANT: Report bugs to Github §n(click)§r§c!").toFlatList(issuesLink)
-					);
+					textList.add(Component.literal("§8" + changelogs));
 
 					Style downloadLink = Style.EMPTY.withClickEvent(new ClickEvent(
 						ClickEvent.Action.OPEN_URL,
 						latestVersion.downloadUrl
 					));
-					textList.addAll(Component.literal("§7§nClick to download").toFlatList(downloadLink));
+					textList.addAll(Component.literal(" §2> Download").toFlatList(downloadLink));
+
+					Style issuesLink = Style.EMPTY.withClickEvent(new ClickEvent(
+						ClickEvent.Action.OPEN_URL,
+						"https://github.com/kerudion/chunksfadein/issues"
+					));
+
+					textList.addAll(Component.literal(" §8§nReport Chunks Fade In bugs to GitHub")
+						.toFlatList(issuesLink));
 
 					Minecraft minecraft = Minecraft.getInstance();
 					LocalPlayer player = minecraft.player;
