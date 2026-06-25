@@ -6,28 +6,6 @@ base {
     archivesName = "chunksfadein-neoforge"
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(project.java_version as int)
-        vendor = JvmVendorSpec.ORACLE
-    }
-}
-
-def oracleJavaLauncher = javaToolchains.launcherFor {
-    languageVersion = JavaLanguageVersion.of(project.java_version as int)
-    vendor = JvmVendorSpec.ORACLE
-}
-def oracleJavaPath = oracleJavaLauncher.map { it.executablePath.asFile.absolutePath }
-
-afterEvaluate {
-    tasks.withType(net.neoforged.nfrtgradle.NeoFormRuntimeTask).configureEach {
-        javaExecutable.set(oracleJavaPath)
-    }
-    tasks.withType(net.neoforged.nfrtgradle.CreateMinecraftArtifacts).configureEach {
-        toolsJavaExecutable.set(oracleJavaPath)
-    }
-}
-
 neoForge {
     version = neoforge_version
 }
