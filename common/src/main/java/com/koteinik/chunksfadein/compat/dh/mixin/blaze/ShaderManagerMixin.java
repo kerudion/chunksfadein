@@ -28,9 +28,9 @@ public abstract class ShaderManagerMixin {
 			return original;
 
 		String path = id.getPath();
-		if (type == ShaderType.VERTEX && "lod/blaze/vert".equals(path))
+		if (type == ShaderType.VERTEX && "terrain/blaze/vert".equals(path))
 			return cfi_terrainVertexInjector().get(original);
-		else if (type == ShaderType.FRAGMENT && "lod/blaze/frag".equals(path))
+		else if (type == ShaderType.FRAGMENT && "terrain/blaze/frag".equals(path))
 			return cfi_terrainFragmentInjector().get(original);
 		else
 			return original;

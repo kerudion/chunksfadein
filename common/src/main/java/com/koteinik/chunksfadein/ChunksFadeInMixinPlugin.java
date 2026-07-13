@@ -33,7 +33,9 @@ public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 			}
 
 			if (api == EDhApiRenderingEngine.AUTO)
-				api = VersionConstants.INSTANCE.getDefaultRenderingEngine();
+				api = hasClass("net.irisshaders.iris.api.v0.IrisApi")
+					? EDhApiRenderingEngine.OPEN_GL
+					: VersionConstants.INSTANCE.getDefaultRenderingEngine();
 
 			dhIsBlaze = api == EDhApiRenderingEngine.BLAZE_3D;
 		}
