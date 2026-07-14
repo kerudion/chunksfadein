@@ -3,6 +3,7 @@ package com.koteinik.chunksfadein.compat.mc.mixin;
 import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
 import com.koteinik.chunksfadein.compat.sodium.ext.*;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.RenderPhase;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.core.Utils;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
@@ -21,6 +22,22 @@ import java.util.Iterator;
 
 @Mixin(value = LevelRenderer.class)
 public class LevelRendererMixin {
+	@Inject(
+		method = "renderLevel",
+		at = @At(value = "HEAD")
+	)
+	private void cfi_levelStart(DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
+		RenderPhase.renderingLevel = true;
+	}
+
+	@Inject(
+		method = "renderLevel",
+		at = @At(value = "RETURN")
+	)
+	private void cfi_levelEnd(DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
+		RenderPhase.renderingLevel = false;
+	}
+
 	@Inject(
 		method = "renderLevel",
 		at = @At(

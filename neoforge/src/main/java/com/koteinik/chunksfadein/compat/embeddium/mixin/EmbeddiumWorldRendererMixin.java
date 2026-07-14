@@ -3,6 +3,8 @@ package com.koteinik.chunksfadein.compat.embeddium.mixin;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionManagerExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.RenderPhase;
+import com.koteinik.chunksfadein.core.Utils;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -13,7 +15,6 @@ import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.BlockDestructionProgress;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.embeddedt.embeddium.impl.render.EmbeddiumWorldRenderer;
@@ -42,22 +43,17 @@ public class EmbeddiumWorldRendererMixin implements SodiumWorldRendererExt {
 		);
 
 		if (Config.isCurvatureEnabled) {
-			Minecraft client = Minecraft.getInstance();
+			Vec3 cam = Utils.cameraPosition();
 
-			Entity camera = client.getCameraEntity();
-			if (camera != null) {
-				Vec3 cam = camera.position();
+			double x = pos.x - cam.x;
+			double z = pos.z - cam.z;
 
-				double x = pos.x - cam.x;
-				double z = pos.z - cam.z;
+			if (offset == null)
+				offset = new float[3];
+			else
+				offset = offset.clone();
 
-				if (offset == null)
-					offset = new float[3];
-				else
-					offset = offset.clone();
-
-				offset[1] -= (float) ((x * x + z * z) / Config.worldCurvature);
-			}
+			offset[1] -= (float) ((x * x + z * z) / Config.worldCurvature);
 		}
 
 		return offset;
@@ -97,6 +93,7 @@ public class EmbeddiumWorldRendererMixin implements SodiumWorldRendererExt {
 		float[] offset = null;
 
 		if (Config.isModEnabled && (Config.isAnimationEnabled || Config.isCurvatureEnabled)
+			&& RenderPhase.renderingLevel
 			&& getRenderSectionManager() != null)
 			offset = getAnimationOffset(entity.getBlockPos().getCenter());
 

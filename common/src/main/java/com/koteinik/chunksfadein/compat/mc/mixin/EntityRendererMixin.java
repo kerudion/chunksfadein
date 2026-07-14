@@ -2,6 +2,7 @@ package com.koteinik.chunksfadein.compat.mc.mixin;
 
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.RenderPhase;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -15,6 +16,7 @@ public class EntityRendererMixin {
 	@Inject(method = "getRenderOffset", at = @At(value = "RETURN"), cancellable = true)
 	public void modifyGetPositionOffsetNew(Entity entity, float tickDelta, CallbackInfoReturnable<Vec3> cir) {
 		if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled)
+			|| !RenderPhase.renderingLevel
 			|| entity.level() == null
 			|| entity.level().getEntity(entity.getId()) == null)
 			return;
@@ -30,6 +32,6 @@ public class EntityRendererMixin {
 		if (offset == null)
 			return;
 
-		cir.setReturnValue(new Vec3(offset[0], offset[1], offset[2]));
+		cir.setReturnValue(cir.getReturnValue().add(offset[0], offset[1], offset[2]));
 	}
 }
