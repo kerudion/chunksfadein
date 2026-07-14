@@ -3,6 +3,7 @@ package com.koteinik.chunksfadein.compat.mc.mixin;
 
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.RenderPhase;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemFrameRenderer;
@@ -24,6 +25,7 @@ public class ItemFrameEntityRendererMixin {
 	)
 	private void modifyRender(ItemFrame entity, float f, float g, PoseStack stack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
 		if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled)
+			|| !RenderPhase.renderingLevel
 			|| entity.level() == null)
 			return;
 

@@ -3,6 +3,7 @@ package com.koteinik.chunksfadein.compat.sodium.mixin;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionManagerExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.RenderPhase;
 import com.koteinik.chunksfadein.core.Utils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -14,7 +15,6 @@ import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.BlockDestructionProgress;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -43,22 +43,17 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
 		);
 
 		if (Config.isCurvatureEnabled) {
-			Minecraft client = Minecraft.getInstance();
+			Vec3 cam = Utils.cameraPosition();
 
-			Entity camera = client.getCameraEntity();
-			if (camera != null) {
-				Vec3 cam = camera.position();
+			double x = pos.x - cam.x;
+			double z = pos.z - cam.z;
 
-				double x = pos.x - cam.x;
-				double z = pos.z - cam.z;
+			if (offset == null)
+				offset = new float[3];
+			else
+				offset = offset.clone();
 
-				if (offset == null)
-					offset = new float[3];
-				else
-					offset = offset.clone();
-
-				offset[1] -= (float) ((x * x + z * z) / Config.worldCurvature);
-			}
+			offset[1] -= (float) ((x * x + z * z) / Config.worldCurvature);
 		}
 
 		return offset;
@@ -86,7 +81,8 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
 	private static void modifySubmitBlockEntities(
 		PoseStack matrices, RenderBuffers bufferBuilders, Long2ObjectMap<SortedSet<BlockDestructionProgress>> blockBreakingProgressions, float tickDelta, MultiBufferSource.BufferSource immediate, double x, double y, double z, BlockEntityRenderDispatcher dispatcher, BlockEntity entity, CallbackInfo ci
 	) {
-		if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled))
+		if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled)
+			|| !RenderPhase.renderingLevel)
 			return;
 
 		SodiumWorldRendererExt ext = ((SodiumWorldRendererExt) SodiumWorldRenderer.instance());
@@ -104,7 +100,7 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
 		if (offset == null)
 			return;
 
-		Vector3f worldShift = new Vector3f(offset[0],  offset[1], offset[2]);
+		Vector3f worldShift = new Vector3f(offset[0], offset[1], offset[2]);
 		viewRot.transform(worldShift);
 		matrices.last().pose().translateLocal(worldShift.x, worldShift.y, worldShift.z);
 	}

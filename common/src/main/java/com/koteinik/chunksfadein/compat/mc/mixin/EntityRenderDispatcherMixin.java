@@ -2,6 +2,7 @@ package com.koteinik.chunksfadein.compat.mc.mixin;
 
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.RenderPhase;
 import com.koteinik.chunksfadein.core.Utils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
@@ -34,6 +35,7 @@ public class EntityRenderDispatcherMixin {
 		CallbackInfo ci
 	) {
 		if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled)
+			|| !RenderPhase.renderingLevel
 			|| entity.level() == null
 			|| entity.level().getEntity(entity.getId()) == null)
 			return;

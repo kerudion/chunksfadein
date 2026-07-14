@@ -1,6 +1,7 @@
 package com.koteinik.chunksfadein.compat.mc.mixin;
 
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.RenderPhase;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.core.Utils;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,6 +17,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = LevelRenderer.class)
 public class LevelRendererMixin {
+	@Inject(
+		method = "renderLevel",
+		at = @At(value = "HEAD")
+	)
+	private void cfi_levelStart(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
+		RenderPhase.renderingLevel = true;
+	}
+
+	@Inject(
+		method = "renderLevel",
+		at = @At(value = "RETURN")
+	)
+	private void cfi_levelEnd(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
+		RenderPhase.renderingLevel = false;
+	}
+
 	@Inject(
 		method = "renderLevel",
 		at = @At(
