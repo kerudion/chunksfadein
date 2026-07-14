@@ -6,11 +6,15 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "client": [
+    "blaze.BlazeDhMetaRendererMixin_fabric",
+    "blaze.BlazeDhMetaRendererMixin_neoforge",
     "blaze.BlazeDhTerrainRendererMixin_fabric",
     "blaze.BlazeDhTerrainRendererMixin_neoforge",
     "blaze.BlazeLodBufferContainerMixin",
-    "blaze.GlDeviceMixin",
-    "blaze.GlProgramMixin",
+    "blaze.RenderPassWrapperMixin_fabric",
+    "blaze.RenderPassWrapperMixin_neoforge",
+    "blaze.RenderPipelineBuilderWrapperMixin_fabric",
+    "blaze.RenderPipelineBuilderWrapperMixin_neoforge",
     "blaze.ShaderManagerMixin",
     "ogl.iris.DHTerrainTransformerMixin",
     "ogl.iris.IrisGlDhMetaRendererMixin_fabric",
@@ -30,7 +34,8 @@
     "ogl.SSAOShaderMixin_fabric",
     "ogl.SSAOShaderMixin_neoforge",
     "ogl.SSAOApplyShaderMixin_fabric",
-    "ogl.SSAOApplyShaderMixin_neoforge"
+    "ogl.SSAOApplyShaderMixin_neoforge",
+    "GlBufferMixin"
   ],
   "server": [],
   "injectors": {

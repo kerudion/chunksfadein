@@ -1,6 +1,6 @@
 package com.koteinik.chunksfadein.hooks;
 
-import com.seibel.distanthorizons.api.enums.config.EDhApiRenderApi;
+import com.seibel.distanthorizons.api.enums.config.EDhApiRenderingEngine;
 import com.seibel.distanthorizons.api.enums.rendering.EDhApiRendererMode;
 import com.seibel.distanthorizons.core.config.Config;
 import net.irisshaders.iris.api.v0.IrisApi;
@@ -55,8 +55,8 @@ public class CompatibilityHook {
 		if (!isDHLoaded) return false;
 
 		try {
-			return com.seibel.distanthorizons.core.config.Config.Client.Advanced.Graphics.Experimental.renderingApi.get()
-				== EDhApiRenderApi.BLAZE_3D;
+			return Config.Client.Advanced.Graphics.Experimental.renderingEngine.get()
+				== EDhApiRenderingEngine.BLAZE_3D;
 		} catch (Exception e) {
 			return false;
 		}

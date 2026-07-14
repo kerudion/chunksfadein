@@ -40,7 +40,7 @@ public abstract class SSAOApplyShaderMixin_neoforge extends GlAbstractShaderRend
 			return;
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE13);
-		GL13.glBindTexture(GL13.GL_TEXTURE_2D, SkyFBO.getTextureId());
+		GL13.glBindTexture(GL13.GL_TEXTURE_2D, SkyFBO.getGlInstance().textureId());
 	}
 
 	@Inject(method = "onRender", at = @At(value = "INVOKE", target = "Lcom/seibel/distanthorizons/common/render/openGl/postProcessing/GlScreenQuad;render()V"))

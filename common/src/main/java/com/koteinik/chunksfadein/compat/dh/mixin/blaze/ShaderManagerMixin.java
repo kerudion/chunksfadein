@@ -28,9 +28,9 @@ public abstract class ShaderManagerMixin {
 			return original;
 
 		String path = id.getPath();
-		if (type == ShaderType.VERTEX && "lod/blaze/vert".equals(path))
+		if (type == ShaderType.VERTEX && "terrain/blaze/vert".equals(path))
 			return cfi_terrainVertexInjector().get(original);
-		else if (type == ShaderType.FRAGMENT && "lod/blaze/frag".equals(path))
+		else if (type == ShaderType.FRAGMENT && "terrain/blaze/frag".equals(path))
 			return cfi_terrainFragmentInjector().get(original);
 		else
 			return original;
@@ -47,8 +47,7 @@ public abstract class ShaderManagerMixin {
 			injector.insertAfterOutVars("flat out int cfi_material;");
 
 		injector.insertAfterOutVars(shader
-			.newLine("uniform vec4 cfi_chunkFadeData;")
-			.newLine("uniform vec3 cfi_lodMaskOrigin;")
+			.dhUniforms(true)
 			.vertOutVars()
 			.utilFunctions()
 			.flushMultiline());
@@ -63,7 +62,10 @@ public abstract class ShaderManagerMixin {
 				.vertInitMod("localPos", "vertexWorldPos", false, "offsetPos", true)
 				// push water and lava slightly down
 				.newLine("if (irisMaterial == 12 || irisMaterial == 6) { vertexWorldPos.y -= 0.115; }")
-				.newLineIf(Config.isFadeEnabled && !CompatibilityHook.isDHDitherEnabled(), "cfi_material = irisMaterial;")
+				.newLineIf(
+					Config.isFadeEnabled && !CompatibilityHook.isDHDitherEnabled(),
+					"cfi_material = irisMaterial;"
+				)
 				.flushMultiline()
 		);
 
@@ -76,20 +78,16 @@ public abstract class ShaderManagerMixin {
 		FadeShader shader = new FadeShader();
 
 		injector.insertAfterInVars(
-			"uniform sampler3D cfi_lodMask;",
-			"uniform vec3 cfi_lodMaskDim;",
-			"uniform vec3 cfi_lodMaskMaxDist;",
-			"uniform vec3 cfi_lodMaskOrigin;",
-			"uniform float cfi_lodMaskMinY;",
-			"uniform bool cfi_dhFadeActive;",
-			"uniform float cfi_dhStartFadeBlockDistanceSq;"
+			shader.dhSamplers()
+				.dhUniforms(true)
+				.flushMultiline()
 		);
 
 		if (Config.isFadeEnabled && !CompatibilityHook.isDHDitherEnabled())
 			injector.insertAfterInVars("flat in int cfi_material;");
 
 		injector.insertAfterInVars(
-			shader.fragInVars()
+			shader.fragInVars(false)
 				.utilFunctions()
 				.flushMultiline()
 		);
