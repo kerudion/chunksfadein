@@ -765,13 +765,20 @@ public class FadeShader {
 		return this;
 	}
 
+	public FadeShader dhSamplers() {
+		newLine("uniform sampler3D cfi_lodMask;");
+
+		return this;
+	}
+
 	public FadeShader dhUniforms() {
 		newLine("uniform vec4 cfi_chunkFadeData;");
-		newLine("uniform sampler3D cfi_lodMask;");
 		newLine("uniform vec3 cfi_lodMaskDim;");
-		newLine("uniform vec3 cfi_lodMaskMaxDist;");
-		newLine("uniform vec3 cfi_lodMaskOrigin;");
 		newLine("uniform float cfi_lodMaskMinY;");
+		newLine("uniform vec3 cfi_lodMaskMaxDist;");
+		newLine("uniform float cfi_dhStartFadeBlockDistanceSq;");
+		newLine("uniform vec3 cfi_lodMaskOrigin;");
+		newLine("uniform bool cfi_dhFadeActive;");
 
 		return this;
 	}
