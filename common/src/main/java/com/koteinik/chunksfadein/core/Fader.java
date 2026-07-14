@@ -1,13 +1,9 @@
 package com.koteinik.chunksfadein.core;
 
-import org.joml.Vector3f;
-
 import com.koteinik.chunksfadein.MathUtils;
 import com.koteinik.chunksfadein.config.Config;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 public class Fader {
 	public static final float[] ZERO_OFFSET = new float[3];
@@ -85,7 +81,12 @@ public class Fader {
 				Vec3 camPos = getCameraPosition();
 				camPos = new Vec3(camPos.x, 0, camPos.z);
 
-				Vector3f direction = camPos.toVector3f().sub(thisPos.toVector3f()).normalize();
+				Vector3f direction = camPos.toVector3f().sub(thisPos.toVector3f());
+				if (direction.lengthSquared() < 1e-6f)
+					direction.set(0, 0, 0);
+				else
+					direction.normalize();
+
 				Vector3f axis = new Vector3f(direction).cross(UP);
 
 				direction.rotateAxis((float) Math.toRadians(90 - Config.animationAngle), axis.x, axis.y, axis.z)
@@ -122,12 +123,6 @@ public class Fader {
 	}
 
 	private static Vec3 getCameraPosition() {
-		Minecraft client = Minecraft.getInstance();
-		Entity camera = client.getCameraEntity();
-
-		if (camera == null)
-			return new Vec3(0, 0, 0);
-
-		return camera.position();
+		return Utils.cameraPosition();
 	}
 }
