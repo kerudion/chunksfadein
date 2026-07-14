@@ -64,12 +64,7 @@ public class LevelRendererMixin {
 			framePass.executes(() -> {
 				SkyFBO fbo = SkyFBO.getInstance();
 				if (fbo != null)
-					fbo.blitFromTexture(
-						Utils.mainColorTexture(),
-						Utils.mainTargetWidth(),
-						Utils.mainTargetHeight(),
-						true
-					);
+					fbo.blitFromTexture(Utils.mainColorTexture());
 			});
 		}
 
@@ -78,6 +73,9 @@ public class LevelRendererMixin {
 		RenderSectionManager manager = ext.getRenderSectionManager();
 		if (manager == null)
 			return;
+
+		if (CompatibilityHook.isDHRenderingEnabled())
+			LodMaskTexture.prepare();
 
 		Iterator<ChunkRenderList> renderLists = manager.getRenderLists().iterator();
 		while (renderLists.hasNext()) {
@@ -90,7 +88,7 @@ public class LevelRendererMixin {
 		}
 
 		if (CompatibilityHook.isDHRenderingEnabled())
-			LodMaskTexture.createAndUpdate();
+			LodMaskTexture.upload();
 	}
 
 	@Inject(

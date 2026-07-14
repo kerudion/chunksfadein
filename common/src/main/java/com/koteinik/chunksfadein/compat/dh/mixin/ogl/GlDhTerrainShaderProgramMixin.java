@@ -28,6 +28,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class GlDhTerrainShaderProgramMixin extends GlShaderProgram implements DhRenderProgramExt {
 	@Shadow
 	public int uClipDistance;
+
+	@Shadow
+	public abstract int getId();
+
 	@Unique
 	private int screenSize;
 	@Unique
@@ -79,16 +83,17 @@ public abstract class GlDhTerrainShaderProgramMixin extends GlShaderProgram impl
 			return;
 
 		if (lodMask != -1)
-			LodMaskTexture.bind(14);
+			if (LodMaskTexture.getGlInstance() != null)
+				LodMaskTexture.getGlInstance().bindTexture(14);
 
 		if (!Config.isFadeEnabled)
 			return;
 
 		if (terrainFadeTexture != -1)
-			SkyFBO.bind(15);
+			SkyFBO.getGlInstance().bindTexture(15);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/seibel/distanthorizons/coreapi/DependencyInjection/ApiEventInjector;fireAllEvents(Ljava/lang/Class;Ljava/lang/Object;)Z"))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/seibel/distanthorizons/coreapi/DependencyInjection/ApiEventInjector;fireAllEvents(Ljava/lang/Class;Ljava/lang/Object;)Z", ordinal = 1))
 	private void modifyRender(CallbackInfo ci, @Local(name = "bufferContainer") LodBufferContainer bufferContainer) {
 		if (!Config.isModEnabled || !CompatibilityHook.isDHRenderingEnabled())
 			return;

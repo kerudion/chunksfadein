@@ -50,7 +50,7 @@ public class DHTerrainTransformerMixin {
 
 				tree.parseAndInjectNodes(
 					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
-					shader.dhUniforms().flushArray()
+					shader.dhUniforms(false).flushArray()
 				);
 
 				tree.parseAndInjectNodes(
@@ -104,7 +104,7 @@ public class DHTerrainTransformerMixin {
 			case FRAGMENT -> {
 				tree.parseAndInjectNodes(
 					t, ASTInjectionPoint.BEFORE_FUNCTIONS,
-					shader.dhUniforms().flushArray()
+					shader.dhSamplers().dhUniforms(false).flushArray()
 				);
 
 				tree.parseAndInjectNodes(

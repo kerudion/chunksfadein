@@ -27,7 +27,7 @@ public class GlShaderProgramMixin {
 		@Local(argsOnly = true, ordinal = 0) String vertResourcePath
 	) {
 		if (!Config.isModEnabled) return sauce;
-		if (!vertResourcePath.equals("assets/distanthorizons/shaders/shared/gl/standard.vert")) return sauce;
+		if (!vertResourcePath.equals("assets/distanthorizons/shaders/terrain/gl/vert.vert")) return sauce;
 
 		return prepareTerrainVertexInjector().get(sauce);
 	}
@@ -49,7 +49,7 @@ public class GlShaderProgramMixin {
 		String source = (switch (fragResourcePath) {
 			case "assets/distanthorizons/shaders/ssao/gl/ao.frag" -> prepareAOFragmentInjector();
 			case "assets/distanthorizons/shaders/ssao/gl/apply.frag" -> prepareAOApplyFragmentInjector();
-			case "assets/distanthorizons/shaders/shared/gl/flat_shaded.frag" -> prepareTerrainFragmentInjector();
+			case "assets/distanthorizons/shaders/terrain/gl/frag.frag" -> prepareTerrainFragmentInjector();
 			default -> ShaderInjector.EMPTY_INJECTOR;
 		}).get(sauce);
 
@@ -63,8 +63,6 @@ public class GlShaderProgramMixin {
 		FadeShader shader = new FadeShader();
 
 		injector.replace("#version 150 core", "#version 330 core");
-
-		injector.insertAfterInVars("layout(location = 2) in ivec4 irisExtra;");
 
 		if (Config.isFadeEnabled)
 			injector.insertAfterOutVars("flat out int cfi_material;");
@@ -85,8 +83,8 @@ public class GlShaderProgramMixin {
 				.vertInitOutVars("localPos", "offsetPos")
 				.vertInitMod("localPos", "vertexWorldPos", false, "offsetPos", true)
 				// push water and lava slightly down
-				.newLine("if (irisExtra.x == 12 || irisExtra.x == 6) { vertexWorldPos.y -= 0.115; }")
-				.newLineIf(Config.isFadeEnabled, "cfi_material = irisExtra.x;")
+				.newLine("if (irisData.x == 12u || irisData.x == 6u) { vertexWorldPos.y -= 0.115; }")
+				.newLineIf(Config.isFadeEnabled, "cfi_material = int(irisData.x);")
 				.flushMultiline()
 		);
 
@@ -99,13 +97,9 @@ public class GlShaderProgramMixin {
 		FadeShader shader = new FadeShader();
 
 		injector.insertAfterInVars(
-			"uniform sampler3D cfi_lodMask;",
-			"uniform vec3 cfi_lodMaskDim;",
-			"uniform vec3 cfi_lodMaskMaxDist;",
-			"uniform vec3 cfi_lodMaskOrigin;",
-			"uniform float cfi_lodMaskMinY;",
-			"uniform bool cfi_dhFadeActive;",
-			"uniform float cfi_dhStartFadeBlockDistanceSq;"
+			shader.dhSamplers()
+				.dhUniforms(false)
+				.flushMultiline()
 		);
 
 		if (Config.isFadeEnabled)

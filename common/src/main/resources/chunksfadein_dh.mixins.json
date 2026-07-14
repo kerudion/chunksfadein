@@ -6,10 +6,11 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "client": [
+    "blaze.BlazeDhMetaRendererMixin",
     "blaze.BlazeDhTerrainRendererMixin",
     "blaze.BlazeLodBufferContainerMixin",
-    "blaze.GlDeviceMixin",
-    "blaze.GlProgramMixin",
+    "blaze.RenderPassWrapperMixin",
+    "blaze.RenderPipelineBuilderWrapperMixin",
     "blaze.ShaderManagerMixin",
     "ogl.iris.DHTerrainTransformerMixin",
     "ogl.iris.IrisGlDhMetaRendererMixin",
@@ -23,7 +24,8 @@
     "ogl.GlDhTerrainShaderProgramMixin",
     "ogl.GlShaderProgramMixin",
     "ogl.SSAOShaderMixin",
-    "ogl.SSAOApplyShaderMixin"
+    "ogl.SSAOApplyShaderMixin",
+    "GlBufferMixin"
   ],
   "server": [],
   "injectors": {

@@ -34,7 +34,11 @@ public class NoIrisLodRendererMixin {
 		if (!Config.isModEnabled || !Config.isFadeEnabled || !CompatibilityHook.isDHSSAOEnabled())
 			return;
 
-		SkyFBO.bindAttachment(GL30.GL_COLOR_ATTACHMENT1);
+		SkyFBO.Gl fbo = SkyFBO.getGlInstance();
+		if (fbo == null)
+			return;
+
+		fbo.bindColorAttachment(GL30.GL_COLOR_ATTACHMENT1);
 	}
 
 	@Inject(
@@ -49,7 +53,7 @@ public class NoIrisLodRendererMixin {
 		if (!Config.isModEnabled || !Config.isFadeEnabled || !CompatibilityHook.isDHRenderingEnabled())
 			return;
 
-		SkyFBO fbo = SkyFBO.getInstance();
+		SkyFBO.Gl fbo = SkyFBO.getGlInstance();
 		if (fbo == null)
 			return;
 
@@ -57,8 +61,7 @@ public class NoIrisLodRendererMixin {
 			fbo.blitFromTexture(
 				((GlDhMetaRendererExt) metaRenderer).activeColorTexture(),
 				Utils.mainTargetWidth(),
-				Utils.mainTargetHeight(),
-				false
+				Utils.mainTargetHeight()
 			);
 		} catch (Exception e) {
 			Logger.error("Failed to blit main color texture after DH rendering:", e);

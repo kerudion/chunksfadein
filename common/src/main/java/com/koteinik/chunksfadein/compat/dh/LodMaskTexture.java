@@ -1,23 +1,34 @@
 package com.koteinik.chunksfadein.compat.dh;
 
 import com.koteinik.chunksfadein.Logger;
-import com.koteinik.chunksfadein.core.GlStateSaver;
+import com.koteinik.chunksfadein.compat.dh.ext.GlBufferExt;
 import com.koteinik.chunksfadein.core.Utils;
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.opengl.GlBuffer;
+import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.TextureFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL31;
+import org.lwjgl.opengl.GL33C;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import static com.mojang.blaze3d.buffers.GpuBuffer.*;
+import static com.mojang.blaze3d.systems.RenderSystem.getDevice;
+import static org.lwjgl.system.MemoryUtil.memFree;
+
 public class LodMaskTexture {
 	private static LodMaskTexture instance = null;
 	private static int lastLevel = 0;
 
-	public static void createAndUpdate() {
+	public static void prepare() {
 		RenderSystem.assertOnRenderThread();
 
 		Minecraft minecraft = Minecraft.getInstance();
@@ -57,29 +68,25 @@ public class LodMaskTexture {
 		lastLevel = currentLevel;
 
 		instance.origin = origin;
-		instance.update();
+	}
+
+	public static void upload() {
+		if (instance != null)
+			instance.update();
+	}
+
+	public static Gl getGlInstance() {
+		return instance == null ? null : instance.gl;
 	}
 
 	public static LodMaskTexture getInstance() {
 		return instance;
 	}
 
-	public static int getId() {
-		LodMaskTexture instance = getInstance();
-
-		if (instance == null) return -1;
-		else return instance.id;
-	}
-
 	public static void markRendered(int chunkX, int chunkY, int chunkZ) {
 		if (instance != null) instance.markChunk(chunkX, chunkY, chunkZ);
 	}
 
-	public static void bind(int slot) {
-		if (instance != null) instance.bindTexture(slot);
-	}
-
-	public final int id;
 	public final int sizeX;
 	public final int sizeY;
 	public final int sizeZ;
@@ -88,6 +95,9 @@ public class LodMaskTexture {
 
 	public ChunkPos origin;
 
+	public final Gl gl;
+
+	private final GpuBuffer textureBuffer;
 	private final ByteBuffer textureDataBuffer;
 	private final boolean[] rendered;
 
@@ -102,29 +112,19 @@ public class LodMaskTexture {
 		this.origin = origin;
 		this.rendered = new boolean[sizeX * sizeY * sizeZ];
 
-		this.textureDataBuffer = MemoryUtil.memAlloc(sizeX * sizeY * sizeZ * 4);
+		this.textureDataBuffer = MemoryUtil.memAlloc(sizeX * sizeY * sizeZ);
 
-		this.id = GL11.glGenTextures();
+		this.textureBuffer = getDevice().createBuffer(
+			() -> "Chunks Fade In DH lod mask buffer",
+			USAGE_UNIFORM_TEXEL_BUFFER | USAGE_COPY_DST | USAGE_MAP_WRITE,
+			textureDataBuffer.capacity()
+		);
 
-		GlStateSaver.withSavedState(() -> {
-			GL13.glActiveTexture(GL13.GL_TEXTURE0);
-			GL11.glBindTexture(GL12.GL_TEXTURE_3D, id);
+		this.gl = new Gl();
+	}
 
-			clearGlState();
-
-			GL12.glTexImage3D(
-				GL12.GL_TEXTURE_3D, 0, GL30.GL_RGBA8,
-				sizeX, sizeY, sizeZ,
-				0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null
-			);
-
-			GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-			GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-			GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL12.GL_TEXTURE_WRAP_S, GL14.GL_CLAMP_TO_BORDER);
-			GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL12.GL_TEXTURE_WRAP_T, GL14.GL_CLAMP_TO_BORDER);
-			GL11.glTexParameteri(GL12.GL_TEXTURE_3D, GL12.GL_TEXTURE_WRAP_R, GL14.GL_CLAMP_TO_BORDER);
-			GL11.glTexParameterfv(GL12.GL_TEXTURE_3D, GL14.GL_TEXTURE_BORDER_COLOR, new float[] { 0f, 0f, 0f, 0f });
-		});
+	public GpuBuffer getBuffer() {
+		return textureBuffer;
 	}
 
 	public void update() {
@@ -152,9 +152,6 @@ public class LodMaskTexture {
 					needUpdate |= textureDataBuffer.get(textureDataBuffer.position()) != val;
 
 					textureDataBuffer.put(val);
-					textureDataBuffer.put((byte) 0);
-					textureDataBuffer.put((byte) 0);
-					textureDataBuffer.put((byte) 0);
 
 					rendered[i] = false;
 
@@ -164,18 +161,10 @@ public class LodMaskTexture {
 
 		if (!needUpdate) return;
 
-		GlStateSaver.withSavedState(() -> {
-			GL13.glActiveTexture(GL13.GL_TEXTURE0);
-			GL11.glBindTexture(GL12.GL_TEXTURE_3D, id);
-
-			clearGlState();
-
-			GL12.glTexSubImage3D(
-				GL12.GL_TEXTURE_3D, 0, 0, 0, 0,
-				sizeX, sizeY, sizeZ,
-				GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, textureDataBuffer
-			);
-		});
+		getDevice().createCommandEncoder().writeToBuffer(
+			textureBuffer.slice(),
+			textureDataBuffer
+		);
 
 		needUpdate = false;
 	}
@@ -196,31 +185,40 @@ public class LodMaskTexture {
 		}
 	}
 
-	public void bindTexture(int slot) {
-		int prevActive = GL13.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
-
-		GL13.glActiveTexture(GL13.GL_TEXTURE0 + slot);
-		GL11.glBindTexture(GL12.GL_TEXTURE_3D, id);
-
-		GL13.glActiveTexture(prevActive);
-	}
-
 	public void cleanup() {
-		if (id != -1)
-			GL11.glDeleteTextures(id);
-		if (textureDataBuffer != null)
-			MemoryUtil.memFree((java.nio.Buffer) textureDataBuffer);
+		textureBuffer.close();
+		memFree(textureDataBuffer);
+
+		gl.cleanup();
 	}
 
-	private void clearGlState() {
-		GL21.glBindBuffer(GL21.GL_PIXEL_UNPACK_BUFFER, 0);
-		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 4);
-		GL11.glPixelStorei(GL11.GL_UNPACK_ROW_LENGTH, 0);
-		GL11.glPixelStorei(GL12.GL_UNPACK_SKIP_PIXELS, 0);
-		GL11.glPixelStorei(GL12.GL_UNPACK_SKIP_ROWS, 0);
-		GL11.glPixelStorei(GL12.GL_UNPACK_SKIP_IMAGES, 0);
-		GL11.glPixelStorei(GL12.GL_UNPACK_IMAGE_HEIGHT, 0);
-		GL11.glPixelStorei(GL11.GL_UNPACK_SWAP_BYTES, GL11.GL_FALSE);
-		GL11.glPixelStorei(GL11.GL_UNPACK_LSB_FIRST, GL11.GL_FALSE);
+	public class Gl {
+		private int texture = -1;
+
+		public void bindTexture(int slot) {
+			if (!(textureBuffer instanceof GlBuffer buffer))
+				return;
+
+			if (texture == -1) texture = GL13.glGenTextures();
+
+			int prevActive = GL13.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
+
+			GL13.glActiveTexture(GL13.GL_TEXTURE0 + slot);
+			GL11.glBindTexture(GL31.GL_TEXTURE_BUFFER, texture);
+			GL33C.glTexBuffer(
+				GL31.GL_TEXTURE_BUFFER,
+				GlConst.toGlInternalId(TextureFormat.RED8I),
+				((GlBufferExt) buffer).cfi_getHandle()
+			);
+
+			GL13.glActiveTexture(prevActive);
+		}
+
+		public void cleanup() {
+			if (texture != -1)
+				GL11.glDeleteTextures(texture);
+
+			texture = -1;
+		}
 	}
 }

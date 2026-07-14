@@ -85,10 +85,11 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
 
 		fadeInterface.bindUniforms(fadeDataBuffer);
 
-		if (sky != null) {
+		SkyFBO.Gl skyFbo = SkyFBO.getGlInstance();
+		if (sky != null && skyFbo != null) {
 			int prevActive = GL13.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
 
-			SkyFBO.bind(13);
+			skyFbo.bindTexture(13);
 			sky.set(13);
 
 			GL13.glActiveTexture(prevActive);

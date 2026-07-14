@@ -17,6 +17,7 @@ import net.irisshaders.iris.pipeline.programs.SodiumPrograms.Pass;
 import net.irisshaders.iris.pipeline.programs.SodiumShader;
 import net.irisshaders.iris.uniforms.custom.CustomUniforms;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -41,7 +42,15 @@ public class IrisSodiumShaderMixin implements ChunkShaderInterfaceExt {
 	                                 @Local ProgramSamplers.Builder builder) {
 		if (!Config.isModEnabled) return;
 
-		builder.addDynamicSampler(SkyFBO::getTextureId, GlSampler.NEAREST, "cfi_sky");
+		builder.addDynamicSampler(IrisSodiumShaderMixin::cfi_skyTextureId, GlSampler.NEAREST, "cfi_sky");
+	}
+
+	@Unique
+	private static int cfi_skyTextureId() {
+		SkyFBO.Gl sky = SkyFBO.getGlInstance();
+		if (sky == null) return 0;
+
+		return sky.textureId();
 	}
 
 	@Override

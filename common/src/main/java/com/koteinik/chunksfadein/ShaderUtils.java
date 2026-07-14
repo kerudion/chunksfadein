@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 public class ShaderUtils {
+	public static int shaderVersion = 0;
+
 	public static GlDhMetaRendererExt lodRenderer = null;
 	public static BlazeDhTerrainRendererExt blazeLodRenderer = null;
 
@@ -42,6 +44,8 @@ public class ShaderUtils {
 
 	public static void reloadWorldRenderer() {
 		try {
+			shaderVersion++;
+
 			if (CompatibilityHook.isIrisLoaded)
 				clearCache.invoke(irisTransformCache);
 
