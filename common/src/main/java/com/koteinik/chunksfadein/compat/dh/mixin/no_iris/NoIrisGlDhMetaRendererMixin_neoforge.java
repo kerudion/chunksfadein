@@ -70,7 +70,7 @@ public abstract class NoIrisGlDhMetaRendererMixin_neoforge implements GlDhMetaRe
 		method = "setGLState",
 		at = @At(
 			value = "INVOKE",
-			target = "Lorg/lwjgl/opengl/GL32;glClearDepth(D)V"
+			target = "Lorg/lwjgl/opengl/GL33;glClearDepth(D)V"
 		)
 	)
 	private void avoidClear(DhApiRenderParam renderEventParam, boolean firstPass, CallbackInfo ci) {
