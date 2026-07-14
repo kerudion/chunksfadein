@@ -11,7 +11,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.PlainTextContents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
@@ -132,7 +132,7 @@ public class Translations {
 		packOverrides.putAll(overrides);
 	}
 
-	private static ResourceLocation langFile(String code) {
-		return ResourceLocation.fromNamespaceAndPath("chunksfadein", "lang/" + code + ".json");
+	private static Identifier langFile(String code) {
+		return Identifier.fromNamespaceAndPath("chunksfadein", "lang/" + code + ".json");
 	}
 }
