@@ -4,12 +4,11 @@ import com.koteinik.chunksfadein.compat.sodium.ChunkFadeInController;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionManagerExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.Utils;
 import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.SectionPos;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,6 +17,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 
 @Mixin(value = SodiumWorldRenderer.class, remap = false)
 public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
@@ -54,22 +54,17 @@ public class SodiumWorldRendererMixin implements SodiumWorldRendererExt {
 		);
 
 		if (Config.isCurvatureEnabled) {
-			Minecraft client = Minecraft.getInstance();
+			Vec3 cam = Utils.cameraPosition();
 
-			Entity camera = client.getCameraEntity();
-			if (camera != null) {
-				Vec3 cam = camera.position();
+			double x = pos.x - cam.x;
+			double z = pos.z - cam.z;
 
-				double x = pos.x - cam.x;
-				double z = pos.z - cam.z;
+			if (offset == null)
+				offset = new float[3];
+			else
+				offset = offset.clone();
 
-				if (offset == null)
-					offset = new float[3];
-				else
-					offset = offset.clone();
-
-				offset[1] -= (float) ((x * x + z * z) / Config.worldCurvature);
-			}
+			offset[1] -= (float) ((x * x + z * z) / Config.worldCurvature);
 		}
 
 		return offset;

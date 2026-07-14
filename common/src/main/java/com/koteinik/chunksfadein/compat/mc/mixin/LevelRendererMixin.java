@@ -6,6 +6,7 @@ import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.RenderPhase;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.core.Utils;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
@@ -46,6 +47,16 @@ public class LevelRendererMixin {
 	@Shadow
 	@Final
 	private LevelTargetBundle targets;
+
+	@Inject(method = "submitFeatures", at = @At("HEAD"))
+	private void cfi_submitStart(LevelRenderState levelRenderState, SubmitNodeCollector submitNodeCollector, boolean renderOutline, CallbackInfo ci) {
+		RenderPhase.renderingLevel = true;
+	}
+
+	@Inject(method = "submitFeatures", at = @At("RETURN"))
+	private void cfi_submitEnd(LevelRenderState levelRenderState, SubmitNodeCollector submitNodeCollector, boolean renderOutline, CallbackInfo ci) {
+		RenderPhase.renderingLevel = false;
+	}
 
 	@Inject(
 		method = "render",
