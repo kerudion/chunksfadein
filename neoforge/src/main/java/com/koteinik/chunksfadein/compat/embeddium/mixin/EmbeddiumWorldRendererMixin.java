@@ -3,6 +3,8 @@ package com.koteinik.chunksfadein.compat.embeddium.mixin;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionManagerExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.Minecraft;
@@ -71,27 +73,44 @@ public class EmbeddiumWorldRendererMixin implements SodiumWorldRendererExt {
 		SodiumWorldRendererExt.Holder.instance = this;
 	}
 
-	@Inject(
-		method = "renderBlockEntity",
+	@WrapOperation(
+		method = {
+			"renderBlockEntities(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/RenderBuffers;Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;FLnet/minecraft/client/renderer/MultiBufferSource$BufferSource;DDDLnet/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher;)V",
+			"renderGlobalBlockEntities"
+		},
 		at = @At(
 			value = "INVOKE",
-			target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(DDD)V",
-			shift = At.Shift.AFTER,
-			remap = true
+			target = "Lorg/embeddedt/embeddium/impl/render/EmbeddiumWorldRenderer;renderBlockEntity(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/RenderBuffers;Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;FLnet/minecraft/client/renderer/MultiBufferSource$BufferSource;DDDLnet/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher;Lnet/minecraft/world/level/block/entity/BlockEntity;)V"
 		)
 	)
-	private static void modifySubmitBlockEntities(
-		PoseStack matrices, RenderBuffers bufferBuilders, Long2ObjectMap<SortedSet<BlockDestructionProgress>> blockBreakingProgressions, float tickDelta, MultiBufferSource.BufferSource immediate, double x, double y, double z, BlockEntityRenderDispatcher dispatcher, BlockEntity entity, CallbackInfo ci
+	private void modifySubmitBlockEntities(
+		PoseStack matrices,
+		RenderBuffers bufferBuilders,
+		Long2ObjectMap<SortedSet<BlockDestructionProgress>> blockBreakingProgressions,
+		float tickDelta,
+		MultiBufferSource.BufferSource immediate,
+		double x, double y, double z,
+		BlockEntityRenderDispatcher dispatcher,
+		BlockEntity entity,
+		Operation<Void> original
 	) {
-		if (!Config.isModEnabled || (!Config.isAnimationEnabled && !Config.isCurvatureEnabled))
-			return;
+		float[] offset = null;
 
-		SodiumWorldRendererExt ext = ((SodiumWorldRendererExt) EmbeddiumWorldRenderer.instance());
-		if (ext.getRenderSectionManager() == null)
-			return;
+		if (Config.isModEnabled && (Config.isAnimationEnabled || Config.isCurvatureEnabled)
+			&& getRenderSectionManager() != null)
+			offset = getAnimationOffset(entity.getBlockPos().getCenter());
 
-		float[] offset = ext.getAnimationOffset(entity.getBlockPos().getCenter());
+		if (offset != null) {
+			matrices.pushPose();
+			matrices.translate(offset[0], offset[1], offset[2]);
+		}
 
-		matrices.translate(offset[0], offset[1], offset[2]);
+		original.call(
+			matrices, bufferBuilders, blockBreakingProgressions, tickDelta, immediate,
+			x, y, z, dispatcher, entity
+		);
+
+		if (offset != null)
+			matrices.popPose();
 	}
 }
