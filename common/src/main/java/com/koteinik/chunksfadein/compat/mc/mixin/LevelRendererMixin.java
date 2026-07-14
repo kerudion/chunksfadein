@@ -5,6 +5,7 @@ import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.RenderPhase;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.core.Utils;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
@@ -44,6 +45,22 @@ public class LevelRendererMixin {
 	@Shadow
 	@Final
 	private LevelTargetBundle targets;
+
+	@Inject(
+		method = "renderLevel",
+		at = @At(value = "HEAD")
+	)
+	private void cfi_levelStart(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, Matrix4f matrix4f, Matrix4f matrix4f2, Matrix4f matrix4f3, GpuBufferSlice gpuBufferSlice, Vector4f vector4f, boolean bl2, CallbackInfo ci) {
+		RenderPhase.renderingLevel = true;
+	}
+
+	@Inject(
+		method = "renderLevel",
+		at = @At(value = "RETURN")
+	)
+	private void cfi_levelEnd(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, Matrix4f matrix4f, Matrix4f matrix4f2, Matrix4f matrix4f3, GpuBufferSlice gpuBufferSlice, Vector4f vector4f, boolean bl2, CallbackInfo ci) {
+		RenderPhase.renderingLevel = false;
+	}
 
 	@Inject(
 		method = "renderLevel",
