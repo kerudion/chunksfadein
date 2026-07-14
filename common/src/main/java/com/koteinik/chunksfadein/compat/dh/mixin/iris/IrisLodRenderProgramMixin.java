@@ -1,9 +1,9 @@
 package com.koteinik.chunksfadein.compat.dh.mixin.iris;
 
-import com.koteinik.chunksfadein.config.Config;
-import com.koteinik.chunksfadein.core.Utils;
 import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
 import com.koteinik.chunksfadein.compat.dh.ext.DhRenderProgramExt;
+import com.koteinik.chunksfadein.config.Config;
+import com.koteinik.chunksfadein.core.Utils;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.irisshaders.iris.compat.dh.IrisLodRenderProgram;
@@ -12,6 +12,8 @@ import net.irisshaders.iris.gl.texture.TextureType;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4fc;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL41;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -23,6 +25,9 @@ import java.util.Set;
 
 @Mixin(value = IrisLodRenderProgram.class, remap = false)
 public abstract class IrisLodRenderProgramMixin implements DhRenderProgramExt {
+	@Shadow
+	@Final
+	private int id;
 	@Unique
 	private int chunkFadeData;
 	@Unique
@@ -94,7 +99,7 @@ public abstract class IrisLodRenderProgramMixin implements DhRenderProgramExt {
 	@Override
 	public void bindUniforms(float x, float y, float z, float w) {
 		if (chunkFadeData != -1)
-			GL30.glUniform4f(chunkFadeData, x, y, z, w);
+			GL41.glProgramUniform4f(id, chunkFadeData, x, y, z, w);
 	}
 
 	@Shadow

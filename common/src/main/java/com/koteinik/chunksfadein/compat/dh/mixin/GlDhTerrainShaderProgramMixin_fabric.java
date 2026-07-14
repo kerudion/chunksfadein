@@ -88,7 +88,7 @@ public abstract class GlDhTerrainShaderProgramMixin_fabric extends GlShaderProgr
 			SkyFBO.bind(15);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/seibel/distanthorizons/coreapi/DependencyInjection/ApiEventInjector;fireAllEvents(Ljava/lang/Class;Ljava/lang/Object;)Z"))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/seibel/distanthorizons/coreapi/DependencyInjection/ApiEventInjector;fireAllEvents(Ljava/lang/Class;Ljava/lang/Object;)Z", ordinal = 1))
 	private void modifyRender(CallbackInfo ci, @Local(name = "bufferContainer") LodBufferContainer bufferContainer) {
 		if (!Config.isModEnabled || !CompatibilityHook.isDHRenderingEnabled())
 			return;
