@@ -2,26 +2,30 @@ package com.koteinik.chunksfadein.crowdin;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.koteinik.chunksfadein.Logger;
 import net.minecraft.client.Minecraft;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.PlainTextContents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Translations {
 	private static Map<String, String> enUs;
+	private static volatile Map<String, String> packOverrides = new ConcurrentHashMap<>();
 	private static volatile Map<String, Map<String, String>> translations = new ConcurrentHashMap<>();
 
 	static {
@@ -63,6 +67,10 @@ public class Translations {
 	}
 
 	public static synchronized String resolve(String key) {
+		String override = packOverrides.get(key);
+		if (override != null)
+			return override;
+
 		String language = Minecraft.getInstance().options.languageCode;
 
 		Map<String, String> map = translations.get(language);
@@ -90,5 +98,40 @@ public class Translations {
 		return jsonPairs.asMap().entrySet().stream()
 			.map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue().getAsString()))
 			.collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
+	}
+
+	public static void setPackOverrides(ResourceManager manager, List<String> languages) {
+		packOverrides.clear();
+
+		List<Resource> defaultStack = manager.getResourceStack(langFile("en_us"));
+		if (defaultStack.isEmpty())
+			return;
+
+		String defaultId = defaultStack.getFirst().sourcePackId();
+
+		Map<String, String> overrides = new HashMap<>();
+		for (String code : languages) {
+			for (Resource resource : manager.getResourceStack(langFile(code))) {
+				if (resource.sourcePackId().equals(defaultId))
+					continue;
+
+				try (InputStream in = resource.open()) {
+					Language.loadFromJson(
+						in,
+						(k, v) -> {
+							if (enUs.containsKey(k)) overrides.put(k, v);
+						}
+					);
+				} catch (IOException e) {
+					Logger.warn("Failed to read pack language " + code, e);
+				}
+			}
+		}
+
+		packOverrides.putAll(overrides);
+	}
+
+	private static ResourceLocation langFile(String code) {
+		return ResourceLocation.fromNamespaceAndPath("chunksfadein", "lang/" + code + ".json");
 	}
 }
