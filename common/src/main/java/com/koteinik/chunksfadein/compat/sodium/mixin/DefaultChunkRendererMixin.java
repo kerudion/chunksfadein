@@ -4,8 +4,8 @@ import com.koteinik.chunksfadein.compat.sodium.ext.ChunkShaderInterfaceExt;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
 import com.koteinik.chunksfadein.config.Config;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.textures.GpuSampler;
-import net.caffeinemc.mods.sodium.client.gl.device.CommandList;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;import com.mojang.blaze3d.textures.GpuSampler;
+import net.caffeinemc.mods.sodium.client.gl.buffer.GlTexelBuffer;import net.caffeinemc.mods.sodium.client.gl.device.CommandList;
 import net.caffeinemc.mods.sodium.client.render.chunk.ChunkRenderMatrices;
 import net.caffeinemc.mods.sodium.client.render.chunk.DefaultChunkRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.lists.ChunkRenderListIterable;
@@ -37,6 +37,8 @@ public class DefaultChunkRendererMixin {
 		FogParameters parameters,
 		boolean indexedRenderingEnabled,
 		GpuSampler terrainSampler,
+		GpuBufferSlice uniformBuffer,
+		GlTexelBuffer sectionTimeInfoTexture,
 		CallbackInfo ci,
 		@Local(ordinal = 0) ChunkShaderInterface shader,
 		@Local(ordinal = 0) RenderRegion region

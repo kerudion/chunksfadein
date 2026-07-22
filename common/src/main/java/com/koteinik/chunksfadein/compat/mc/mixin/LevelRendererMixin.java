@@ -19,7 +19,6 @@ import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import net.caffeinemc.mods.sodium.client.render.chunk.lists.ChunkRenderList;
-import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
 import net.caffeinemc.mods.sodium.client.util.iterator.ByteIterator;
 import net.caffeinemc.mods.sodium.client.world.LevelRendererExtension;
 import net.minecraft.client.DeltaTracker;
@@ -101,7 +100,7 @@ public class LevelRendererMixin {
 			ByteIterator geometrySections = renderList.sectionsWithGeometryIterator(false);
 			if (geometrySections != null)
 				while (geometrySections.hasNext())
-					processChunk(renderList.getRegion(), geometrySections.nextByteAsInt());
+					processChunk((RenderRegionExt) renderList.getRegion(), geometrySections.nextByteAsInt());
 		}
 
 		if (CompatibilityHook.isDHRenderingEnabled())
@@ -137,12 +136,10 @@ public class LevelRendererMixin {
 		matrices.translate(offset[0], offset[1], offset[2]);
 	}
 
-	private static void processChunk(RenderRegion region, int sectionIndex) {
+	private static void processChunk(RenderRegionExt region, int sectionIndex) {
 		RenderSection section = region.getSection(sectionIndex);
 		if (section == null) return;
 
-		RenderRegionExt regionExt = (RenderRegionExt) region;
-
-		regionExt.processChunk((RenderSectionExt) section, sectionIndex);
+		region.processChunk((RenderSectionExt) section, sectionIndex);
 	}
 }

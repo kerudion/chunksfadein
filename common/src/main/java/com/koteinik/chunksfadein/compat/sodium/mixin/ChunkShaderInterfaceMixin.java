@@ -55,15 +55,15 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
 		method = "setupState",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/caffeinemc/mods/sodium/client/gl/shader/uniform/GlUniformFloat;setFloat(F)V"
+			target = "Lnet/caffeinemc/mods/sodium/client/gl/shader/uniform/GlUniformInt;setInt(I)V"
 		)
 	)
-	private boolean wrapSet(GlUniformFloat instance, float value) {
+	private boolean wrapSet(GlUniformInt instance, int value) {
 		return instance != null;
 	}
 
 	@WrapWithCondition(
-		method = "setChunkData",
+		method = "setRegionData",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/caffeinemc/mods/sodium/client/gl/shader/uniform/GlUniformInt;set(Ljava/lang/Integer;)V"
