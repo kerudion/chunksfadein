@@ -10,83 +10,94 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      game-versions: ${{ steps.props.outputs.game_versions }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: "temurin"
+          distribution: "oracle"
           java-version: 25
 
-      - name: Build
-        run: ./gradlew clean build
-
-      - name: Publish Fabric/Quilt
-        uses: Kir-Antipov/mc-publish@v3.3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
         with:
-          curseforge-id: 720811
-          curseforge-token: "${{secrets.CURSEFORGE_TOKEN}}"
+          cache-read-only: false
 
-          modrinth-id: JaNmzvA8
-          modrinth-token: "${{secrets.MODRINTH_TOKEN}}"
-          modrinth-featured: false
-
-          github-token: "${{secrets.GITHUB_TOKEN}}"
-
-          name: "${{github.event.release.name}} for Fabric"
-          version: "${{github.ref_name}}-fabric"
-
-          loaders: |
-            fabric
-            quilt
-
-          files: |
-            fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
-            fabric/build/libs/*-@(dev|sources|javadocs).jar
-
-          dependencies: |
-            sodium(required){modrinth:AANobbMI}{curseforge:394468}
-            iris(optional){modrinth:YL57xq9U}{curseforge:455508}
-            optifabric(incompatible){curseforge:322385}#(ignore:modrinth)
-
-          java: |
-            17
-            18
-            21
-            25
-
-          game-version-filter: releases
-
-      - name: Get NeoForge version range
-        id: neoforge_version
+      - name: Resolve game versions
+        id: props
         run: |
-          range=$(grep -w "minecraft_version_range_neoforge" gradle.properties | cut -d'=' -f2- | cut -d' ' -f2-)
-          echo "value=$range" >> "$GITHUB_OUTPUT"
-      - name: Publish NeoForge
+          set -euo pipefail
+          value=$(sed -n 's/^[[:space:]]*publish_game_versions[[:space:]]*=[[:space:]]*//p' gradle.properties | tr -d '\r' | head -1)
+          if [ -z "$value" ]; then
+            echo "::error::publish_game_versions is missing or empty in gradle.properties"
+            exit 1
+          fi
+          echo "Publishing for versions: $value"
+          echo "game_versions=$value" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: ./gradlew build
+
+      - name: Upload jars
+        uses: actions/upload-artifact@v4
+        with:
+          name: jars
+          if-no-files-found: error
+          path: |
+            fabric/build/libs/*.jar
+            neoforge/build/libs/*.jar
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04-arm
+    name: ${{ matrix.loader }} -> ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        loader: [fabric, neoforge]
+        platform: [modrinth, curseforge, github]
+        include:
+          - loader: fabric
+            display: Fabric
+            loaders: |-
+              fabric
+              quilt
+          - loader: neoforge
+            display: NeoForge
+            loaders: neoforge
+    steps:
+      - name: Download jars
+        uses: actions/download-artifact@v4
+        with:
+          name: jars
+
+      - name: Publish
         uses: Kir-Antipov/mc-publish@v3.3
         with:
-          curseforge-id: 720811
-          curseforge-token: "${{secrets.CURSEFORGE_TOKEN}}"
+          curseforge-id: ${{ matrix.platform == 'curseforge' && '720811' || '' }}
+          curseforge-token: ${{ matrix.platform == 'curseforge' && secrets.CURSEFORGE_TOKEN || '' }}
 
-          modrinth-id: JaNmzvA8
-          modrinth-token: "${{secrets.MODRINTH_TOKEN}}"
+          modrinth-id: ${{ matrix.platform == 'modrinth' && 'JaNmzvA8' || '' }}
+          modrinth-token: ${{ matrix.platform == 'modrinth' && secrets.MODRINTH_TOKEN || '' }}
           modrinth-featured: false
 
-          github-token: "${{secrets.GITHUB_TOKEN}}"
+          github-token: ${{ matrix.platform == 'github' && secrets.GITHUB_TOKEN || '' }}
 
-          name: "${{github.event.release.name}} for NeoForge"
-          version: "${{github.ref_name}}-neoforge"
+          name: "${{github.event.release.name}} for ${{ matrix.display }}"
+          version: "${{github.ref_name}}-${{ matrix.loader }}"
 
-          loaders: |
-            neoforge
+          loaders: ${{ matrix.loaders }}
 
-          game-versions: ${{ steps.neoforge_version.outputs.value }}
+          game-versions: ${{ needs.build.outputs.game-versions }}
+          game-version-filter: releases
 
           files: |
-            neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
-            neoforge/build/libs/*-@(dev|sources|javadocs).jar
+            ${{ matrix.loader }}/build/libs/!(*-@(dev|sources|javadoc)).jar
+            ${{ matrix.loader }}/build/libs/*-@(dev|sources|javadocs).jar
 
           dependencies: |
             sodium(required){modrinth:AANobbMI}{curseforge:394468}
@@ -98,5 +109,3 @@ jobs:
             18
             21
             25
-
-          game-version-filter: releases
