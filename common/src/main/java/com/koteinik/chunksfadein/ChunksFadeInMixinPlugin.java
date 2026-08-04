@@ -20,7 +20,7 @@ public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 		boolean isEmbeddium = mixinClassName.contains("embeddium");
 		boolean isMonocle = mixinClassName.contains("monocle");
 		boolean isNoIris = mixinClassName.contains("no_iris");
-		boolean isIris = mixinClassName.contains("iris");
+		boolean isIris = !isNoIris && mixinClassName.contains("iris");
 		boolean isDH = mixinClassName.contains("dh");
 		boolean isSable = mixinClassName.contains("sable");
 
@@ -33,7 +33,7 @@ public class ChunksFadeInMixinPlugin implements IMixinConfigPlugin {
 
 		boolean allow = true;
 
-		if (isNoIris && !hasIris)
+		if (isNoIris && hasIris)
 			allow = false;
 
 		if (isIris && !hasIris)
