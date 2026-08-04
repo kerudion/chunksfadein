@@ -7,6 +7,7 @@
   "mixins": [],
   "client": [
     "DefaultChunkRendererMixin",
+    "RenderRegionManagerMixin",
     "RenderRegionMixin",
     "RenderSectionManagerMixin",
     "RenderSectionMixin",

@@ -9,13 +9,15 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import static com.mojang.blaze3d.buffers.GpuBuffer.*;
 import static com.mojang.blaze3d.systems.RenderSystem.getDevice;
 import static net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion.REGION_HEIGHT;
 import static net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion.REGION_WIDTH;
 import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
 public class ChunkFadeInController {
 	// Buffer logic based on Sodium's UniformBufferManager
@@ -51,6 +53,8 @@ public class ChunkFadeInController {
 
 		for (int i = 3; i < (fadeBuffer.size() / 4); i += 4)
 			writeRaw(i * 4, 1f);
+
+		Arrays.fill(regionsDirty, true);
 	}
 
 	public GpuBuffer getFadeBuffer() {

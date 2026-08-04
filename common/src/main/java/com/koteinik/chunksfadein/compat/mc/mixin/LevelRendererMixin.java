@@ -2,9 +2,7 @@ package com.koteinik.chunksfadein.compat.mc.mixin;
 
 import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
 import com.koteinik.chunksfadein.compat.sodium.ChunkFadeInController;
-import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
-import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.*;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.RenderPhase;
 import com.koteinik.chunksfadein.core.SkyFBO;
@@ -17,6 +15,7 @@ import com.mojang.blaze3d.framegraph.FramePass;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
+import net.caffeinemc.mods.sodium.client.render.chunk.IntPool;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import net.caffeinemc.mods.sodium.client.render.chunk.lists.ChunkRenderList;
 import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
@@ -86,6 +85,8 @@ public class LevelRendererMixin {
 		if (sectionManager == null)
 			return;
 
+		IntPool freeIds = ((RenderSectionManagerExt) sectionManager).getRenderRegionManager().getFreeIds();
+
 		ChunkFadeInController controller = worldRenderer.getChunkFadeInController();
 		if (controller == null)
 			return;
@@ -100,7 +101,7 @@ public class LevelRendererMixin {
 			ChunkRenderList renderList = renderLists.next();
 
 			RenderRegion region = renderList.getRegion();
-			int regionIndex = region.getId();
+			int regionIndex = region.getOrAcquireId(freeIds);
 			if (regionIndex == -1) continue;
 
 			RenderRegionExt regionExt = (RenderRegionExt) region;
