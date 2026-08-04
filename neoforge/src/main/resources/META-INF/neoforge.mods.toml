@@ -37,6 +37,13 @@ config = "chunksfadein_dh.mixins.json"
 config = "chunksfadein_sable.mixins.json"
 
 [[dependencies.chunksfadein]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.chunksfadein]]
 modId = "sodium"
 type = "optional"
 reason = "Sodium or Embeddium is required for Chunks Fade In."

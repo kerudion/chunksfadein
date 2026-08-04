@@ -49,10 +49,10 @@ dependencies {
 
     jarJar api("dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:${sable_companion_version}")
 
-    compileOnly files(project(":common").sourceSets.main.compileClasspath.files.findAll { file ->
+    compileOnly project(":common").sourceSets.main.compileClasspath.filter { file ->
         def fileName = file.name.toLowerCase()
         return (fileName.contains("sodium") || fileName.contains("iris")) && !fileName.contains("minecraft")
-    })
+    }
 
     implementation "org.anarres:jcpp:1.4.14"
     implementation "io.github.douira:glsl-transformer:${glsl_transformer_version}"
