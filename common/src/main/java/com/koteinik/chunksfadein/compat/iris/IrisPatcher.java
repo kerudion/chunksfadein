@@ -50,6 +50,10 @@ public class IrisPatcher {
 			add("u_RegionOffset");
 			add("_get_draw_translation");
 			add("_get_relative_chunk_coord");
+			add("u_RegionID");
+			add("_draw_id");
+			add("_vert_position");
+			add("iris_FogColor");
 		}
 	};
 
@@ -196,31 +200,30 @@ public class IrisPatcher {
 					shader.outPrefix("g_");
 				}
 
-				if (!injected) {
-					tree.parseAndInjectNodes(
-						t, ASTInjectionPoint.BEFORE_FUNCTIONS,
-						shader.vertInVars().flushList().stream()
-					);
+				List<String> vertBlock = new ArrayList<>();
 
-					tree.parseAndInjectNodes(
-						t, ASTInjectionPoint.BEFORE_FUNCTIONS,
-						shader.utilRand().flushSingleLine(),
-						shader.utilSrgbToOklab().flushSingleLine(),
-						shader.utilOklabToSrgb().flushSingleLine(),
-						shader.utilMixSrgbInOklab().flushSingleLine()
-					);
+				if (!injected) {
+					vertBlock.addAll(shader.vertInVars().flushList());
+					if (inject) vertBlock.addAll(shader.vertOutVars().flushList());
 				}
 
-				tree.injectNodes(
-					ASTInjectionPoint.BEFORE_FUNCTIONS,
-					parseDeclarations(
-						t, root,
-						shader.apiVertGetFadeData("_draw_id").flushSingleLine(),
-						shader.apiVertCalculateDisplacement().flushSingleLine(),
-						shader.apiVertCalculateDisplacement2().flushSingleLine(),
-						shader.apiVertCalculateCurvature().flushSingleLine(),
-						shader.apiVertCalculateCurvature2().flushSingleLine()
-					)
+				vertBlock.add(shader.utilRand().flushSingleLine());
+				vertBlock.add(shader.utilSrgbToOklab().flushSingleLine());
+				vertBlock.add(shader.utilOklabToSrgb().flushSingleLine());
+				vertBlock.add(shader.utilMixSrgbInOklab().flushSingleLine());
+
+				vertBlock.add(shader.apiVertGetFadeData("_draw_id").flushSingleLine());
+				vertBlock.add(shader.apiVertCalculateDisplacement().flushSingleLine());
+				vertBlock.add(shader.apiVertCalculateDisplacement2().flushSingleLine());
+				vertBlock.add(shader.apiVertCalculateCurvature().flushSingleLine());
+				vertBlock.add(shader.apiVertCalculateCurvature2().flushSingleLine());
+
+				int vertInit = tree.getChildren()
+					.indexOf(tree.getOneFunctionDefinitionBody("_vert_init").getAncestor(FunctionDefinition.class));
+
+				tree.getChildren().addAll(
+					vertInit,
+					parseDeclarations(t, root, vertBlock.toArray(String[]::new))
 				);
 
 				if (!inject)
@@ -234,12 +237,6 @@ public class IrisPatcher {
 					shader.vertInitMod("_vert_position", "position", true, "vec3(_draw_id)", injectCurvature);
 
 				tree.appendFunctionBody("_vert_init", parseStatements(t, root, shader.flushArray()));
-
-				if (!injected)
-					tree.parseAndInjectNodes(
-						t, ASTInjectionPoint.BEFORE_FUNCTIONS, shader
-							.vertOutVars().flushList().stream()
-					);
 
 				break;
 
@@ -326,32 +323,37 @@ public class IrisPatcher {
 				if (hasTessEval || hasGeometry)
 					shader.inPrefix("f_");
 
-				tree.injectNodes(
-					ASTInjectionPoint.BEFORE_FUNCTIONS,
-					parseDeclarations(
-						t, root,
-						shader.apiFragCalculateFade().flushSingleLine(),
-						shader.apiFragApplyFade().flushSingleLine(),
-						shader.apiFragApplyFogFade().flushSingleLine(),
-						shader.apiFragApplySkyLodFade().flushSingleLine(),
-						shader.apiFragSampleSkyLodTexture().flushSingleLine()
-					)
+				List<String> fragBlock = new ArrayList<>();
+
+				if (!injected) fragBlock.addAll(shader.fragInVars().flushList());
+
+				fragBlock.add(shader.utilRand().flushSingleLine());
+				fragBlock.add(shader.utilSrgbToOklab().flushSingleLine());
+				fragBlock.add(shader.utilOklabToSrgb().flushSingleLine());
+				fragBlock.add(shader.utilMixSrgbInOklab().flushSingleLine());
+
+				fragBlock.add(shader.apiFragCalculateFade().flushSingleLine());
+				fragBlock.add(shader.apiFragApplyFade().flushSingleLine());
+				fragBlock.add(shader.apiFragApplyFogFade().flushSingleLine());
+				fragBlock.add(shader.apiFragApplySkyLodFade().flushSingleLine());
+				fragBlock.add(shader.apiFragSampleSkyLodTexture().flushSingleLine());
+
+				OptionalInt fogColorUsage = tree.getRoot().identifierIndex.getStream("iris_FogColor")
+					.map(id -> id.getBranchAncestor(
+						DeclarationExternalDeclaration.class,
+						DeclarationExternalDeclaration::getDeclaration
+					))
+					.filter(Objects::nonNull)
+					.mapToInt(declaration -> tree.getChildren().indexOf(declaration))
+					.filter(i -> i != -1)
+					.findFirst();
+
+				tree.getChildren().addAll(
+					fogColorUsage.isPresent()
+						? (fogColorUsage.getAsInt() + 1)
+						: ASTInjectionPoint.BEFORE_FUNCTIONS.getInjectionIndex(tree),
+					parseDeclarations(t, root, fragBlock.toArray(String[]::new))
 				);
-
-				if (!injected) {
-					tree.parseAndInjectNodes(
-						t, ASTInjectionPoint.BEFORE_FUNCTIONS,
-						shader.fragInVars().flushList().stream()
-					);
-
-					tree.parseAndInjectNodes(
-						t, ASTInjectionPoint.BEFORE_FUNCTIONS,
-						shader.utilRand().flushSingleLine(),
-						shader.utilSrgbToOklab().flushSingleLine(),
-						shader.utilOklabToSrgb().flushSingleLine(),
-						shader.utilMixSrgbInOklab().flushSingleLine()
-					);
-				}
 
 				if (injectFragMod) {
 					injectFragMod(shader, t, tree, root);
