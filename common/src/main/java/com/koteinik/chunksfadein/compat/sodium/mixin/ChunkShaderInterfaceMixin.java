@@ -73,6 +73,17 @@ public abstract class ChunkShaderInterfaceMixin implements ChunkShaderInterfaceE
 		return instance != null;
 	}
 
+	@WrapWithCondition(
+		method = "setRegionData",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/caffeinemc/mods/sodium/client/gl/shader/uniform/GlUniformUnsignedInt;set(Ljava/lang/Integer;)V"
+		)
+	)
+	private boolean wrapSetUnsigned(GlUniformUnsignedInt instance, Integer value) {
+		return instance != null;
+	}
+
 	@Override
 	public void bindUniforms(GlMutableBuffer fadeDataBuffer) {
 		if (fadeInterface == null) {
