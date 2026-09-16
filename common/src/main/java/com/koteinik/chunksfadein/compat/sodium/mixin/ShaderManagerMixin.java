@@ -5,20 +5,19 @@ import com.koteinik.chunksfadein.core.FadeMixType;
 import com.koteinik.chunksfadein.core.FadeShader;
 import com.koteinik.chunksfadein.core.FogOverrideMode;
 import com.koteinik.chunksfadein.core.ShaderInjector;
-import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.shaders.ShaderType;
+import com.mojang.renderpearl.api.pipeline.ShaderType;
 import net.minecraft.client.renderer.ShaderManager;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(value = ShaderManager.class)
+@Mixin(value = ShaderManager.Configs.class)
 public class ShaderManagerMixin {
 	@ModifyReturnValue(method = "getShader", at = @At("RETURN"))
-	private String cfi_injectShaders(String source, @Local Identifier location, @Local ShaderType type) {
-		if (CompatibilityHook.isIrisShaderPackInUse())
+	private String cfi_injectShaders(String source, @Local(argsOnly = true) Identifier location, @Local(argsOnly = true) ShaderType type) {
+		if (source == null)
 			return source;
 
 		String path = location.getPath();
@@ -46,20 +45,14 @@ public class ShaderManagerMixin {
 
 	private static ShaderInjector prepareFragmentInjector() {
 		ShaderInjector injector = new ShaderInjector();
-		FadeShader shader = new FadeShader();
+		FadeShader shader = new FadeShader().baseLocation(8);
 
 		injector.insertAfterInVars(shader.fragInVars().flushMultiline());
 
 		if (!Config.isModEnabled || !Config.isFadeEnabled)
 			return injector;
 
-		if (Config.fogOverrideMode != FogOverrideMode.NONE && Config.fadeMixType == FadeMixType.OKLAB)
-			injector.replace(
-				"mix(fragColor.rgb, fogColor.rgb, fogValue * fogColor.a)",
-				"_cfi_mix_srgb_in_oklab(fragColor.rgb, fogColor.rgb, fogValue * fogColor.a)"
-			);
-
-		injector.insertAfterStr("#version 330 core", shader.utilFunctions().flushMultiline());
+		injector.insertAfterVersion(shader.utilFunctions().flushMultiline());
 
 		String inFogRange = switch (Config.fogOverrideMode) {
 			case BOTH -> "v_FragDistance.x > u_RenderFog.x || v_FragDistance.y > u_EnvironmentFog.x";
@@ -68,28 +61,29 @@ public class ShaderManagerMixin {
 			case NONE -> "false";
 		};
 
+		String applyFog;
+		if (Config.fogOverrideMode != FogOverrideMode.NONE && Config.fadeMixType == FadeMixType.OKLAB) {
+			applyFog = "float cfi_fogValue = total_fog_value(v_FragDistance.y, v_FragDistance.x, u_EnvironmentFog.x, u_EnvironmentFog.y, u_RenderFog.x, u_RenderFog.y);";
+			applyFog += "\ncolor = vec4(_cfi_mix_srgb_in_oklab({color}.rgb, fogColor.rgb, cfi_fogValue * fogColor.a), {color}.a);";
+		} else {
+			applyFog = "color = _linearFog({color}, v_FragDistance, fogColor, u_EnvironmentFog, u_RenderFog, 1.0);";
+		}
+
 		injector.replace(
-			"fragColor = _linearFog({color}, v_FragDistance, u_FogColor, u_EnvironmentFog, u_RenderFog, fadeFactor);",
-			"#ifdef USE_FOG",
+			"return _linearFog(color, v_FragDistance, fogColor, u_EnvironmentFog, u_RenderFog, factor);",
 			"vec3 fadeColor;",
-			"vec4 fogColor = u_FogColor;",
 			"if (cfi_FadeFactor < 1.0 || %s) {".formatted(inFogRange),
 			"fadeColor = texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb;",
+			"#ifdef OIT_ACCUMULATE",
+			"fadeColor *= {color}.a;",
+			"#endif",
 			"if (%s) {".formatted(inFogRange),
 			"fogColor.rgb = fadeColor;",
 			"}",
 			"}",
-			"fragColor = _linearFog({color}, v_FragDistance, fogColor, u_EnvironmentFog, u_RenderFog, 1.0);",
-			shader.fragColorMod("{frag_color}.rgb", "fadeColor", true).flushMultiline(),
-			"#else",
-			"if (cfi_FadeFactor < 1.0) {",
-			"vec3 fadeColor = texture(cfi_sky, gl_FragCoord.xy / cfi_screenSize).rgb;",
-			shader.fragColorMod("{frag_color}.rgb", "fadeColor", false).flushMultiline(),
-			"}",
-			"else {",
-			"{frag_color} = {color};",
-			"}",
-			"#endif"
+			applyFog,
+			shader.fragColorMod("color.rgb", "fadeColor", true).flushMultiline(),
+			"return color;"
 		);
 
 		return injector;
@@ -97,17 +91,17 @@ public class ShaderManagerMixin {
 
 	private static ShaderInjector prepareVertexInjector() {
 		ShaderInjector injector = new ShaderInjector();
-		FadeShader shader = new FadeShader();
+		FadeShader shader = new FadeShader().baseLocation(8);
 
 		injector.insertAfterStr(
-			"uint _material_params;",
+			"uniform isamplerBuffer u_SectionTimeInfo;",
 			shader
 				.vertInVars()
 				.vertOutVars()
 				.flushMultiline()
 		);
 
-		injector.insertAfterStr("#version 330 core", shader.utilFunctions().flushMultiline());
+		injector.insertAfterVersion(shader.utilFunctions().flushMultiline());
 
 		injector.insertAfterStr(
 			"_vert_init();",

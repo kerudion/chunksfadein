@@ -1,7 +1,7 @@
 package com.koteinik.chunksfadein.compat.dh;
 
 import com.koteinik.chunksfadein.core.Utils;
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import com.seibel.distanthorizons.api.enums.config.EDhApiMcRenderingFadeMode;
 import com.seibel.distanthorizons.core.util.RenderUtil;
 import net.minecraft.world.phys.Vec3;
@@ -10,7 +10,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 
-import static com.mojang.blaze3d.buffers.GpuBuffer.*;
+import static com.mojang.renderpearl.api.buffers.GpuBuffer.*;
 import static com.mojang.blaze3d.systems.RenderSystem.getDevice;
 import static org.lwjgl.system.MemoryStack.stackPush;
 

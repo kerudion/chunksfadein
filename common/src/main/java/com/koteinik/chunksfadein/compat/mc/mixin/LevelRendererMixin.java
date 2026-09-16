@@ -2,18 +2,21 @@ package com.koteinik.chunksfadein.compat.mc.mixin;
 
 import com.koteinik.chunksfadein.compat.dh.LodMaskTexture;
 import com.koteinik.chunksfadein.compat.sodium.ChunkFadeInController;
-import com.koteinik.chunksfadein.compat.sodium.ext.*;
+import com.koteinik.chunksfadein.compat.sodium.ext.RenderRegionExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionManagerExt;
+import com.koteinik.chunksfadein.compat.sodium.ext.SodiumWorldRendererExt;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.RenderPhase;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.core.Utils;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.framegraph.FramePass;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.IntPool;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
@@ -21,7 +24,6 @@ import net.caffeinemc.mods.sodium.client.render.chunk.lists.ChunkRenderList;
 import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
 import net.caffeinemc.mods.sodium.client.util.iterator.ByteIterator;
 import net.caffeinemc.mods.sodium.client.world.LevelRendererExtension;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -30,7 +32,6 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -61,11 +62,11 @@ public class LevelRendererMixin {
 		method = "render",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/renderer/LevelRenderer;prepareChunkRenders(Lorg/joml/Matrix4fc;)Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;",
+			target = "Lnet/minecraft/client/renderer/LevelRenderer;prepareChunkRenders(Lorg/joml/Matrix4fc;Z)Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;",
 			shift = At.Shift.AFTER
 		)
 	)
-	private void modifyRenderLevel(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker, boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, CallbackInfo ci, @Local FrameGraphBuilder frameGraphBuilder) {
+	private void modifyRenderLevel(GraphicsResourceAllocator resourceAllocator, boolean renderOutline, CameraRenderState cameraState, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, boolean consistentDepthRequired, CallbackInfo ci, @Local FrameGraphBuilder frameGraphBuilder) {
 		if (!Config.isModEnabled)
 			return;
 

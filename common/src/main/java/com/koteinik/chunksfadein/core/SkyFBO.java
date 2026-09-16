@@ -1,14 +1,14 @@
 package com.koteinik.chunksfadein.core;
 
 import com.koteinik.chunksfadein.Logger;
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.opengl.FrameBufferAttachment;
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.textures.GpuTexture;
+import com.mojang.renderpearl.backend.opengl.FrameBufferAttachment;
+import com.mojang.renderpearl.backend.opengl.GlStateManager;
+import com.mojang.renderpearl.backend.opengl.GlTexture;
 import net.caffeinemc.mods.sodium.client.gpu.device.backend.DrawBackend;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
@@ -74,8 +74,8 @@ public class SkyFBO {
 			"Chunks Fade In sky + DH texture",
 			width,
 			height,
-			false,
-			GpuFormat.RGBA8_UNORM
+			GpuFormat.RGBA8_UNORM,
+			null
 		);
 
 		if (DrawBackend.BACKEND == DrawBackend.OPENGL)

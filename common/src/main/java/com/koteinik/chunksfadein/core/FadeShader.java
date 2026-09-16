@@ -10,10 +10,19 @@ import static com.koteinik.chunksfadein.core.AnimationType.JAGGED;
 import static com.koteinik.chunksfadein.core.FadeType.*;
 
 public class FadeShader {
+	public static final int FADE_FACTOR = 0;
+	public static final int BLOCK_SEED = 1;
+	public static final int REF_FACTOR = 1;
+	public static final int LOCAL_POS = 2;
+	public static final int WORLD_POS = 3;
+	public static final int MATERIAL = 4;
+
 	private List<String> lines = new ArrayList<>();
 
 	private String inPrefix = "";
 	private String outPrefix = "";
+	private String regionId = "u_RegionID";
+	private int baseLocation = -1;
 
 	private boolean animation = isAnimationEnabled;
 	private boolean fade = isFadeEnabled;
@@ -45,6 +54,18 @@ public class FadeShader {
 
 	public FadeShader outPrefix(String value) {
 		outPrefix = value;
+
+		return this;
+	}
+
+	public FadeShader regionId(String regionId) {
+		this.regionId = regionId;
+
+		return this;
+	}
+
+	public FadeShader baseLocation(int baseLocation) {
+		this.baseLocation = baseLocation;
 
 		return this;
 	}
@@ -273,7 +294,7 @@ public class FadeShader {
 			return this;
 
 		newLine("vec4 cfi_getFadeData() {");
-		newLine("return texelFetch(cfi_u_FadeData, int(u_RegionID * 256u + uint(%s)));".formatted(drawId));
+		newLine("return texelFetch(cfi_u_FadeData, int(%s * 256u + uint(%s)));".formatted(regionId, drawId));
 		newLine("}");
 
 		return this;
@@ -466,14 +487,14 @@ public class FadeShader {
 	}
 
 	private FadeShader insertVars(String mods, String flatMods, String prefix, String suffix) {
-		newLine("%s float %scfi_FadeFactor%s;".formatted(flatMods, prefix, suffix));
+		newLine(withLoc(FADE_FACTOR, "%s float %scfi_FadeFactor%s;".formatted(flatMods, prefix, suffix)));
 
 		if (fadeType == BLOCK || fadeType == FRAGMENTED)
-			newLine("%s vec3 %scfi_BlockSeed%s;".formatted(mods, prefix, suffix));
+			newLine(withLoc(BLOCK_SEED, "%s vec3 %scfi_BlockSeed%s;".formatted(mods, prefix, suffix)));
 		if (fadeType == LINED)
-			newLine("%s float %scfi_RefFactor%s;".formatted(mods, prefix, suffix));
+			newLine(withLoc(REF_FACTOR, "%s float %scfi_RefFactor%s;".formatted(mods, prefix, suffix)));
 		if (fadeType == VERTEX)
-			newLine("%s float %scfi_RefFactor%s;".formatted(flatMods, prefix, suffix));
+			newLine(withLoc(REF_FACTOR, "%s float %scfi_RefFactor%s;".formatted(flatMods, prefix, suffix)));
 
 		return this;
 	}
@@ -483,8 +504,8 @@ public class FadeShader {
 			return this;
 
 		if (animation || fade)
-			newLine("vec4 chunkFadeData = texelFetch(cfi_u_FadeData, int(u_RegionID * 256u + uint(%s)));"
-				.formatted(drawId));
+			newLine("vec4 chunkFadeData = texelFetch(cfi_u_FadeData, int(%s * 256u + uint(%s)));"
+				.formatted(regionId, drawId));
 
 		return vertInitOutVars(localPos, "vec3(%s)".formatted(drawId));
 	}
@@ -749,8 +770,8 @@ public class FadeShader {
 	public FadeShader dhVertOutVars() {
 		vertOutVars();
 
-		newLine("out vec3 cfi_localPos;");
-		newLine("out vec3 cfi_worldPos;");
+		newLine(withLoc(LOCAL_POS, "out vec3 cfi_localPos;"));
+		newLine(withLoc(WORLD_POS, "out vec3 cfi_worldPos;"));
 
 		return this;
 	}
@@ -758,8 +779,8 @@ public class FadeShader {
 	public FadeShader dhFragInVars() {
 		fragInVars();
 
-		newLine("in vec3 cfi_localPos;");
-		newLine("in vec3 cfi_worldPos;");
+		newLine(withLoc(LOCAL_POS, "in vec3 cfi_localPos;"));
+		newLine(withLoc(WORLD_POS, "in vec3 cfi_worldPos;"));
 
 		return this;
 	}
@@ -857,6 +878,12 @@ public class FadeShader {
 		newLine("}");
 
 		return this;
+	}
+
+	public String withLoc(int slot, String declaration) {
+		if (baseLocation == -1) return declaration;
+
+		return "layout(location = %d) %s".formatted(baseLocation + slot, declaration);
 	}
 
 	public FadeShader newLine(String line) {

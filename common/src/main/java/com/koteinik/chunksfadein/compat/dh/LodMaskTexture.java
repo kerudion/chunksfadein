@@ -2,11 +2,11 @@ package com.koteinik.chunksfadein.compat.dh;
 
 import com.koteinik.chunksfadein.Logger;
 import com.koteinik.chunksfadein.core.Utils;
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.opengl.GlBuffer;
-import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.backend.opengl.GlBuffer;
+import com.mojang.renderpearl.backend.opengl.GlConst;
 import net.caffeinemc.mods.sodium.client.gpu.device.backend.DrawBackend;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.ChunkPos;
@@ -20,8 +20,8 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import static com.mojang.blaze3d.buffers.GpuBuffer.*;
 import static com.mojang.blaze3d.systems.RenderSystem.getDevice;
+import static com.mojang.renderpearl.api.buffers.GpuBuffer.*;
 import static org.lwjgl.system.MemoryUtil.memFree;
 
 public class LodMaskTexture {

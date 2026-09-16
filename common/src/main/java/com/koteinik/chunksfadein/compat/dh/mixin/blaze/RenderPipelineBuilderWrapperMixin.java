@@ -3,10 +3,10 @@ package com.koteinik.chunksfadein.compat.dh.mixin.blaze;
 import com.koteinik.chunksfadein.ShaderUtils;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.pipeline.BindGroupLayout;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.shaders.UniformType;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.UniformType;
 import com.seibel.distanthorizons.common.render.blaze.wrappers.RenderPipelineBuilderWrapper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +26,7 @@ public class RenderPipelineBuilderWrapperMixin {
 		blazePipelineBuilder.withShaderDefine("CFI_CFG_VERSION", ShaderUtils.shaderVersion);
 	}
 
-	@WrapOperation(method = "build", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/BindGroupLayout$Builder;withUniform(Ljava/lang/String;Lcom/mojang/blaze3d/shaders/UniformType;)Lcom/mojang/blaze3d/pipeline/BindGroupLayout$Builder;"))
+	@WrapOperation(method = "build", at = @At(value = "INVOKE", target = "Lcom/mojang/renderpearl/api/pipeline/BindGroupLayout$Builder;withUniform(Ljava/lang/String;Lcom/mojang/renderpearl/api/pipeline/UniformType;)Lcom/mojang/renderpearl/api/pipeline/BindGroupLayout$Builder;"))
 	private BindGroupLayout.Builder cfi_changeType(BindGroupLayout.Builder instance, String name, UniformType type, Operation<BindGroupLayout.Builder> original) {
 		if (name.equals("cfi_lodMask"))
 			return instance.withUniform(name, UniformType.TEXEL_BUFFER, GpuFormat.R8_SINT);

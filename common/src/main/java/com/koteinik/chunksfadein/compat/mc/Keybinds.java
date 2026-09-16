@@ -24,7 +24,7 @@ public class Keybinds {
 	public static void initKeybinds() {
 		toggleModKeybind = Services.PLATFORM.registerKeyBind(new KeyMapping(
 			TOGGLE_MOD,
-			InputConstants.Type.KEYSYM,
+			InputConstants.Type.KEYBOARD,
 			InputConstants.UNKNOWN.getValue(),
 			KeyMapping.Category.register(Identifier.fromNamespaceAndPath("chunksfadein", "keybinds"))
 		));

@@ -12,10 +12,10 @@ import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.SkyFBO;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.commands.RenderPass;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import com.seibel.distanthorizons.common.render.blaze.BlazeDhTerrainRenderer;
 import com.seibel.distanthorizons.common.render.blaze.wrappers.RenderPassWrapper;
 import com.seibel.distanthorizons.common.render.blaze.wrappers.RenderPipelineBuilderWrapper;
@@ -116,7 +116,7 @@ public abstract class BlazeDhTerrainRendererMixin implements BlazeDhTerrainRende
 
 		pass.setUniform("cfi_u_DHGlobals", DHBlazeUniforms.buffer);
 		pass.setUniform("cfi_lodMask", LodMaskTexture.getInstance().getBuffer());
-		pass.bindTexture(
+		pass.setUniform(
 			"cfi_sky",
 			SkyFBO.getInstance().texture.getColorTextureView(),
 			RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)

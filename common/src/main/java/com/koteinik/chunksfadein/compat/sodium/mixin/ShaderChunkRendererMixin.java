@@ -3,16 +3,15 @@ package com.koteinik.chunksfadein.compat.sodium.mixin;
 import com.koteinik.chunksfadein.ShaderUtils;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.pipeline.BindGroupLayout;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.shaders.UniformType;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.UniformType;
 import net.caffeinemc.mods.sodium.client.render.chunk.ShaderChunkRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.terrain.TerrainRenderPass;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.Map;
@@ -31,14 +30,14 @@ public class ShaderChunkRendererMixin {
 		method = "<clinit>",
 		at = @At(
 			value = "INVOKE",
-			target = "Lcom/mojang/blaze3d/pipeline/BindGroupLayout$Builder;build()Lcom/mojang/blaze3d/pipeline/BindGroupLayout;"
+			target = "Lcom/mojang/renderpearl/api/pipeline/BindGroupLayout$Builder;build()Lcom/mojang/renderpearl/api/pipeline/BindGroupLayout;"
 		)
 	)
 	private static BindGroupLayout cfi_injectBuffers(BindGroupLayout.Builder instance, Operation<BindGroupLayout> original) {
 		return instance
 			.withUniform("cfi_u_Globals", UniformType.UNIFORM_BUFFER)
 			.withUniform("cfi_u_FadeData", UniformType.TEXEL_BUFFER, GpuFormat.RGBA32_FLOAT)
-			.withSampler("cfi_sky")
+			.withUniform("cfi_sky", UniformType.COMBINED_IMAGE_SAMPLER)
 			.build();
 	}
 
@@ -46,7 +45,7 @@ public class ShaderChunkRendererMixin {
 		method = "createShader",
 		at = @At(
 			value = "INVOKE",
-			target = "Lcom/mojang/blaze3d/pipeline/RenderPipeline$Builder;build()Lcom/mojang/blaze3d/pipeline/RenderPipeline;"
+			target = "Lcom/mojang/renderpearl/api/pipeline/RenderPipeline$Builder;build()Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;"
 		)
 	)
 	private static RenderPipeline cfi_injectReloadThing(RenderPipeline.Builder instance, Operation<RenderPipeline> original) {

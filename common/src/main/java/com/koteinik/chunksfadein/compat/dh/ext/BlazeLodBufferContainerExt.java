@@ -1,6 +1,6 @@
 package com.koteinik.chunksfadein.compat.dh.ext;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 
 public interface BlazeLodBufferContainerExt {
 	void cfi_upload();

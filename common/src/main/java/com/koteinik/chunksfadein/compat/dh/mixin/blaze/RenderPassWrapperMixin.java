@@ -1,7 +1,7 @@
 package com.koteinik.chunksfadein.compat.dh.mixin.blaze;
 
 import com.koteinik.chunksfadein.compat.dh.ext.RenderPassWrapperExt;
-import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import com.seibel.distanthorizons.common.render.blaze.wrappers.RenderPassWrapper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

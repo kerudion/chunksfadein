@@ -3,9 +3,15 @@ package com.koteinik.chunksfadein.core;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ShaderInjector {
 	public static final ShaderInjector EMPTY_INJECTOR = new ShaderInjector();
+
+	private static final Pattern IN_VAR = Pattern.compile("(?m)^\\h*(?:layout\\s*\\([^)]*\\)\\s*)?.*in\\s+");
+	private static final Pattern OUT_VAR = Pattern.compile("(?m)^\\h*(?:layout\\s*\\([^)]*\\)\\s*)?.*out\\s+");
+	private static final Pattern VERSION = Pattern.compile("(?m)^\\h*#version[^\\n]*(?:\\s*#extension[^\\n]*)*");
 
 	private final List<Function<String, String>> transformations = new ArrayList<>();
 
@@ -42,11 +48,15 @@ public class ShaderInjector {
 	}
 
 	public void insertAfterInVars(boolean first, String... code) {
-		transformations.add(insertAfter("\nin ", first, code));
+		transformations.add(insertAfter(IN_VAR, first, code));
 	}
 
 	public void insertAfterOutVars(boolean first, String... code) {
-		transformations.add(insertAfter("\nout ", first, code));
+		transformations.add(insertAfter(OUT_VAR, first, code));
+	}
+
+	public void insertAfterVersion(String... code) {
+		transformations.add(insertAfter(VERSION, false, code));
 	}
 
 	public void insertAfterStr(String str, boolean first, String... code) {
@@ -80,14 +90,34 @@ public class ShaderInjector {
 			int idx = first ? src.indexOf(what) : src.lastIndexOf(what);
 			if (idx == -1) return src;
 
-			String indentation = getIndentationForLine(src, idx);
-			int newlineIdx = src.indexOf("\n", idx);
-
-			String toInsert = applyIndentation(indentation, code);
-
-			toInsert = replaceParts(src, toInsert);
-			return insertAt(newlineIdx, src, toInsert);
+			return insertAfterLine(src, idx, code);
 		};
+	}
+
+	private static Function<String, String> insertAfter(Pattern pattern, boolean first, String... code) {
+		return (src) -> {
+			Matcher matcher = pattern.matcher(src);
+
+			int idx = -1;
+			while (matcher.find()) {
+				idx = matcher.start();
+				if (first) break;
+			}
+			if (idx == -1) return src;
+
+			return insertAfterLine(src, idx, code);
+		};
+	}
+
+	private static String insertAfterLine(String src, int idx, String... code) {
+		String indentation = getIndentationForLine(src, idx);
+		int newlineIdx = src.indexOf("\n", idx);
+		if (newlineIdx == -1) newlineIdx = src.length();
+
+		String toInsert = applyIndentation(indentation, code);
+
+		toInsert = replaceParts(src, toInsert);
+		return insertAt(newlineIdx, src, toInsert);
 	}
 
 	private static String insertToFunction(String src, String code, String function, int offset) {

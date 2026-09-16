@@ -6,17 +6,17 @@ import com.koteinik.chunksfadein.core.ShaderInjector;
 import com.koteinik.chunksfadein.hooks.CompatibilityHook;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.shaders.ShaderType;
+import com.mojang.renderpearl.api.pipeline.ShaderType;
 import net.minecraft.client.renderer.ShaderManager;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(value = ShaderManager.class)
+@Mixin(value = ShaderManager.Configs.class)
 public abstract class ShaderManagerMixin {
 	@ModifyReturnValue(
-		method = "getShader(Lnet/minecraft/resources/Identifier;Lcom/mojang/blaze3d/shaders/ShaderType;)Ljava/lang/String;",
+		method = "getShader(Lnet/minecraft/resources/Identifier;Lcom/mojang/renderpearl/api/pipeline/ShaderType;)Ljava/lang/String;",
 		at = @At("RETURN")
 	)
 	private String cfi_modifyDhBlazeShader(
@@ -39,12 +39,12 @@ public abstract class ShaderManagerMixin {
 	@Unique
 	private static ShaderInjector cfi_terrainVertexInjector() {
 		ShaderInjector injector = new ShaderInjector();
-		FadeShader shader = new FadeShader();
+		FadeShader shader = new FadeShader().baseLocation(8);
 
 		injector.replace("#version 150", "#version 330 core");
 
 		if (Config.isFadeEnabled && !CompatibilityHook.isDHDitherEnabled())
-			injector.insertAfterOutVars("flat out int cfi_material;");
+			injector.insertAfterOutVars(shader.withLoc(FadeShader.MATERIAL, "flat out int cfi_material;"));
 
 		injector.insertAfterOutVars(shader
 			.dhUniforms(true)
@@ -75,7 +75,7 @@ public abstract class ShaderManagerMixin {
 	@Unique
 	private static ShaderInjector cfi_terrainFragmentInjector() {
 		ShaderInjector injector = new ShaderInjector();
-		FadeShader shader = new FadeShader();
+		FadeShader shader = new FadeShader().baseLocation(8);
 
 		injector.insertAfterInVars(
 			shader.dhSamplers()
@@ -84,7 +84,7 @@ public abstract class ShaderManagerMixin {
 		);
 
 		if (Config.isFadeEnabled && !CompatibilityHook.isDHDitherEnabled())
-			injector.insertAfterInVars("flat in int cfi_material;");
+			injector.insertAfterInVars(shader.withLoc(FadeShader.MATERIAL, "flat in int cfi_material;"));
 
 		injector.insertAfterInVars(
 			shader.fragInVars()

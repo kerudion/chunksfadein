@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "client": [
+    "ExtendedShaderMixin",
     "IrisRenderingPipelineMixin",
     "IrisSodiumTransformerMixin",
     "JcppProcessorMixin",

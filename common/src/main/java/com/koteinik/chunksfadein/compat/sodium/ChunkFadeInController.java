@@ -3,15 +3,15 @@ package com.koteinik.chunksfadein.compat.sodium;
 import com.koteinik.chunksfadein.compat.sodium.ext.RenderSectionExt;
 import com.koteinik.chunksfadein.config.Config;
 import com.koteinik.chunksfadein.core.Utils;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.systems.CommandEncoder;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
 import net.minecraft.client.multiplayer.ClientLevel;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import static com.mojang.blaze3d.buffers.GpuBuffer.*;
+import static com.mojang.renderpearl.api.buffers.GpuBuffer.*;
 import static com.mojang.blaze3d.systems.RenderSystem.getDevice;
 import static net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion.REGION_HEIGHT;
 import static net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion.REGION_WIDTH;

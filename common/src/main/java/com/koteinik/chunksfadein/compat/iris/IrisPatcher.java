@@ -47,10 +47,10 @@ public class IrisPatcher {
 	private static final Set<String> sorterWhitelist = new HashSet<>() {
 		{
 			add("getVertexPosition");
-			add("u_RegionOffset");
+			add("iris_RegionOffset");
 			add("_get_draw_translation");
 			add("_get_relative_chunk_coord");
-			add("u_RegionID");
+			add("iris_RegionID");
 			add("_draw_id");
 			add("_vert_position");
 			add("iris_FogColor");
@@ -162,6 +162,7 @@ public class IrisPatcher {
 
 	public static void injectModAndAPI(ASTParser t, TranslationUnit tree, Root root, SodiumParameters parameters) {
 		FadeShader shader = new FadeShader();
+		shader.regionId("iris_RegionID");
 
 		boolean injected = hasDef(tree, "_cfi_injected");
 
