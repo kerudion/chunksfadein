@@ -44,7 +44,7 @@ public abstract class ShaderManagerMixin {
 		injector.replace("#version 150", "#version 330 core");
 
 		if (Config.isFadeEnabled && !CompatibilityHook.isDHDitherEnabled())
-			injector.insertAfterOutVars(shader.withLoc(FadeShader.MATERIAL, "flat out int cfi_material;"));
+			injector.insertAfterOutVars(shader.withLoc(FadeShader.MATERIAL, "flat out uint cfi_material;"));
 
 		injector.insertAfterOutVars(shader
 			.dhUniforms(true)
@@ -61,7 +61,7 @@ public abstract class ShaderManagerMixin {
 				.vertInitOutVars("localPos", "offsetPos")
 				.vertInitMod("localPos", "vertexWorldPos", false, "offsetPos", true)
 				// push water and lava slightly down
-				.newLine("if (irisMaterial == 12 || irisMaterial == 6) { vertexWorldPos.y -= 0.115; }")
+				.newLine("if (irisMaterial == 12u || irisMaterial == 6u) { vertexWorldPos.y -= 0.115; }")
 				.newLineIf(
 					Config.isFadeEnabled && !CompatibilityHook.isDHDitherEnabled(),
 					"cfi_material = irisMaterial;"
@@ -103,7 +103,7 @@ public abstract class ShaderManagerMixin {
 				"if (allowDither)"
 			);
 		} else {
-			String whenOccluded = Config.isFadeEnabled ? "if (cfi_material != 12) { discard; }" : "discard;";
+			String whenOccluded = Config.isFadeEnabled ? "if (cfi_material != 12u) { discard; }" : "discard;";
 			shader.dhMaskLod(whenOccluded, "vPos", "vertexWorldPos", true);
 		}
 

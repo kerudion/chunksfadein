@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 public class ShaderInjector {
 	public static final ShaderInjector EMPTY_INJECTOR = new ShaderInjector();
 
-	private static final Pattern IN_VAR = Pattern.compile("(?m)^\\h*(?:layout\\s*\\([^)]*\\)\\s*)?.*in\\s+");
-	private static final Pattern OUT_VAR = Pattern.compile("(?m)^\\h*(?:layout\\s*\\([^)]*\\)\\s*)?.*out\\s+");
+	private static final Pattern IN_VAR = Pattern.compile("(?m)^\\h*(?:layout\\s*\\([^)]*\\)\\s*)?(?:flat\\s+|smooth\\s+|noperspective\\s+|centroid\\s+)?in\\s+");
+	private static final Pattern OUT_VAR = Pattern.compile("(?m)^\\h*(?:layout\\s*\\([^)]*\\)\\s*)?(?:flat\\s+|smooth\\s+|noperspective\\s+|centroid\\s+)?out\\s+");
 	private static final Pattern VERSION = Pattern.compile("(?m)^\\h*#version[^\\n]*(?:\\s*#extension[^\\n]*)*");
 
 	private final List<Function<String, String>> transformations = new ArrayList<>();

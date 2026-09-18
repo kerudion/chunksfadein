@@ -174,7 +174,7 @@ public class GlShaderProgramMixin {
 
 		injector.insertAfterStr(
 			"occlusion = ",
-			"occlusion *= texture(cfi_fadeTex, TexCoord).a;"
+			"occlusion *= texture(cfi_fadeTex, texCoord).a;"
 		);
 
 		return injector;
@@ -200,7 +200,7 @@ public class GlShaderProgramMixin {
 			"main",
 			"fragColor.rgb = vec3(0.0);",
 			"fragColor.a = 1.0 - fragColor.a;",
-			"fragColor.a *= texture(cfi_fadeTex, TexCoord).a;"
+			"fragColor.a *= texture(cfi_fadeTex, texCoord).a;"
 		);
 
 		return injector;

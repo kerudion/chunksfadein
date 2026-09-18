@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = BlazeDhMetaRenderer.class, remap = false)
 public class BlazeDhMetaRendererMixin {
 	@Inject(
-		method = "applyToMcTexture",
+		method = "copyToMcTexture",
 		at = @At(value = "TAIL")
 	)
 	private void cfi_blitDHBufferAfterDraw(RenderParams renderParams, CallbackInfo ci) {
